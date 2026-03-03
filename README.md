@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=FF6B00,FFB347&height=200&section=header&text=Sistema%20de%20Gestão%20de%20EPIs&fontSize=36&fontColor=ffffff&fontAlignY=38&desc=SENAI%20Roberto%20Mange&descAlignY=58&descSize=18" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=FF6B00,FFB347&height=200&section=header&text=EPI%20de%20System&fontSize=36&fontColor=ffffff&fontAlignY=38&desc=SENAI%20Roberto%20Mange&descAlignY=58&descSize=18" />
 
 <br>
 
@@ -212,7 +212,7 @@ Este sistema foi projetado em conformidade com:
 
 ## 👨‍💻 Equipe
 
-> Desenvolvido por alunos do **SENAI Roberto Mange** como projeto acadêmico.
+> Desenvolvido por Enzo Turcovic no **SENAI Roberto Mange** como projeto acadêmico.
 
 ---
 
@@ -222,7 +222,6 @@ Este sistema foi projetado em conformidade com:
 
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/turco-vic)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/enzo-alves-turcovic-10b7ab201/)
-[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:enzoturcovic@gmail.com)
 
 </div>
 
