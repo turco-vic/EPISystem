@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=FF6B00,FFB347&height=200&section=header&text=EPI%20de%20System&fontSize=36&fontColor=ffffff&fontAlignY=38&desc=SENAI%20Roberto%20Mange&descAlignY=58&descSize=18" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=FF6B00,FFB347&height=200&section=header&text=EPI%20System&fontSize=36&fontColor=ffffff&fontAlignY=38&desc=SENAI%20Roberto%20Mange&descAlignY=58&descSize=18" />
 
 <br>
 
