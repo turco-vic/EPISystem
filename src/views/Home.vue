@@ -1,19 +1,19 @@
 
 <template>
     <div class="container">
-    <PageHeader title="Home" />
+    <Header title="Home" />
     <main class="main">
         <h1 class="title">Bem-vindo ao SystemACE</h1>
         <PageNav />
     </main>
-    <PageFooter />
+    <Footer />
     </div>
 </template>
 
 <script>
 import PageNav from "../components/PageNav.vue";
-import PageHeader from "../components/Header.vue";
-import PageFooter from "../components/Footer.vue";
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
 
 export default {
     name: "Home",
@@ -25,7 +25,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .container {
     display: flex;
