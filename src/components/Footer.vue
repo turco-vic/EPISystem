@@ -19,5 +19,10 @@ export default {
     color: #dedede;
     height: 10vh;
 }
+
+.copyright {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 1rem;
+}
 </style>
     

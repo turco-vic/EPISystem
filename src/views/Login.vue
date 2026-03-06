@@ -1,21 +1,18 @@
 <template>
     <Header title="Login" />
     <main>
-        <h1>Bem-vindo ao EPI System</h1>
-        <PageNav />
+        <h1>Login</h1>
     </main>
     <Footer />
 </template>
 
 <script>
-import PageNav from "../components/PageNav.vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
 export default {
     name: 'Login',
     components: {
-        PageNav,
         Header,
         Footer,
     },

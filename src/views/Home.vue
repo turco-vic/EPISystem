@@ -4,21 +4,18 @@
     <Header title="Home" />
     <main class="main">
         <h1 class="title">Bem-vindo ao SystemACE</h1>
-        <PageNav />
     </main>
     <Footer />
     </div>
 </template>
 
 <script>
-import PageNav from "../components/PageNav.vue";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 
 export default {
     name: "Home",
     components: {
-        PageNav,
         Header,
         Footer,
     },
@@ -31,6 +28,8 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background: #000000;
+    background: linear-gradient(180deg,#000000 10%, #878787 100%);
 }
 
 .main {
