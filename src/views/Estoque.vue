@@ -1,23 +1,23 @@
 <template>
-    <header>
-        <h1>Home</h1>
-    </header>
-<main>
+    <PageHeader title="Estoque" />
+    <main>
         <h1>Bem-vindo ao EPI System</h1>
         <PageNav />
     </main>
-    <footer>
-        <p>© 2024 EPI System. Todos os direitos reservados.</p>
-    </footer>
+    <PageFooter />
 </template>
 
 <script>
 import PageNav from "../components/PageNav.vue";
+import PageHeader from "../components/Header.vue";
+import PageFooter from "../components/Footer.vue";
 
 export default {
     name: "Estoque",
     components: {
         PageNav,
+        Header,
+        Footer,
     },
 }
 </script>

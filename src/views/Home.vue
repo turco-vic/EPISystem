@@ -1,28 +1,44 @@
 
 <template>
-    <div :class="$style.container">
-    <header :class="$style.header">
-        <h1>Home</h1>
-    </header>
-    <main :class="$style.main">
-        <h1 :class="$style.title">Bem-vindo ao SystemACE</h1>
+    <div class="container">
+    <PageHeader title="Home" />
+    <main class="main">
+        <h1 class="title">Bem-vindo ao SystemACE</h1>
         <PageNav />
     </main>
-    <footer :class="$style.footer">
-        <p :class="$style.copyright">© 2024 Sistema ACE. Todos os direitos reservados.</p>
-    </footer>
+    <PageFooter />
     </div>
 </template>
 
-<style module src="../styles/Home.module.css"></style>
-
 <script>
 import PageNav from "../components/PageNav.vue";
+import PageHeader from "../components/Header.vue";
+import PageFooter from "../components/Footer.vue";
 
 export default {
     name: "Home",
     components: {
         PageNav,
+        Header,
+        Footer,
     },
 }
 </script>
+
+<style>
+
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    height: 80vh;
+}
+</style>
