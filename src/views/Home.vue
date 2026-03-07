@@ -15,8 +15,8 @@
                         <p class="check"><i class="fas fa-check-circle"></i> Otimize a gestão dos seus EPIs</p>
                     </section>
                     <article class="content">
-                        <p>A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo Módulo
-                            Gestão de EPIs do EPISystem, você tem controle total sobre a distribuição, rastreamento e
+                        <p>A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo <span class="content-highlighted">Módulo
+                            Gestão de EPIs do EPISystem</span>, você tem controle total sobre a distribuição, rastreamento e
                             gestão
                             dos Equipamentos de Proteção Individual (EPIs), garantindo conformidade com as normas de
                             segurança e prevenindo riscos trabalhistas.</p>
@@ -51,7 +51,7 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
+    background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
 }
 
 .main {
@@ -60,7 +60,8 @@ background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
     justify-content: center;
     align-items: center;
     gap: 1.5rem;
-    height: min-content;
+    width: 100%;
+    flex: 1;
 }
 
 .apresentation-page {
@@ -68,7 +69,9 @@ background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    width: 100%;
+    flex: 1;
+    gap: 0;
 }
 
 .left-side {
@@ -76,7 +79,9 @@ background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    padding: 10rem 5rem 10rem 15rem;
+    width: 50%;
+    flex: 1;
+    padding: 6rem 3rem 6rem 6rem;
     gap: 2rem;
 }
 
@@ -118,18 +123,87 @@ background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
     flex-direction: column;
     color: #ffffff;
     font-family: "Red Hat Display", sans-serif;
+    font-weight: 100;
     gap: 1rem;
+}
+
+.content-highlighted {
+    font-weight: bold;
 }
 
 .right-side {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10rem 10rem 10rem 5rem;
+    width: 50%;
+    flex: 1;
+    padding: 6rem 6rem 6rem 3rem;
 }
 
 .image {
     width: 100%;
+    max-width: 560px;
     height: auto;
+}
+
+.image img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+@media (max-width: 1200px) {
+    .left-side {
+        padding: 4rem 2rem 4rem 3rem;
+    }
+
+    .right-side {
+        padding: 4rem 3rem 4rem 2rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .apresentation-page {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .left-side {
+        width: 100%;
+        padding: 3rem 2rem 2rem;
+    }
+
+    .right-side {
+        flex: none;
+        width: 100%;
+        padding: 0 2rem 3rem;
+    }
+
+    .title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .left-side,
+    .right-side {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+    }
+
+    .title {
+        font-size: 1.4rem;
+        gap: 0.5rem;
+    }
+
+    .topics,
+    .content {
+        font-size: 0.95rem;
+    }
 }
 </style>

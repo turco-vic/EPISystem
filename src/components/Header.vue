@@ -70,4 +70,34 @@ export default {
 .user-icon:hover {
     color: #ffffff;
 }
+
+@media (max-width: 768px) {
+    .header-container {
+        height: auto;
+        padding: 0.75rem 1rem;
+        flex-wrap: wrap;
+        row-gap: 0.75rem;
+    }
+
+    .header-title {
+        order: 1;
+        margin: 0;
+    }
+
+    .user-icon {
+        order: 2;
+        margin-left: auto;
+    }
+
+    .nav-container {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .nav-link {
+        font-size: 1rem;
+    }
+}
 </style>
