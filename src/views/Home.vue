@@ -3,7 +3,9 @@
     <div class="container">
     <Header title="Home" />
     <main class="main">
-        <h1 class="title">Bem-vindo ao SystemACE</h1>
+        <section class= "content">
+            <h1>Gestão Inteligente de</h1>
+        </section>
     </main>
     <Footer />
     </div>
