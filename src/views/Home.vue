@@ -165,8 +165,8 @@ export default {
     flex-wrap: wrap;
     color: #ffffff;
     font-family: "Red Hat Display", sans-serif;
-    font-weight: bolder;
-    font-size: xx-large;
+    font-weight: 900;
+    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
     gap: 1rem;
 
 }
@@ -241,14 +241,15 @@ export default {
 }
 
 .check-title {
-    text-align: flex-start;
-    width: 44rem;
+    text-align: left;
+    width: 100%;
+    max-width: 44rem;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
     font-size: 3rem;
     color: #000000;
     margin-bottom: 2rem;
-    line-height: 1.5;
+    line-height: 1.3;
 }
 
 .title-highlighted {
@@ -306,7 +307,11 @@ export default {
     }
 
     .title {
-        font-size: 2rem;
+        font-size: clamp(1.4rem, 2.2vw, 2rem);
+    }
+
+    .check-title {
+        font-size: 2.75rem;
     }
 }
 
@@ -328,7 +333,19 @@ export default {
     }
 
     .title {
-        font-size: 1.75rem;
+        font-size: clamp(1.3rem, 3vw, 1.75rem);
+    }
+
+    .check-page {
+        padding: 3rem 1.5rem;
+    }
+
+    .check-title {
+        font-size: 2.25rem;
+    }
+
+    .accordion {
+        max-width: 100%;
     }
 }
 
@@ -340,13 +357,35 @@ export default {
     }
 
     .title {
-        font-size: 1.4rem;
+        font-size: clamp(1.2rem, 4.5vw, 1.5rem);
         gap: 0.5rem;
     }
 
     .topics,
     .content {
         font-size: 0.95rem;
+    }
+
+    .check-page {
+        padding: 2rem 1rem;
+    }
+
+    .check-title {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .accordion-header {
+        font-size: 1rem;
+    }
+
+    .accordion-content {
+        font-size: 0.85rem;
+        padding-left: 1.25rem;
+    }
+
+    .accordion-item {
+        padding: 0.75rem 1rem;
     }
 }
 </style>
