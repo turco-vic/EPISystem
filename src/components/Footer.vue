@@ -1,6 +1,6 @@
 <template>
     <footer class="footer-container">
-        <p class="copyright">© 2024 Sistema ACE. Todos os direitos reservados.</p>
+        <p class="copyright">© 2026 EPI System. Todos os direitos reservados.</p>
     </footer>
 </template>
 

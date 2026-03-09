@@ -2,8 +2,8 @@
     <div class="container">
         <Header title="Home" />
         <main class="main">
-            <div class="apresentation-page">
-                <div class="left-side">
+            <section class="apresentation-page">
+                <section class="left-side">
                     <section class="title">
                         <h1>Gestão Inteligente de</h1>
                         <h1 class="highlighted">EPIs para mais</h1>
@@ -16,18 +16,38 @@
                     </section>
                     <article class="content">
                         <p>A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo <span class="content-highlighted">Módulo
-                            Gestão de EPIs do EPISystem</span>, você tem controle total sobre a distribuição, rastreamento e
+                            Gestão de EPIs do EPI System</span>, você tem controle total sobre a distribuição, rastreamento e
                             gestão
                             dos Equipamentos de Proteção Individual (EPIs), garantindo conformidade com as normas de
                             segurança e prevenindo riscos trabalhistas.</p>
                     </article>
-                </div>
-                <div class="right-side">
+                </section>
+                <section class="right-side">
                     <aside class="image">
                         <img src="../assets/placeholder.webp" alt="Imagem ilustrativa de segurança no trabalho">
                     </aside>
-                </div>
-            </div>
+                </section>
+            </section>
+
+            <section class="check-page">
+                <h1 class="check-title">O que você pode fazer com o <span class="title-highlighted">EPI System</span>?</h1>
+                <section class="accordion">
+                    <div
+                        v-for="(item, index) in accordionItems"
+                        :key="index"
+                        class="accordion-item"
+                        @click="toggleAccordion(index)"
+                    >
+                        <div class="accordion-header">
+                            <i :class="activeAccordion === index ? 'fas fa-minus-square' : 'fas fa-plus-square'"></i>
+                            <span>{{ item.title }}</span>
+                        </div>
+                        <div v-if="activeAccordion === index" class="accordion-content">
+                            <p>{{ item.description }}</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
         </main>
         <Footer />
     </div>
@@ -42,6 +62,23 @@ export default {
     components: {
         Header,
         Footer,
+    },
+    data() {
+        return {
+            activeAccordion: 0,
+            accordionItems: [
+                { title: "Cadastro e gerenciamento de EPIs", description: "Registre informações detalhadas como validade, lote, fornecedor." },
+                { title: "Associação de EPIs aos colaboradores", description: "Vincule cada EPI ao colaborador responsável, com histórico completo de entregas." },
+                { title: "Gestão de estoques", description: "Acompanhe a quantidade disponível de cada EPI em tempo real." },
+                { title: "Movimentação de EPIs", description: "Registre entradas, saídas e devoluções de equipamentos de forma prática." },
+                { title: "Relatórios e indicadores", description: "Gere relatórios detalhados para tomada de decisão e auditorias." },
+            ],
+        };
+    },
+    methods: {
+        toggleAccordion(index) {
+            this.activeAccordion = this.activeAccordion === index ? null : index;
+        },
     },
 }
 </script>
@@ -151,6 +188,75 @@ export default {
     height: auto;
     object-fit: contain;
     display: block;
+}
+
+.check-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 90vh;
+    background-color: #ffffff;
+    padding: 4rem 2rem;
+    gap: 2rem;
+    box-sizing: border-box;
+}
+
+.check-title {
+    text-align: flex-start;
+    width: 44rem;
+    font-family: "Red Hat Display", sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    color: #000000;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.title-highlighted {
+    color: #ffffff;
+    background-color: #000000;
+    padding: 0.25rem 0.5rem;
+}
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 44rem;
+    gap: 0.75rem;
+}
+
+.accordion-item {
+    border: 2px solid #000000;
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.2s;
+}
+
+.accordion-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: "Red Hat Display", sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #000000;
+}
+
+.accordion-content {
+    margin-top: 0.5rem;
+    padding-left: 1.75rem;
+    font-family: "Red Hat Display", sans-serif;
+    font-size: 0.95rem;
+    color: #333333;
 }
 
 @media (max-width: 1200px) {
