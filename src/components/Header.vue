@@ -27,16 +27,6 @@ export default {
 </script>
 
 <style scoped>
-.header-title {
-    font-family: 'Anton', sans-serif;
-}
-
-.header-link {
-    color: #dedede;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -45,6 +35,22 @@ export default {
     color: #dedede;
     height: 10vh;
     padding: 0 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.header-title {
+    font-family: 'Anton', sans-serif;
+}
+
+.header-link {
+    color: #dedede;
+    text-decoration: none;
+    transition: color 0.3s;
 }
 
 .nav-container {
