@@ -166,7 +166,7 @@ export default {
     color: #ffffff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
-    font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+    font-size: 1.5rem;
     gap: 1rem;
 
 }
