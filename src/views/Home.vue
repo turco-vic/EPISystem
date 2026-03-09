@@ -1,8 +1,8 @@
 <template>
     <div class="container">
         <Header title="Home" />
-        <main class="main">
-            <section class="apresentation-page">
+        <main class="main" ref="mainRef">
+            <section class="apresentation-page scroll-section" ref="section0">
                 <section class="left-side">
                     <section class="title">
                         <h1>Gestão Inteligente de</h1>
@@ -29,7 +29,7 @@
                 </section>
             </section>
 
-            <section class="check-page">
+            <section class="check-page scroll-section" ref="section1">
                 <h1 class="check-title">O que você pode fazer com o <span class="title-highlighted">EPI System</span>?</h1>
                 <section class="accordion">
                     <div
@@ -80,6 +80,28 @@ export default {
             this.activeAccordion = this.activeAccordion === index ? null : index;
         },
     },
+    mounted() {
+        const sections = this.$el.querySelectorAll('.scroll-section');
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else {
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            },
+            { threshold: 0.15 }
+        );
+        sections.forEach((section) => observer.observe(section));
+        this._observer = observer;
+    },
+    beforeUnmount() {
+        if (this._observer) {
+            this._observer.disconnect();
+        }
+    },
 }
 </script>
 
@@ -87,8 +109,10 @@ export default {
 .container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
     background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
 }
 
 .main {
@@ -96,9 +120,21 @@ export default {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
     width: 100%;
     flex: 1;
+}
+
+.scroll-section {
+    scroll-snap-align: start;
+    min-height: 100vh;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-section.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .apresentation-page {
@@ -107,6 +143,7 @@ export default {
     justify-content: center;
     align-items: center;
     width: 100%;
+    min-height: 100vh;
     flex: 1;
     gap: 0;
 }
@@ -196,7 +233,7 @@ export default {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 90vh;
+    min-height: 100vh;
     background-color: #ffffff;
     padding: 4rem 2rem;
     gap: 2rem;
