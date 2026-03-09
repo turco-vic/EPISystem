@@ -235,7 +235,7 @@ export default {
     width: 100%;
     min-height: 100vh;
     background-color: #ffffff;
-    padding: 4rem 2rem;
+    padding: calc(10vh + 2rem) 2rem 4rem;
     gap: 2rem;
     box-sizing: border-box;
 }
