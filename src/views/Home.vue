@@ -146,6 +146,8 @@ export default {
     min-height: 100vh;
     flex: 1;
     gap: 0;
+    padding-top: 10vh;
+    box-sizing: border-box;
 }
 
 .left-side {
@@ -156,7 +158,7 @@ export default {
     width: 50%;
     flex: 1;
     padding: 6rem 3rem 6rem 6rem;
-    gap: 2rem;
+    gap: 3.5rem;
 }
 
 .title {
