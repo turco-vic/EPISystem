@@ -50,7 +50,6 @@ export default {
 .header-link {
     color: #dedede;
     text-decoration: none;
-    transition: color 0.3s;
 }
 
 .nav-container {
@@ -63,14 +62,12 @@ export default {
     font-family: 'Red Hat Display', sans-serif;
     text-decoration: none;
     font-size: 1.2rem;
-    transition: color 0.3s;
 }
 
 .user-icon {
     color: #dedede;
     font-size: 1.5rem;
     text-decoration: none;
-    transition: color 0.3s;
 }
 
 .user-icon:hover {

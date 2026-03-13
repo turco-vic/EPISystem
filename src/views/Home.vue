@@ -2,7 +2,7 @@
     <div class="container">
         <Header title="Home" />
         <main class="main" ref="mainRef">
-            <section class="apresentation-page scroll-section" ref="section0">
+            <section class="apresentation-page" ref="section0">
                 <section class="left-side">
                     <section class="title">
                         <h1>Gestão Inteligente de</h1>
@@ -29,7 +29,7 @@
                 </section>
             </section>
 
-            <section class="check-page scroll-section" ref="section1">
+            <section class="check-page" ref="section1">
                 <h1 class="check-title">O que você pode fazer com o <span class="title-highlighted">EPI System</span>?</h1>
                 <section class="accordion">
                     <div
@@ -81,26 +81,8 @@ export default {
         },
     },
     mounted() {
-        const sections = this.$el.querySelectorAll('.scroll-section');
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    } else {
-                        entry.target.classList.remove('visible');
-                    }
-                });
-            },
-            { threshold: 0.15 }
-        );
-        sections.forEach((section) => observer.observe(section));
-        this._observer = observer;
     },
     beforeUnmount() {
-        if (this._observer) {
-            this._observer.disconnect();
-        }
     },
 }
 </script>
@@ -109,10 +91,8 @@ export default {
 .container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: 100vh;
     background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
-    overflow-y: auto;
-    scroll-snap-type: y mandatory;
 }
 
 .main {
@@ -122,19 +102,6 @@ export default {
     align-items: center;
     width: 100%;
     flex: 1;
-}
-
-.scroll-section {
-    scroll-snap-align: start;
-    min-height: 100vh;
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.scroll-section.visible {
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .apresentation-page {
@@ -274,7 +241,6 @@ export default {
     padding: 1rem 1.25rem;
     cursor: pointer;
     background-color: transparent;
-    transition: background-color 0.2s;
 }
 
 .accordion-item:hover {
