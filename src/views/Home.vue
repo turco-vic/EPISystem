@@ -124,8 +124,8 @@ export default {
     align-items: flex-start;
     width: 50%;
     flex: 1;
-    padding: 6rem 3rem 6rem 6rem;
-    gap: 3.5rem;
+    padding: 6rem 3rem 6rem 10rem;
+    gap: 1.5rem;
 }
 
 .title {
@@ -180,7 +180,7 @@ export default {
     align-items: center;
     width: 50%;
     flex: 1;
-    padding: 6rem 6rem 6rem 3rem;
+    padding: 6rem 10rem 6rem 3rem;
 }
 
 .image {
@@ -218,7 +218,7 @@ export default {
     font-size: 3rem;
     color: #000000;
     margin-bottom: 2rem;
-    line-height: 1.3;
+    line-height: 1.5;
 }
 
 .title-highlighted {
