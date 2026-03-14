@@ -36,9 +36,9 @@
             <div class="footer-column">
                 <h3 class="footer-column-title">Fale Conosco</h3>
                 <ul class="footer-column-list">
-                    <li><span class="footer-column-link"><i class="fa-solid fa-envelope"></i> suporte@episystem.com</span></li>
-                    <li><span class="footer-column-link"><i class="fa-solid fa-phone"></i> (11) 1234-5678</span></li>
-                    <li><span class="footer-column-link"><i class="fa-solid fa-location-dot"></i> Campinas/SP</span></li>
+                    <li><span class="footer-column-link">suporte@episystem.com</span></li>
+                    <li><span class="footer-column-link">(11) 1234-5678</span></li>
+                    <li><span class="footer-column-link">Campinas/SP</span></li>
                 </ul>
                 <Line />
             </div>
@@ -184,7 +184,7 @@ export default {
 
 @media (max-width: 768px) {
     .footer-container {
-        padding: 2rem 2rem 1rem 2rem;
+        padding: 2rem 1.5rem 1rem 1.5rem;
     }
     .footer-top-content {
         flex-direction: column;
@@ -192,18 +192,19 @@ export default {
         margin-bottom: 1rem;
     }
     .footer-columns-topics {
-        flex-direction: column;
-        gap: 2.5rem;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 2.5rem 1rem;
         margin: 2rem 0;
-        align-items: center;
-        text-align: center;
+        align-items: flex-start;
+        text-align: left;
     }
     .footer-column {
-        width: 100%;
-        align-items: center;
+        width: calc(50% - 0.5rem);
+        align-items: flex-start;
     }
     .footer-column-title {
-        text-align: center;
+        text-align: left;
     }
 }
 </style>
