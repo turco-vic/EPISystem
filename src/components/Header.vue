@@ -47,6 +47,11 @@ export default {
     font-family: 'Anton', sans-serif;
 }
 
+.header-title:hover {
+    color: #ffffff;
+    scale: 1.1;
+}
+
 .header-link {
     color: #dedede;
     text-decoration: none;
