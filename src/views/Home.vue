@@ -4,19 +4,21 @@
         <main class="main" ref="mainRef">
             <section class="apresentation-page" ref="section0">
                 <section class="left-side">
-                    <section class="title">
+                    <section class="apresentation_page_title">
                         <h1>Gestão Inteligente de</h1>
                         <h1 class="highlighted">EPIs para mais</h1>
                         <h1>controle e segurança</h1>
                     </section>
-                    <section class="topics">
-                        <p class="check"><i class="fas fa-check-circle"></i>Reduza riscos</p>
-                        <p class="check"><i class="fas fa-check-circle"></i>Garanta conformidade</p>
-                        <p class="check"><i class="fas fa-check-circle"></i> Otimize a gestão dos seus EPIs</p>
+                    <section class="apresentation_page_topics">
+                        <p class="apresentation_page_check"><i class="fas fa-check-circle"></i>Reduza riscos</p>
+                        <p class="apresentation_page_check"><i class="fas fa-check-circle"></i>Garanta conformidade</p>
+                        <p class="apresentation_page_check"><i class="fas fa-check-circle"></i> Otimize a gestão dos seus EPIs</p>
                     </section>
                     <article class="content">
-                        <p>A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo <span class="content-highlighted">Módulo
-                            Gestão de EPIs do EPI System</span>, você tem controle total sobre a distribuição, rastreamento e
+                        <p>A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo <span
+                                class="content-highlighted">Módulo
+                                Gestão de EPIs do EPI System</span>, você tem controle total sobre a distribuição,
+                            rastreamento e
                             gestão
                             dos Equipamentos de Proteção Individual (EPIs), garantindo conformidade com as normas de
                             segurança e prevenindo riscos trabalhistas.</p>
@@ -30,14 +32,11 @@
             </section>
 
             <section class="check-page" ref="section1">
-                <h1 class="check-title">O que você pode fazer com o <span class="title-highlighted">EPI System</span>?</h1>
+                <h1 class="check-title">O que você pode fazer com o <span class="title-highlighted">EPI System</span>?
+                </h1>
                 <section class="accordion">
-                    <div
-                        v-for="(item, index) in accordionItems"
-                        :key="index"
-                        class="accordion-item"
-                        @click="toggleAccordion(index)"
-                    >
+                    <div v-for="(item, index) in accordionItems" :key="index" class="accordion-item"
+                        @click="toggleAccordion(index)">
                         <div class="accordion-header">
                             <i :class="activeAccordion === index ? 'fas fa-minus-square' : 'fas fa-plus-square'"></i>
                             <span>{{ item.title }}</span>
@@ -48,6 +47,38 @@
                     </div>
                 </section>
             </section>
+
+            <section class="implementation_page" ref="section2">
+                <section class="left_side2">
+                    <section class="implementation_title">
+                        <h1>Facilidade na Implementação</h1>
+                    </section>
+                    <article class="card_content">
+                        <p class="text_implementation_page">O <span class="content_highlighted">EPI System</span> foi desenvolvido com a facilidade na
+                            implementação em mente, permitindo que sua empresa adote a gestão eficiente dos EPIs sem
+                            complicações.</p>
+                    </article>
+                </section>
+                <section class="right_side2">
+                    <aside class="image">
+                        <img src="../assets/image_landing_page2.png" alt="Imagem ilustrativa de implementação fácil">
+                    </aside>
+                </section>
+            </section>
+
+            <section class="dashboard_page" ref="section3">
+                <section class="titles">
+                    <h1 class="title">Dashboard Inteligente</h1>
+                    <h3 class="subtitle">Acesse uma visão geral completa dos EPIs na sua empresa, incluindo:</h3>
+                </section>
+                <section class="dashboard_topics">
+                    <p class="check"><i class="fas fa-check-square"></i>Total de EPIs cadastrados</p>
+                    <p class="check"><i class="fas fa-check-square"></i>EPIs em uso, vencidos, entregues e não entregues
+                    </p>
+                    <p class="check"><i class="fas fa-check-square"></i>Relatórios sintéticos e analíticos de EPIs e estoques</p>
+                </section>
+            </section>
+
         </main>
         <Footer />
     </div>
@@ -92,7 +123,7 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(180deg,#000000 10%, #464646 45%, #878787 100%);
+    background: linear-gradient(180deg, #000000 10%, #464646 45%, #878787 100%);
 }
 
 .main {
@@ -103,6 +134,8 @@ export default {
     width: 100%;
     flex: 1;
 }
+
+/* Estlos para a seção de apresentação */
 
 .apresentation-page {
     display: flex;
@@ -128,7 +161,7 @@ export default {
     gap: 1.5rem;
 }
 
-.title {
+.apresentation_page_title {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -145,16 +178,23 @@ export default {
     background-color: #dedede;
 }
 
-.topics {
+.apresentation_page_topics {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid #dedede;
+    width: 100%;
+    height: 8rem;
+    padding: 1.5rem;
+    background-color: #0f0f0f;
     color: #ffffff;
     font-family: "Red Hat Display", sans-serif;
     gap: 0.5rem;
 }
 
-.check {
+.apresentation_page_check {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -195,6 +235,8 @@ export default {
     object-fit: contain;
     display: block;
 }
+
+/* Estilos para a seção de funcionalidades */
 
 .check-page {
     display: flex;
@@ -265,12 +307,150 @@ export default {
     color: #333333;
 }
 
+/* Estilos para a seção de implementação */
+
+.implementation_page {
+    display: flex;
+    flex-direction: row;
+    background-color: #000000;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.left_side2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 50%;
+    flex: 1;
+    padding: 6rem 3rem 6rem 10rem;
+    gap: 1.5rem;
+}
+
+.implementation_title {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    color: #ffffff;
+    font-family: "Red Hat Display", sans-serif;
+    font-weight: 900;
+    font-size: 1.5rem;
+    gap: 1rem;
+}
+
+.card_content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid #dedede;
+    height: 8rem;
+    padding: 1.5rem;
+    background-color: #0f0f0f;
+    color: #ffffff;
+    font-family: "Red Hat Display", sans-serif;
+    font-weight: 100;
+    gap: 1rem;
+}
+
+.text_implementation_page {
+    font-size: 1.1rem;
+}
+
+.content_highlighted {
+    color: #000000;
+    background-color: #dedede;
+    font-weight: bold;
+}
+
+.right_side2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    flex: 1;
+    padding: 6rem 10rem 6rem 3rem;
+}
+
+/* Estilos para a seção de dashboard */
+
+.dashboard_page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #ffffff;
+    min-height: 100vh;
+    padding: calc(10vh + 2rem) 2rem 4rem;
+    gap: 2rem;
+    box-sizing: border-box;
+}
+
+.titles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 44rem;
+}
+
+.title {
+    font-family: "Red Hat Display", sans-serif;
+    font-weight: 1000;
+    font-size: 4rem;
+    color: #000000;
+}
+
+.subtitle {
+    font-family: "Red Hat Display", sans-serif;
+    font-weight: 400;
+    font-size: 1.25rem;
+    color: #1d1d1d;
+}
+
+.dashboard_topics {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 50%;
+    gap: 1rem;
+    margin-top: 3rem;
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 4rem;
+    gap: 0.5rem;
+    font-family: "Red Hat Display", sans-serif;
+    font-size: 1.1rem;
+    border: solid 2px #000000;
+    border-radius: 5px;
+    color: #000000;
+}
+
+.dashboard_topics .fas.fa-check-square {
+    color: #000000;
+    font-size: 2rem;
+    margin-left: 1rem;
+}
+
+/* Estilos para a responsividade do site */
+
 @media (max-width: 1200px) {
-    .left-side {
+    .left-side,
+    .left_side2 {
         padding: 4rem 2rem 4rem 3rem;
     }
 
-    .right-side {
+    .right-side,
+    .right_side2 {
         padding: 4rem 3rem 4rem 2rem;
     }
 
@@ -281,20 +461,31 @@ export default {
     .check-title {
         font-size: 2.75rem;
     }
+
+    .dashboard_page .title {
+        font-size: 3rem;
+    }
+
+    .dashboard_topics {
+        width: 70%;
+    }
 }
 
 @media (max-width: 992px) {
-    .apresentation-page {
+    .apresentation-page,
+    .implementation_page {
         flex-direction: column;
         gap: 0;
     }
 
-    .left-side {
+    .left-side,
+    .left_side2 {
         width: 100%;
         padding: 3rem 2rem 2rem;
     }
 
-    .right-side {
+    .right-side,
+    .right_side2 {
         flex: none;
         width: 100%;
         padding: 0 2rem 3rem;
@@ -304,7 +495,8 @@ export default {
         font-size: clamp(1.3rem, 3vw, 1.75rem);
     }
 
-    .check-page {
+    .check-page,
+    .dashboard_page {
         padding: 3rem 1.5rem;
     }
 
@@ -315,26 +507,45 @@ export default {
     .accordion {
         max-width: 100%;
     }
+
+    .dashboard_page .title {
+        font-size: 2.5rem;
+        text-align: center;
+    }
+
+    .dashboard_page .subtitle {
+        text-align: center;
+    }
+
+    .dashboard_topics {
+        width: 100%;
+    }
 }
 
 @media (max-width: 576px) {
+
     .left-side,
-    .right-side {
+    .left_side2,
+    .right-side,
+    .right_side2 {
         padding-left: 1.25rem;
         padding-right: 1.25rem;
     }
 
-    .title {
+    .title,
+    .implementation_title {
         font-size: clamp(1.2rem, 4.5vw, 1.5rem);
         gap: 0.5rem;
     }
 
     .topics,
-    .content {
+    .content,
+    .card_content {
         font-size: 0.95rem;
     }
 
-    .check-page {
+    .check-page,
+    .dashboard_page {
         padding: 2rem 1rem;
     }
 
@@ -354,6 +565,27 @@ export default {
 
     .accordion-item {
         padding: 0.75rem 1rem;
+    }
+
+    .dashboard_page .title {
+        font-size: 2rem;
+    }
+
+    .dashboard_page .subtitle {
+        font-size: 1.1rem;
+    }
+
+    .check {
+        height: auto;
+        padding: 1rem;
+        font-size: 1rem;
+        align-items: flex-start;
+    }
+
+    .dashboard_topics .fas.fa-check-square {
+        font-size: 1.5rem;
+        margin-left: 0;
+        margin-top: 0.1rem;
     }
 }
 </style>

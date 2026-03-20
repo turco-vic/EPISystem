@@ -71,7 +71,7 @@ export default {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 2rem 20rem 1rem 20rem;
+    padding: 4rem 20rem 1rem 20rem;
     background-color: #000000;
     color: #dedede;
     height: auto;
