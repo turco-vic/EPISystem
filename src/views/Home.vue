@@ -24,7 +24,7 @@
                 </section>
                 <section class="right-side">
                     <aside class="image">
-                        <img src="../assets/placeholder.webp" alt="Imagem ilustrativa de segurança no trabalho">
+                        <img src="../assets/image_landing_page1.png" alt="Imagem ilustrativa de segurança no trabalho">
                     </aside>
                 </section>
             </section>
