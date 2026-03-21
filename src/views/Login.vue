@@ -8,19 +8,24 @@
                 conformidade no ambiente de trabalho.</p>
         </aside>
         <aside class="right-side">
-            <h1 class="login-title">Sua conta.</h1>
-            <form class="login-form">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Digite seu email" required>
-                <label for="password">Senha</label>
-                <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
-                <button type="submit">Entrar</button>
-            </form>
-            <div class="baseboard">
+            <section class="top-content">
+                <h1 class="login-title">Sua conta.</h1>
+                <form class="login-form">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    <button type="submit">Entrar</button>
+                </form>
+            </section>
+            <section class="baseboard">
                 <Line />
-                <p class="signup-text">Não tem uma conta?</p>
-                <router-link to="/cadastro" class="signup-link">Cadastre-se</router-link>
-            </div>
+                <section class="baseboard-content">
+                    <p class="signup-text">Não tem uma conta?</p>
+                    <router-link to="/cadastro" class="signup-link">Cadastre-se</router-link>
+                </section>
+
+            </section>
         </aside>
     </main>
     <Footer />
@@ -87,7 +92,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     width: 50%;
     min-height: 85vh;
     background-color: #ffffff;
@@ -97,6 +102,13 @@ export default {
     margin: 0 2rem 0 0;
 }
 
+.top-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
 
 .login-title {
     font-family: 'Anton', sans-serif;
@@ -141,6 +153,14 @@ export default {
 
 .baseboard {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.baseboard-content {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
     gap: 0.5rem;
 }
 
