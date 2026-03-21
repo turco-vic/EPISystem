@@ -71,6 +71,8 @@ export default {
     font-family: 'Pinyon Script', cursive;
     color: #000000;
     font-size: 2rem;
+    margin: 0;
+    line-height: 1;
 }
 
 .welcome-title {
@@ -78,7 +80,8 @@ export default {
     color: #000000;
     font-size: 7rem;
     font-weight: 900;
-    margin: 0;
+    margin: -0.35rem 0 0 0;
+    line-height: 0.95;
 }
 
 .welcome-description {

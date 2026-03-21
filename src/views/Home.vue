@@ -5,17 +5,16 @@
             <section class="apresentation-page" ref="section0">
                 <aside class="left-side">
                     <section class="apresentation-page-title">
-                        <h1>Gestão Inteligente de</h1>
-                        <h1 class="highlighted">EPIs para mais</h1>
-                        <h1>controle e segurança</h1>
+                        <h1 class="apresentation-page-title-text">Gestão Inteligente de <span class="highlighted">EPIs para mais</span> controle e segurança</h1>
                     </section>
                     <section class="apresentation-page-topics">
                         <p class="apresentation-page-check"><i class="fas fa-check-circle"></i>Reduza riscos</p>
                         <p class="apresentation-page-check"><i class="fas fa-check-circle"></i>Garanta conformidade</p>
-                        <p class="apresentation-page-check"><i class="fas fa-check-circle"></i> Otimize a gestão dos seus EPIs</p>
+                        <p class="apresentation-page-check"><i class="fas fa-check-circle"></i> Otimize a gestão dos
+                            seus EPIs</p>
                     </section>
                     <article class="content">
-                        <p>A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo <span
+                        <p class="apresentation-page-content-text">A segurança dos colaboradores é uma prioridade para qualquer organização. Com o novo <span
                                 class="content-highlighted">Módulo
                                 Gestão de EPIs do EPI System</span>, você tem controle total sobre a distribuição,
                             rastreamento e
@@ -54,7 +53,8 @@
                         <h1>Facilidade na Implementação</h1>
                     </section>
                     <article class="card-content">
-                        <p class="text_implementation-page">O <span class="content-highlighted">EPI System</span> foi desenvolvido com a facilidade na
+                        <p class="text_implementation-page">O <span class="content-highlighted">EPI System</span> foi
+                            desenvolvido com a facilidade na
                             implementação em mente, permitindo que sua empresa adote a gestão eficiente dos EPIs sem
                             complicações.</p>
                     </article>
@@ -73,9 +73,11 @@
                 </section>
                 <section class="dashboard-topics">
                     <p class="dashboard-page_check"><i class="fas fa-check-square"></i>Total de EPIs cadastrados</p>
-                    <p class="dashboard-page_check"><i class="fas fa-check-square"></i>EPIs em uso, vencidos, entregues e não entregues
+                    <p class="dashboard-page_check"><i class="fas fa-check-square"></i>EPIs em uso, vencidos, entregues
+                        e não entregues
                     </p>
-                    <p class="dashboard-page_check"><i class="fas fa-check-square"></i>Relatórios sintéticos e analíticos de EPIs e estoques</p>
+                    <p class="dashboard-page_check"><i class="fas fa-check-square"></i>Relatórios sintéticos e
+                        analíticos de EPIs e estoques</p>
                 </section>
             </section>
 
@@ -157,7 +159,7 @@ export default {
     align-items: flex-start;
     width: 50%;
     flex: 1;
-    padding: 6rem 3rem 6rem 10rem;
+    padding: 6rem 3rem 6rem 7rem;
     gap: 1.5rem;
 }
 
@@ -168,9 +170,8 @@ export default {
     color: #ffffff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
-    font-size: 1.5rem;
-    gap: 1rem;
-
+    font-size: 1.3rem;
+    align-items: justify;
 }
 
 .highlighted {
@@ -210,6 +211,12 @@ export default {
     gap: 1rem;
 }
 
+.apresentation-page-content-text {
+    font-size: 1.1rem;
+    text-align: justify;
+    line-height: 2rem;
+}
+
 .content-highlighted {
     font-weight: bold;
 }
@@ -220,7 +227,7 @@ export default {
     align-items: center;
     width: 50%;
     flex: 1;
-    padding: 6rem 10rem 6rem 3rem;
+    padding: 6rem 7rem 6rem 3rem;
 }
 
 .image {
@@ -236,7 +243,7 @@ export default {
     display: block;
 }
 
-/* Estilos para a seção de funcionalidades */
+/* Estilos para a seção de check-box */
 
 .check-page {
     display: flex;
@@ -445,6 +452,7 @@ export default {
 /* Estilos para a responsividade do site */
 
 @media (max-width: 1200px) {
+
     .left-side,
     .left-side2 {
         padding: 4rem 2rem 4rem 3rem;
@@ -473,6 +481,7 @@ export default {
 }
 
 @media (max-width: 992px) {
+
     .apresentation-page,
     .implementation-page {
         flex-direction: column;
