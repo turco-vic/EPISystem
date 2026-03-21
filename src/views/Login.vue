@@ -1,7 +1,10 @@
 <template>
     <Header title="Login" />
-    <main>
-        <h1>Login</h1>
+    <main class="main" ref="mainRef">
+        <aside class="leff-side">
+            <h1>Login</h1>
+            <p>Faça login para acessar o sistema</p>
+        </aside>
     </main>
     <Footer />
 </template>
@@ -18,3 +21,7 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+
+</style>
