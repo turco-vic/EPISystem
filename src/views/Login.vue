@@ -101,7 +101,7 @@ export default {
     background-color: #ffffff;
     border-radius: 15px;
     gap: 1rem;
-    padding: 2rem 5rem 2rem 5rem;
+    padding: 2rem 2rem 2rem 2rem;
     margin: 0 2rem 0 0;
 }
 
@@ -157,6 +157,7 @@ export default {
 .baseboard {
     display: flex;
     flex-direction: column;
+    width: 100%;
     gap: 0.5rem;
 }
 
@@ -164,6 +165,8 @@ export default {
     display: flex;
     align-items: center;
     flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
     gap: 0.5rem;
 }
 
