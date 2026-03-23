@@ -2,8 +2,9 @@
     <Header title="Login" />
     <main class="main" ref="mainRef">
         <aside class="left-side">
-            <h3 class="login">Login</h3>
-            <h1 class="welcome-title">BEM-VINDO</h1>
+            <h3 class="login">Log in</h3>
+            <h1 class="welcome-title">BEM</h1>
+            <h1 class="welcome-title">VINDO</h1>
             <p class="welcome-description">Entre para gerenciar seus equipamentos de proteção individual e garantir a
                 conformidade no ambiente de trabalho.</p>
         </aside>
@@ -11,15 +12,19 @@
             <section class="top-content">
                 <h1 class="login-title">Sua conta.</h1>
                 <form class="login-form">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Digite seu email" required>
-                    <label for="password">Senha</label>
-                    <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    <div class="email-input">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+                    </div>
+                    <div class="password-input">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                    </div>
                     <button type="submit">Entrar</button>
                 </form>
             </section>
             <section class="baseboard">
-                <Line />
+                <Line backgroundColor="#000000" height="2px" />
                 <section class="baseboard-content">
                     <p class="signup-text">Não tem uma conta?</p>
                     <router-link to="/cadastro" class="signup-link">Cadastre-se</router-link>
@@ -28,6 +33,7 @@
             </section>
         </aside>
     </main>
+    <Line />
     <Footer />
 </template>
 
@@ -51,7 +57,8 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    background-image: url('../assets/grunge-wall-texture.png');
+    justify-content: space-between;
+    background-color: #000000;
     background-size: cover;
     background-position: center;
     min-height: 100vh;
@@ -63,13 +70,13 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 50%;
+    width: 30%;
     padding: 2rem 5rem 2rem 5rem;
 }
 
 .login {
     font-family: 'Pinyon Script', cursive;
-    color: #000000;
+    color: #ffffff;
     font-size: 2rem;
     margin: 0;
     line-height: 1;
@@ -77,7 +84,7 @@ export default {
 
 .welcome-title {
     font-family: 'Archivo Black', sans-serif;
-    color: #000000;
+    color: #ffffff;
     font-size: 7rem;
     font-weight: 900;
     margin: -0.35rem 0 0 0;
@@ -86,9 +93,11 @@ export default {
 
 .welcome-description {
     font-family: 'Red Hat Display', sans-serif;
-    color: #000000;
     font-size: 1.2rem;
+    color: #ffffff;
     margin-top: 1rem;
+    text-align: justify;
+;
 }
 
 .right-side {
@@ -96,13 +105,13 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    width: 50%;
+    width: 40%;
     min-height: 85vh;
     background-color: #ffffff;
     border-radius: 15px;
     gap: 1rem;
-    padding: 2rem 2rem 2rem 2rem;
-    margin: 0 2rem 0 0;
+    padding: 2rem 6rem 2rem 6rem;
+    margin: 0 5rem 0 0;
 }
 
 .top-content {
@@ -123,12 +132,18 @@ export default {
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     width: 100%;
+    gap: 1.5rem;
+}
+
+.email-input, .password-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
 }
 
 .login-form label {
-    font-family: 'Red Hat Display', sans-serif;
+    font-family: 'Anton', sans-serif;
     color: #000000;
     font-size: 1rem;
 }
@@ -136,22 +151,26 @@ export default {
 .login-form input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #ccc;
+    border: 1px solid #9e9e9e;
     border-radius: 4px;
+    height: 3rem;
 }
 
 .login-form button {
+    height: 3rem;
     padding: 0.75rem;
-    font-size: 1rem;
+    font-size: 1.25rem;
+    font-weight: bold;
     background-color: #000000;
     color: #dedede;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin-top: 3rem;
 }
 
 .login-form button:hover {
-    background-color: #333333;
+    background-color: #878787;
 }
 
 .baseboard {
@@ -186,5 +205,60 @@ export default {
 .signup-link:hover {
     color: #000000;
     text-decoration: underline;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .left-side {
+        width: 40%;
+        padding: 2rem;
+    }
+    
+    .right-side {
+        width: 50%;
+        margin: 0 2rem 0 0;
+        padding: 2rem 3rem;
+    }
+
+    .welcome-title {
+        font-size: 5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main {
+        flex-direction: column;
+        justify-content: center;
+        padding: 5rem 1rem 2rem 1rem;
+        margin-top: 1.5rem;
+        gap: 2rem;
+    }
+
+    .left-side {
+        width: 100%;
+        padding: 1rem;
+        align-items: center;
+        text-align: center;
+    }
+
+    .welcome-title {
+        font-size: 4rem;
+        margin: 0;
+    }
+
+    .welcome-description {
+        text-align: center;
+    }
+
+    .right-side {
+        width: 100%;
+        margin: 0;
+        padding: 2rem 1.5rem;
+        min-height: auto;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
 }
 </style>
