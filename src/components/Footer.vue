@@ -19,34 +19,34 @@
                 <h3 class="footer-column-title">Recursos</h3>
                 <ul class="footer-column-list">
                     <li><a href="/" class="footer-column-link">Suporte</a></li>
-                    <li><a href="/" class="footer-column-link">Política de Privacidade</a></li>
                     <li><a href="/" class="footer-column-link">Termos de Serviço</a></li>
+                    <li><a href="/" class="footer-column-link">Política de Privacidade</a></li>
                 </ul>
                 <Line />
             </div>
             <div class="footer-column">
                 <h3 class="footer-column-title">Empresa</h3>
                 <ul class="footer-column-list">
-                    <li><router-link to="/sobre" class="footer-column-link">Sobre Nós</router-link></li>
-                    <li><router-link to="/" class="footer-column-link">Carreiras</router-link></li>
                     <li><router-link to="/contato" class="footer-column-link">Contato</router-link></li>
+                    <li><router-link to="/" class="footer-column-link">Carreiras</router-link></li>
+                    <li><router-link to="/sobre" class="footer-column-link">Sobre Nós</router-link></li>
                 </ul>
                 <Line />
             </div>
             <div class="footer-column">
                 <h3 class="footer-column-title">Fale Conosco</h3>
                 <ul class="footer-column-list">
-                    <li><span class="footer-column-link">suporte@episystem.com</span></li>
-                    <li><span class="footer-column-link">(11) 1234-5678</span></li>
                     <li><span class="footer-column-link">Campinas/SP</span></li>
+                    <li><span class="footer-column-link">(11) 1234-5678</span></li>
+                    <li><span class="footer-column-link">suporte@episystem.com</span></li>
                 </ul>
                 <Line />
             </div>
             <div class="footer-column">
                 <h3 class="footer-column-title">Links Úteis</h3>
                 <ul class="footer-column-list">
-                    <li><router-link to="/" class="footer-column-link">Central de Ajuda</router-link></li>
                     <li><router-link to="/" class="footer-column-link">FAQ</router-link></li>
+                    <li><router-link to="/" class="footer-column-link">Central de Ajuda</router-link></li>
                     <li><router-link to="/" class="footer-column-link">Status do Sistema</router-link></li>
                 </ul>
                 <Line />
