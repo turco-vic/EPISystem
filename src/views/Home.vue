@@ -176,7 +176,7 @@ export default {
 
 .highlighted {
     color: #000000;
-    background-color: #dedede;
+    background-color: #ffffff;
 }
 
 .apresentation-page-topics {
@@ -185,7 +185,7 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #dedede;
+    border: 1px solid #ffffff;
     width: 100%;
     height: 8rem;
     padding: 1.5rem;
@@ -293,7 +293,7 @@ export default {
 }
 
 .accordion-item:hover {
-    background-color: rgba(0, 0, 0, 0.03);
+    background-color: #00000008;
 }
 
 .accordion-header {
