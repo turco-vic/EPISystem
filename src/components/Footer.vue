@@ -72,8 +72,8 @@ export default {
     align-items: center;
     flex-direction: column;
     padding: 4rem 20rem 1rem 20rem;
-    background-color: #000000;
-    color: #dedede;
+    background-color: #243c75;
+    color: #e2f9ff;
     height: auto;
     min-height: 40vh;
 }
@@ -100,12 +100,12 @@ export default {
 }
 
 .footer-top-title:hover {
-    color: #ffffff;
+    color: #e2f9ff;
     scale: 1.1;
 }
 
 .footer-top-link {
-    color: #dedede;
+    color: #e2f9ff;
     text-decoration: none;
 }
 
@@ -116,12 +116,12 @@ export default {
 
 .social-icon {
     font-size: 1.5rem;
-    color: #dedede;
+    color: #e2f9ff;
     text-decoration: none;
 }
 
 .social-icon:hover {
-    color: #ffffff;
+    color: #e2f9ff;
     scale: 1.1;
 }
 
@@ -159,13 +159,13 @@ export default {
 }
 
 .footer-column-link {
-    color: #dedede;
+    color: #e2f9ff;
     text-decoration: none;
     font-family: 'Red Hat Display', sans-serif;
 }
 
 .footer-column-link:hover {
-    color: #ffffff;
+    color: #e2f9ff;
     text-decoration: underline;
 }
 

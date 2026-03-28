@@ -125,7 +125,7 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(180deg, #000000 10%, #464646 45%, #878787 100%);
+    background: linear-gradient(180deg, #243c75 10%, #464646 45%, #878787 100%);
 }
 
 .main {
@@ -167,7 +167,7 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    color: #ffffff;
+    color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
     font-size: 1.3rem;
@@ -175,8 +175,8 @@ export default {
 }
 
 .highlighted {
-    color: #000000;
-    background-color: #ffffff;
+    color: #243c75;
+    background-color: #e2f9ff;
 }
 
 .apresentation-page-topics {
@@ -185,12 +185,12 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #ffffff;
+    border: 1px solid #d1213f;
     width: 100%;
     height: 8rem;
     padding: 1.5rem;
     background-color: #0f0f0f;
-    color: #ffffff;
+    color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     gap: 0.5rem;
 }
@@ -205,7 +205,7 @@ export default {
 .content {
     display: flex;
     flex-direction: column;
-    color: #ffffff;
+    color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 100;
     gap: 1rem;
@@ -252,7 +252,7 @@ export default {
     align-items: center;
     width: 100%;
     min-height: 100vh;
-    background-color: #ffffff;
+    background-color: #e2f9ff;
     padding: calc(10vh + 2rem) 2rem 4rem;
     gap: 2rem;
     box-sizing: border-box;
@@ -265,14 +265,14 @@ export default {
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
     font-size: 3rem;
-    color: #000000;
+    color: #243c75;
     margin-bottom: 2rem;
     line-height: 1.5;
 }
 
 .title-highlighted {
-    color: #ffffff;
-    background-color: #000000;
+    color: #e2f9ff;
+    background-color: #243c75;
     padding: 0.25rem 0.5rem;
 }
 
@@ -285,7 +285,7 @@ export default {
 }
 
 .accordion-item {
-    border: 2px solid #000000;
+    border: 2px solid #d1213f;
     border-radius: 4px;
     padding: 1rem 1.25rem;
     cursor: pointer;
@@ -293,7 +293,7 @@ export default {
 }
 
 .accordion-item:hover {
-    background-color: #00000008;
+    background-color: #243c7508;
 }
 
 .accordion-header {
@@ -303,7 +303,7 @@ export default {
     font-family: "Red Hat Display", sans-serif;
     font-weight: 700;
     font-size: 1.1rem;
-    color: #000000;
+    color: #243c75;
 }
 
 .accordion-content {
@@ -319,7 +319,7 @@ export default {
 .implementation-page {
     display: flex;
     flex-direction: row;
-    background-color: #000000;
+    background-color: #243c75;
     width: 100%;
     min-height: 100vh;
 }
@@ -339,7 +339,7 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    color: #ffffff;
+    color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
     font-size: 1.5rem;
@@ -352,11 +352,11 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #dedede;
+    border: 1px solid #d1213f;
     height: 8rem;
     padding: 1.5rem;
     background-color: #0f0f0f;
-    color: #ffffff;
+    color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 100;
     gap: 1rem;
@@ -367,8 +367,8 @@ export default {
 }
 
 .content-highlighted {
-    color: #000000;
-    background-color: #dedede;
+    color: #243c75;
+    background-color: #e2f9ff;
     font-weight: bold;
 }
 
@@ -389,7 +389,7 @@ export default {
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #ffffff;
+    background-color: #e2f9ff;
     min-height: 100vh;
     padding: calc(10vh + 2rem) 2rem 4rem;
     gap: 2rem;
@@ -409,7 +409,7 @@ export default {
     font-family: "Red Hat Display", sans-serif;
     font-weight: 1000;
     font-size: 4rem;
-    color: #000000;
+    color: #243c75;
 }
 
 .subtitle {
@@ -438,13 +438,13 @@ export default {
     font-family: "Red Hat Display", sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
-    border: solid 2px #000000;
+    border: solid 2px #d1213f;
     border-radius: 5px;
-    color: #000000;
+    color: #243c75;
 }
 
 .dashboard-topics .fas.fa-check-square {
-    color: #000000;
+    color: #243c75;
     font-size: 2rem;
     margin: 1rem;
 }

@@ -24,7 +24,7 @@
                 </form>
             </section>
             <section class="baseboard">
-                <Line backgroundColor="#000000" height="2px" />
+                <Line backgroundColor="#243c75" height="2px" />
                 <section class="baseboard-content">
                     <p class="signup-text">Não tem uma conta?</p>
                     <router-link to="/cadastro" class="signup-link">Cadastre-se</router-link>
@@ -58,7 +58,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: #000000;
+    background-color: #243c75;
     background-size: cover;
     background-position: center;
     min-height: 100vh;
@@ -76,7 +76,7 @@ export default {
 
 .login {
     font-family: 'Pinyon Script', cursive;
-    color: #ffffff;
+    color: #e2f9ff;
     font-size: 2rem;
     margin: 0;
     line-height: 1;
@@ -84,7 +84,7 @@ export default {
 
 .welcome-title {
     font-family: 'Archivo Black', sans-serif;
-    color: #ffffff;
+    color: #e2f9ff;
     font-size: 7rem;
     font-weight: 900;
     margin: -0.35rem 0 0 0;
@@ -94,7 +94,7 @@ export default {
 .welcome-description {
     font-family: 'Red Hat Display', sans-serif;
     font-size: 1.2rem;
-    color: #ffffff;
+    color: #e2f9ff;
     margin-top: 1rem;
     text-align: justify;
 ;
@@ -107,7 +107,7 @@ export default {
     justify-content: space-between;
     width: 40%;
     min-height: 85vh;
-    background-color: #ffffff;
+    background-color: #e2f9ff;
     border-radius: 15px;
     gap: 1rem;
     padding: 2rem 6rem 2rem 6rem;
@@ -124,7 +124,7 @@ export default {
 
 .login-title {
     font-family: 'Anton', sans-serif;
-    color: #000000;
+    color: #243c75;
     font-size: 2rem;
     margin: 0;
 }
@@ -144,14 +144,14 @@ export default {
 
 .login-form label {
     font-family: 'Anton', sans-serif;
-    color: #000000;
+    color: #243c75;
     font-size: 1rem;
 }
 
 .login-form input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #9e9e9e;
+    border: 1px solid #d1213f;
     border-radius: 4px;
     height: 3rem;
 }
@@ -161,8 +161,8 @@ export default {
     padding: 0.75rem;
     font-size: 1.25rem;
     font-weight: bold;
-    background-color: #000000;
-    color: #dedede;
+    background-color: #243c75;
+    color: #e2f9ff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -191,19 +191,19 @@ export default {
 
 .signup-text {
     font-family: 'Red Hat Display', sans-serif;
-    color: #000000;
+    color: #243c75;
     font-size: 1rem;
 }
 
 .signup-link {
     font-family: 'Red Hat Display', sans-serif;
-    color: #000000;
+    color: #243c75;
     font-size: 1rem;
     text-decoration: none;
 }
 
 .signup-link:hover {
-    color: #000000;
+    color: #243c75;
     text-decoration: underline;
 }
 

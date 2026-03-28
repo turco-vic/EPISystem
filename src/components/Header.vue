@@ -31,8 +31,8 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #000000;
-    color: #dedede;
+    background-color: #243c75;
+    color: #e2f9ff;
     height: 10vh;
     padding: 0 2rem;
     position: fixed;
@@ -45,16 +45,22 @@ export default {
 
 .header-title {
     font-family: 'Anton', sans-serif;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .header-title:hover {
-    color: #ffffff;
-    scale: 1.1;
+    color: #d1213f;
+    transform: scale(1.05);
 }
 
 .header-link {
-    color: #dedede;
+    color: #e2f9ff;
     text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.header-link:hover {
+    color: #d1213f;
 }
 
 .nav-container {
@@ -63,20 +69,46 @@ export default {
 }
 
 .nav-link {
-    color: #dedede;
+    color: #e2f9ff;
     font-family: 'Red Hat Display', sans-serif;
     text-decoration: none;
     font-size: 1.2rem;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: 0;
+    left: 0;
+    background-color: #d1213f;
+    transition: width 0.3s ease-in-out;
+    border-radius: 2px;
+}
+
+.nav-link:hover {
+    color: #d1213f;
+    transform: translateY(-2px);
+}
+
+.nav-link:hover::after {
+    width: 100%;
 }
 
 .user-icon {
-    color: #dedede;
+    color: #e2f9ff;
     font-size: 1.5rem;
     text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .user-icon:hover {
-    color: #ffffff;
+    color: #d1213f;
+    transform: scale(1.1);
 }
 
 @media (max-width: 768px) {
