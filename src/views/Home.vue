@@ -185,11 +185,11 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #d1213f;
+    border: 1px solid #e2f9ff;
     width: 100%;
     height: 8rem;
     padding: 1.5rem;
-    background-color: #0f0f0f;
+    background-color: #243c75;
     color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     gap: 0.5rem;
@@ -285,7 +285,7 @@ export default {
 }
 
 .accordion-item {
-    border: 2px solid #d1213f;
+    border: 2px solid #243c75;
     border-radius: 4px;
     padding: 1rem 1.25rem;
     cursor: pointer;
@@ -352,10 +352,10 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #d1213f;
+    border: 1px solid #e2f9ff;
     height: 8rem;
     padding: 1.5rem;
-    background-color: #0f0f0f;
+    background-color: #243c75;
     color: #e2f9ff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 100;
@@ -438,7 +438,7 @@ export default {
     font-family: "Red Hat Display", sans-serif;
     font-size: 1.1rem;
     font-weight: 700;
-    border: solid 2px #d1213f;
+    border: solid 2px #243c75;
     border-radius: 5px;
     color: #243c75;
 }

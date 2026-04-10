@@ -1,5 +1,5 @@
 <template>
-    <Header />
+    <HeaderDashboard />
     <main>
         <h1>Estoque</h1>
     </main>
@@ -7,13 +7,13 @@
 </template>
 
 <script>
-import Header from "../components/Header.vue";
+import HeaderDashboard from "../components/HeaderDashboard.vue";
 import Footer from "../components/Footer.vue";
 
 export default {
     name: "Estoque",
     components: {
-        Header,
+        HeaderDashboard,
         Footer,
     },
 }

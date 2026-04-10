@@ -1,28 +1,36 @@
 <template>
     <header class="header-container">
         <h1 class="header-title">
-            <router-link to="/" class="header-link">EPI System</router-link>
+            <router-link to="/dashboard" class="header-link">EPI System</router-link>
         </h1>
         <nav class="nav-container">
-            <router-link to="/" class="nav-link">Home</router-link>
-            <router-link to="/sobre" class="nav-link">Sobre</router-link>
-            <router-link to="/contato" class="nav-link">Contato</router-link>
+            <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
+            <router-link to="/estoque" class="nav-link">Estoque</router-link>
         </nav>
-        <router-link to="/login" class="user-icon">
-            <i class="fa-solid fa-user"></i>
-        </router-link>
+        <button class="logout-btn" @click="handleLogout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sair
+        </button>
     </header>
 </template>
 
 <script>
+import { useSupabase } from "../composables/useSupabase.js";
+import { useRouter } from "vue-router";
+
 export default {
-    name: "Header",
-    props: {
-        title: {
-            type: String,
-            required: true,
-        },
-    },
+    name: "HeaderDashboard",
+    setup() {
+        const { supabase } = useSupabase();
+        const router = useRouter();
+
+        async function handleLogout() {
+            await supabase.auth.signOut();
+            router.push('/login');
+        }
+
+        return { handleLogout };
+    }
 };
 </script>
 
@@ -45,12 +53,6 @@ export default {
 
 .header-title {
     font-family: 'Anton', sans-serif;
-    transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.header-title:hover {
-    color: #243c75;
-    transform: scale(1.05);
 }
 
 .header-link {
@@ -91,7 +93,6 @@ export default {
 }
 
 .nav-link:hover {
-    color: #e2f9ff;
     transform: translateY(-2px);
 }
 
@@ -99,16 +100,25 @@ export default {
     width: 100%;
 }
 
-.user-icon {
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: 2px solid #e2f9ff;
     color: #e2f9ff;
-    font-size: 1.5rem;
-    text-decoration: none;
-    transition: color 0.3s ease, transform 0.3s ease;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.user-icon:hover {
-    color: #d3d3d3;
-    transform: scale(1.1);
+.logout-btn:hover {
+    background-color: #e2f9ff;
+    color: #243c75;
 }
 
 @media (max-width: 768px) {
@@ -124,9 +134,8 @@ export default {
         margin: 0;
     }
 
-    .user-icon {
+    .logout-btn {
         order: 2;
-        margin-left: auto;
     }
 
     .nav-container {

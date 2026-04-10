@@ -11,17 +11,26 @@
         <aside class="right-side">
             <section class="top-content">
                 <h1 class="login-title">Sua conta.</h1>
-                <form class="login-form">
+                <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+                <div class="login-form">
                     <div class="email-input">
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+                        <input v-model="email" type="email" id="email" name="email" placeholder="Digite seu email"
+                            required>
                     </div>
                     <div class="password-input">
                         <label for="password">Senha</label>
-                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                        <div class="input-wrapper">
+                            <input v-model="password" :type="showPassword ? 'text' : 'password'" id="password"
+                                name="password" placeholder="Digite sua senha" required>
+                            <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="eye-icon"
+                                @click="showPassword = !showPassword"></i>
+                        </div>
                     </div>
-                    <button type="submit">Entrar</button>
-                </form>
+                    <button @click="handleLogin" :disabled="loading">
+                        {{ loading ? 'Entrando...' : 'Entrar' }}
+                    </button>
+                </div>
             </section>
             <section class="baseboard">
                 <Line backgroundColor="#243c75" height="2px" />
@@ -29,7 +38,6 @@
                     <p class="signup-text">Não tem uma conta?</p>
                     <router-link to="/cadastro" class="signup-link">Cadastre-se</router-link>
                 </section>
-
             </section>
         </aside>
     </main>
@@ -41,13 +49,42 @@
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import Line from "../components/Line.vue";
+import { useSupabase } from "../composables/useSupabase.js";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
     name: 'Login',
-    components: {
-        Header,
-        Footer,
-        Line
+    components: { Header, Footer, Line },
+    setup() {
+        const { supabase } = useSupabase();
+        const router = useRouter();
+
+        const email = ref('');
+        const password = ref('');
+        const loading = ref(false);
+        const errorMsg = ref('');
+        const showPassword = ref(false);
+
+        async function handleLogin() {
+            loading.value = true;
+            errorMsg.value = '';
+
+            const { error } = await supabase.auth.signInWithPassword({
+                email: email.value,
+                password: password.value,
+            });
+
+            loading.value = false;
+
+            if (error) {
+                errorMsg.value = 'Email ou senha inválidos.';
+            } else {
+                router.push('/dashboard');
+            }
+        }
+
+        return { email, password, loading, errorMsg, handleLogin, showPassword };
     }
 }
 </script>
@@ -97,7 +134,6 @@ export default {
     color: #e2f9ff;
     margin-top: 1rem;
     text-align: justify;
-;
 }
 
 .right-side {
@@ -129,6 +165,19 @@ export default {
     margin: 0;
 }
 
+.error-msg {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #c0392b;
+    font-size: 0.9rem;
+    background-color: #fdecea;
+    border: 1px solid #c0392b;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
 .login-form {
     display: flex;
     flex-direction: column;
@@ -136,7 +185,32 @@ export default {
     gap: 1.5rem;
 }
 
-.email-input, .password-input {
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 2.5rem;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #243c75;
+    font-size: 1rem;
+}
+
+.eye-icon:hover {
+    color: #878787;
+}
+
+.email-input,
+.password-input {
     display: flex;
     flex-direction: column;
     gap: 0.1rem;
@@ -151,7 +225,7 @@ export default {
 .login-form input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #d1213f;
+    border: 1px solid #243c75;
     border-radius: 4px;
     height: 3rem;
 }
@@ -171,6 +245,11 @@ export default {
 
 .login-form button:hover {
     background-color: #878787;
+}
+
+.login-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .baseboard {
@@ -207,13 +286,12 @@ export default {
     text-decoration: underline;
 }
 
-/* Responsividade */
 @media (max-width: 1024px) {
     .left-side {
         width: 40%;
         padding: 2rem;
     }
-    
+
     .right-side {
         width: 50%;
         margin: 0 2rem 0 0;
