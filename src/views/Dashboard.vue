@@ -1,5 +1,6 @@
 <template>
-    <HeaderDashboard />
+    <NavBar @toggle="sidebarOpen = !sidebarOpen" />
+    <Sidebar :isOpen="sidebarOpen" @close="sidebarOpen = false" />
     <main class="main">
         <section class="welcome-section">
             <h3 class="script">Bem-vindo,</h3>
@@ -48,22 +49,22 @@
             </div>
         </section>
     </main>
-    <Footer />
 </template>
 
 <script>
-import HeaderDashboard from "../components/HeaderDashboard.vue";
-import Footer from "../components/Footer.vue";
+import NavBar from "../components/NavBar.vue";
+import Sidebar from "../components/Sidebar.vue";
 import { useSupabase } from "../composables/useSupabase.js";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
     name: 'Dashboard',
-    components: { HeaderDashboard, Footer },
+    components: { NavBar, Sidebar },
     setup() {
         const { session, supabase } = useSupabase();
         const router = useRouter();
+        const sidebarOpen = ref(false);
 
         const userName = computed(() => {
             const meta = session.value?.user?.user_metadata;
@@ -78,7 +79,7 @@ export default {
             }
         });
 
-        return { userName, userEmail };
+        return { userName, userEmail, sidebarOpen };
     }
 }
 </script>
@@ -124,7 +125,6 @@ export default {
     margin-top: 0.5rem;
 }
 
-/* Cards */
 .cards-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -144,7 +144,7 @@ export default {
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(36, 60, 117, 0.3);
+    box-shadow: 0 8px 24px rgba(78, 78, 78, 0.3);
 }
 
 .card-alert {
@@ -170,7 +170,6 @@ export default {
     margin: 0;
 }
 
-/* Actions */
 .actions-section {
     display: flex;
     flex-direction: column;

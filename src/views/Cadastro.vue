@@ -11,22 +11,46 @@
         <aside class="right-side">
             <section class="top-content">
                 <h1 class="form-title">Nova conta.</h1>
-                <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
-                <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
+                <div class="msg-area">
+                    <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+                    <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
+                </div>
                 <div class="form">
+                    <div class="row">
+                        <div class="field">
+                            <label for="nome">Nome</label>
+                            <input v-model="nome" type="text" id="nome" placeholder="Nome" required>
+                        </div>
+                        <div class="field">
+                            <label for="sobrenome">Sobrenome</label>
+                            <input v-model="sobrenome" type="text" id="sobrenome" placeholder="Sobrenome" required>
+                        </div>
+                    </div>
                     <div class="field">
-                        <label for="nome">Nome completo</label>
-                        <input v-model="nome" type="text" id="nome" placeholder="Digite seu nome" required>
+                        <label for="cpf">CPF</label>
+                        <input v-model="cpf" type="text" id="cpf" placeholder="000.000.000-00" maxlength="14"
+                            @input="formatCPF" required>
                     </div>
                     <div class="field">
                         <label for="email">Email</label>
                         <input v-model="email" type="email" id="email" placeholder="Digite seu email" required>
                     </div>
+                    <div class="row">
+                        <div class="field">
+                            <label for="nascimento">Data de nascimento</label>
+                            <input v-model="nascimento" type="date" id="nascimento" required>
+                        </div>
+                        <div class="field">
+                            <label for="telefone">Telefone</label>
+                            <input v-model="telefone" type="text" id="telefone" placeholder="(00) 00000-0000"
+                                maxlength="15" @input="formatTelefone">
+                        </div>
+                    </div>
                     <div class="field">
                         <label for="password">Senha</label>
                         <div class="input-wrapper">
                             <input v-model="password" :type="showPassword ? 'text' : 'password'" id="password"
-                                placeholder="Digite sua senha" required>
+                                placeholder="Mínimo 6 caracteres" required>
                             <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="eye-icon"
                                 @click="showPassword = !showPassword"></i>
                         </div>
@@ -35,7 +59,7 @@
                         <label for="confirm">Confirmar senha</label>
                         <div class="input-wrapper">
                             <input v-model="confirm" :type="showConfirm ? 'text' : 'password'" id="confirm"
-                                placeholder="Confirme sua senha" required>
+                                placeholder="Repita a senha" required>
                             <i :class="showConfirm ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'" class="eye-icon"
                                 @click="showConfirm = !showConfirm"></i>
                         </div>
@@ -74,7 +98,11 @@ export default {
         const router = useRouter();
 
         const nome = ref('');
+        const sobrenome = ref('');
+        const cpf = ref('');
         const email = ref('');
+        const nascimento = ref('');
+        const telefone = ref('');
         const password = ref('');
         const confirm = ref('');
         const loading = ref(false);
@@ -83,12 +111,27 @@ export default {
         const showPassword = ref(false);
         const showConfirm = ref(false);
 
+        function formatCPF(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d)/, '$1.$2');
+            v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            cpf.value = v;
+        }
+
+        function formatTelefone(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            v = v.replace(/^(\d{2})(\d)/, '($1) $2');
+            v = v.replace(/(\d{5})(\d)/, '$1-$2');
+            telefone.value = v;
+        }
+
         async function handleSignup() {
             errorMsg.value = '';
             successMsg.value = '';
 
-            if (!nome.value || !email.value || !password.value || !confirm.value) {
-                errorMsg.value = 'Preencha todos os campos.';
+            if (!nome.value || !sobrenome.value || !cpf.value || !email.value || !nascimento.value || !password.value || !confirm.value) {
+                errorMsg.value = 'Preencha todos os campos obrigatórios.';
                 return;
             }
 
@@ -104,25 +147,64 @@ export default {
 
             loading.value = true;
 
-            const { error } = await supabase.auth.signUp({
+            // 1. Cria no Supabase Auth
+            const { data, error: authError } = await supabase.auth.signUp({
                 email: email.value,
                 password: password.value,
                 options: {
-                    data: { full_name: nome.value }
+                    data: { full_name: `${nome.value} ${sobrenome.value}` }
                 }
             });
 
+            if (authError) {
+                loading.value = false;
+                errorMsg.value = authError.message || 'Erro ao criar conta.';
+                return;
+            }
+
+            const userId = data.user?.id;
+
+            // 2. Insere na tabela aluno
+            const { error: alunoError } = await supabase
+                .from('aluno')
+                .insert({
+                    nome: nome.value,
+                    sobrenome: sobrenome.value,
+                    cpf: cpf.value,
+                    email: email.value,
+                    senha: 'inutilizado',
+                    data_nascimento: nascimento.value,
+                    telefone: telefone.value || null,
+                    auth_id: userId
+                });
+
+            // 3. Seta role como 'aluno' no profile
+            if (userId) {
+                await supabase.from('profiles').upsert({
+                    id: userId,
+                    email: email.value,
+                    full_name: `${nome.value} ${sobrenome.value}`,
+                    role: 'aluno'
+                });
+            }
+
             loading.value = false;
 
-            if (error) {
-                errorMsg.value = error.message || 'Erro ao criar conta.';
-            } else {
-                successMsg.value = 'Conta criada! Verifique seu email para confirmar.';
-                setTimeout(() => router.push('/login'), 3000);
+            if (alunoError) {
+                errorMsg.value = alunoError.message || 'Erro ao salvar dados.';
+                return;
             }
+
+            successMsg.value = 'Conta criada com sucesso!';
+            setTimeout(() => router.push('/dashboard'), 1500);
         }
 
-        return { nome, email, password, confirm, loading, errorMsg, successMsg, handleSignup, showPassword, showConfirm };
+        return {
+            nome, sobrenome, cpf, email, nascimento, telefone,
+            password, confirm, loading, errorMsg, successMsg,
+            showPassword, showConfirm,
+            handleSignup, formatCPF, formatTelefone
+        };
     }
 }
 </script>
@@ -177,12 +259,12 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    width: 40%;
-    min-height: 85vh;
+    width: 45%;
+    min-height: 90vh;
     background-color: #e2f9ff;
     border-radius: 15px;
     gap: 1rem;
-    padding: 2rem 6rem 2rem 6rem;
+    padding: 2rem 4rem 2rem 4rem;
     margin: 0 5rem 0 0;
 }
 
@@ -199,6 +281,14 @@ export default {
     color: #243c75;
     font-size: 2rem;
     margin: 0;
+}
+
+.msg-area {
+    min-height: 2.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .error-msg {
@@ -231,31 +321,17 @@ export default {
     display: flex;
     flex-direction: column;
     width: 100%;
-    gap: 1.2rem;
+    gap: 1rem;
 }
 
-.input-wrapper {
-    position: relative;
+.row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
 }
 
-.input-wrapper input {
-    width: 100%;
-    box-sizing: border-box;
-    padding-right: 2.5rem;
-}
-
-.eye-icon {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #243c75;
-    font-size: 1rem;
-}
-
-.eye-icon:hover {
-    color: #878787;
+.row .field {
+    flex: 1;
 }
 
 .field {
@@ -276,6 +352,30 @@ export default {
     border: 1px solid #243c75;
     border-radius: 4px;
     height: 3rem;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input {
+    padding-right: 2.5rem;
+}
+
+.eye-icon {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #243c75;
+    font-size: 1rem;
+}
+
+.eye-icon:hover {
+    color: #878787;
 }
 
 .form button {
@@ -288,7 +388,7 @@ export default {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 .form button:hover {
@@ -339,9 +439,9 @@ export default {
     }
 
     .right-side {
-        width: 50%;
+        width: 55%;
         margin: 0 2rem 0 0;
-        padding: 2rem 3rem;
+        padding: 2rem 2.5rem;
     }
 
     .welcome-title {
@@ -352,7 +452,6 @@ export default {
 @media (max-width: 768px) {
     .main {
         flex-direction: column;
-        justify-content: center;
         padding: 5rem 1rem 2rem 1rem;
         gap: 2rem;
     }
@@ -382,6 +481,11 @@ export default {
 
     .form-title {
         font-size: 1.5rem;
+    }
+
+    .row {
+        flex-direction: column;
+        gap: 1rem;
     }
 }
 </style>

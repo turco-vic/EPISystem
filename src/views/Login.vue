@@ -11,7 +11,9 @@
         <aside class="right-side">
             <section class="top-content">
                 <h1 class="login-title">Sua conta.</h1>
-                <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+                <div class="msg-area">
+                    <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+                </div>
                 <div class="login-form">
                     <div class="email-input">
                         <label for="email">Email</label>
@@ -163,6 +165,14 @@ export default {
     color: #243c75;
     font-size: 2rem;
     margin: 0;
+}
+
+.msg-area {
+    min-height: 2.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .error-msg {
