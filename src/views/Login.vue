@@ -35,7 +35,7 @@
                 </div>
             </section>
             <section class="baseboard">
-                <Line backgroundColor="#243c75" height="2px" />
+                <Line backgroundColor="#e2f9ff" height="2px" />
                 <section class="baseboard-content">
                     <p class="signup-text">Não tem uma conta?</p>
                     <router-link to="/cadastro" class="signup-link">Cadastre-se</router-link>
@@ -43,7 +43,6 @@
             </section>
         </aside>
     </main>
-    <Line />
     <Footer />
 </template>
 
@@ -97,7 +96,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: #243c75;
+    background-color: #e2f9ff;
     background-size: cover;
     background-position: center;
     min-height: 100vh;
@@ -115,7 +114,7 @@ export default {
 
 .login {
     font-family: 'Pinyon Script', cursive;
-    color: #e2f9ff;
+    color: #243c75;
     font-size: 2rem;
     margin: 0;
     line-height: 1;
@@ -123,7 +122,7 @@ export default {
 
 .welcome-title {
     font-family: 'Archivo Black', sans-serif;
-    color: #e2f9ff;
+    color: #243c75;
     font-size: 7rem;
     font-weight: 900;
     margin: -0.35rem 0 0 0;
@@ -133,7 +132,7 @@ export default {
 .welcome-description {
     font-family: 'Red Hat Display', sans-serif;
     font-size: 1.2rem;
-    color: #e2f9ff;
+    color: #243c75;
     margin-top: 1rem;
     text-align: justify;
 }
@@ -145,7 +144,7 @@ export default {
     justify-content: space-between;
     width: 40%;
     min-height: 85vh;
-    background-color: #e2f9ff;
+    background-color: #243c75;
     border-radius: 15px;
     gap: 1rem;
     padding: 2rem 6rem 2rem 6rem;
@@ -162,7 +161,7 @@ export default {
 
 .login-title {
     font-family: 'Anton', sans-serif;
-    color: #243c75;
+    color: #e2f9ff;
     font-size: 2rem;
     margin: 0;
 }
@@ -211,12 +210,12 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #243c75;
+    color: #e2f9ff;
     font-size: 1rem;
 }
 
 .eye-icon:hover {
-    color: #878787;
+    color: #d3d3d3;
 }
 
 .email-input,
@@ -228,16 +227,22 @@ export default {
 
 .login-form label {
     font-family: 'Anton', sans-serif;
-    color: #243c75;
+    color: #e2f9ff;
     font-size: 1rem;
 }
 
 .login-form input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #243c75;
+    border: 1px solid #e2f9ff;
     border-radius: 4px;
     height: 3rem;
+    background-color: #243c75;
+    color: #e2f9ff;
+}
+
+.login-form input::placeholder {
+    color: rgba(226, 249, 255, 0.7);
 }
 
 .login-form button {
@@ -245,8 +250,8 @@ export default {
     padding: 0.75rem;
     font-size: 1.25rem;
     font-weight: bold;
-    background-color: #243c75;
-    color: #e2f9ff;
+    background-color: #e2f9ff;
+    color: #243c75;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -254,7 +259,7 @@ export default {
 }
 
 .login-form button:hover {
-    background-color: #878787;
+    background-color: #d3d3d3;
 }
 
 .login-form button:disabled {
@@ -280,19 +285,19 @@ export default {
 
 .signup-text {
     font-family: 'Red Hat Display', sans-serif;
-    color: #243c75;
+    color: #e2f9ff;
     font-size: 1rem;
 }
 
 .signup-link {
     font-family: 'Red Hat Display', sans-serif;
-    color: #243c75;
+    color: #e2f9ff;
     font-size: 1rem;
     text-decoration: none;
 }
 
 .signup-link:hover {
-    color: #243c75;
+    color: #d3d3d3;
     text-decoration: underline;
 }
 
