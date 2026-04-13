@@ -11,22 +11,22 @@
         <section class="cards-grid">
             <div class="card">
                 <div class="card-icon"><i class="fa-solid fa-helmet-safety"></i></div>
-                <h2 class="card-number">0</h2>
+                <h2 class="card-number">{{ stats.episEstoque }}</h2>
                 <p class="card-label">EPIs em estoque</p>
             </div>
             <div class="card">
                 <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                <h2 class="card-number">0</h2>
-                <p class="card-label">Solicitações pendentes</p>
+                <h2 class="card-number">{{ stats.emprestimosAtivos }}</h2>
+                <p class="card-label">Empréstimos ativos</p>
             </div>
             <div class="card">
                 <div class="card-icon"><i class="fa-solid fa-circle-check"></i></div>
-                <h2 class="card-number">0</h2>
-                <p class="card-label">Empréstimos ativos</p>
+                <h2 class="card-number">{{ stats.totalEntregas }}</h2>
+                <p class="card-label">Total de entregas</p>
             </div>
             <div class="card card-alert">
                 <div class="card-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <h2 class="card-number">0</h2>
+                <h2 class="card-number">{{ stats.estoqueCritico }}</h2>
                 <p class="card-label">Estoque crítico</p>
             </div>
         </section>
@@ -36,15 +36,19 @@
             <div class="actions-grid">
                 <router-link to="/estoque" class="action-btn">
                     <i class="fa-solid fa-boxes-stacked"></i>
-                    Gerenciar estoque
+                    {{ role === 'admin' ? 'Gerenciar estoque' : 'Ver EPIs' }}
                 </router-link>
-                <router-link to="/estoque" class="action-btn">
+                <router-link v-if="role === 'admin'" to="/estoque" class="action-btn">
                     <i class="fa-solid fa-plus"></i>
                     Adicionar EPI
                 </router-link>
-                <router-link to="/estoque" class="action-btn">
-                    <i class="fa-solid fa-file-lines"></i>
-                    Ver relatórios
+                <router-link v-if="role === 'aluno' || role === 'docente'" to="/estoque" class="action-btn">
+                    <i class="fa-solid fa-hand"></i>
+                    Solicitar EPI
+                </router-link>
+                <router-link to="/perfil" class="action-btn">
+                    <i class="fa-solid fa-user"></i>
+                    Meu perfil
                 </router-link>
             </div>
         </section>
@@ -66,20 +70,76 @@ export default {
         const router = useRouter();
         const sidebarOpen = ref(false);
 
-        const userName = computed(() => {
-            const meta = session.value?.user?.user_metadata;
-            return meta?.full_name || meta?.name || 'Usuário';
-        });
-
+        const userName = ref('Usuário');
+        const role = ref('');
         const userEmail = computed(() => session.value?.user?.email || '');
 
-        onMounted(() => {
-            if (!session.value) {
-                router.push('/login');
+        const stats = ref({
+            episEstoque: 0,
+            emprestimosAtivos: 0,
+            totalEntregas: 0,
+            estoqueCritico: 0,
+        });
+
+        onMounted(async () => {
+            const { data } = await supabase.auth.getSession();
+            if (!data.session) { router.push('/login'); return; }
+
+            const user = data.session.user;
+            const meta = user.user_metadata;
+
+            if (meta?.full_name || meta?.name) {
+                userName.value = meta.full_name || meta.name;
+            } else {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('full_name, role')
+                    .eq('id', user.id)
+                    .single();
+                if (profile?.full_name) userName.value = profile.full_name;
+                if (profile?.role) role.value = profile.role;
+            }
+
+            // Busca role se não foi carregado ainda
+            if (!role.value) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+                if (profile?.role) role.value = profile.role;
+            }
+
+            // Stats — EPIs em estoque
+            const { data: epis } = await supabase
+                .from('epis')
+                .select('idepis, quantidade, disponivel');
+
+            if (epis) {
+                stats.value.episEstoque = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                stats.value.estoqueCritico = epis.filter(e => e.quantidade <= 5).length;
+            }
+
+            // Entregas ativas de funcionários
+            const { data: funcEntregas } = await supabase
+                .from('funcionario_has_epis')
+                .select('id_entrega_func, data_devolucao');
+
+            // Entregas de alunos
+            const { data: alunoEntregas } = await supabase
+                .from('aluno_has_epis')
+                .select('id_entrega_aluno');
+
+            if (funcEntregas) {
+                stats.value.emprestimosAtivos = funcEntregas.filter(e => !e.data_devolucao).length;
+                stats.value.totalEntregas += funcEntregas.length;
+            }
+            if (alunoEntregas) {
+                stats.value.totalEntregas += alunoEntregas.length;
             }
         });
 
-        return { userName, userEmail, sidebarOpen };
+        return { userName, userEmail, role, sidebarOpen, stats };
     }
 }
 </script>
@@ -144,7 +204,7 @@ export default {
 
 .card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(78, 78, 78, 0.3);
+    box-shadow: 0 8px 24px rgba(36, 60, 117, 0.3);
 }
 
 .card-alert {

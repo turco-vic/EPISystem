@@ -1,7 +1,7 @@
 <template>
     <header class="header-container">
         <h1 class="header-title">
-            <router-link to="/" class="header-link">EPI System</router-link>
+            <router-link :to="session ? '/dashboard' : '/'" class="header-link">EPI System</router-link>
         </h1>
         <nav class="nav-container">
             <router-link to="/" class="nav-link">Home</router-link>
@@ -15,6 +15,8 @@
 </template>
 
 <script>
+import { useSupabase } from "../composables/useSupabase.js";
+
 export default {
     name: "Header",
     props: {
@@ -23,6 +25,10 @@ export default {
             required: true,
         },
     },
+    setup() {
+        const { session } = useSupabase();
+        return { session };
+    }
 };
 </script>
 

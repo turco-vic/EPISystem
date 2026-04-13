@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar">
         <h1 class="navbar-title">
-            <router-link to="/" class="header-link">EPI System</router-link>
+            <router-link :to="logoDestino" class="header-link">EPI System</router-link>
         </h1>
         <button class="menu-btn" @click="$emit('toggle')">
             <i class="fa-solid fa-bars"></i>
@@ -10,9 +10,17 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import { useSupabase } from "../composables/useSupabase.js";
+
 export default {
     name: "NavBar",
-    emits: ['toggle']
+    emits: ['toggle'],
+    setup() {
+        const { session } = useSupabase();
+        const logoDestino = computed(() => session.value ? '/dashboard' : '/');
+        return { logoDestino };
+    }
 };
 </script>
 
@@ -38,7 +46,6 @@ export default {
 }
 
 .navbar-title:hover {
-    color: #243c75;
     transform: scale(1.05);
 }
 

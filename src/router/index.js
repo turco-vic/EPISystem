@@ -7,6 +7,7 @@ import Login from "../views/Login.vue"
 import Cadastro from "../views/Cadastro.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Estoque from "../views/Estoque.vue"
+import Perfil from '../views/Perfil.vue'
 
 const routes = [
     {
@@ -37,6 +38,10 @@ const routes = [
         path: "/estoque", 
         component: Estoque
     },
+    {
+        path: "/perfil",
+        component: Perfil
+    }
 ]
 
 const router = createRouter({

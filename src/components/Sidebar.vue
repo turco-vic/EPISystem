@@ -11,6 +11,10 @@
                     <i class="fa-solid fa-boxes-stacked"></i>
                     <span>Estoque</span>
                 </router-link>
+                <router-link to="/perfil" class="nav-item" @click="close">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span>Perfil</span>
+                </router-link>
             </nav>
         </div>
         <div class="sidebar-bottom">
