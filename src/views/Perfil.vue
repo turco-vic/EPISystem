@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import NavBar from "../components/NavBar.vue";
+import NavBar from "../components/Navbar.vue";
 import Sidebar from "../components/Sidebar.vue";
 import { useSupabase } from "../composables/useSupabase.js";
 import { ref, computed, onMounted } from "vue";
