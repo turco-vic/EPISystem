@@ -146,7 +146,6 @@ export default {
 
             loading.value = true;
 
-            // 1. Cria no Supabase Auth
             const { data, error: authError } = await supabase.auth.signUp({
                 email: email.value,
                 password: password.value,
@@ -163,7 +162,6 @@ export default {
 
             const userId = data.user?.id;
 
-            // 2. Insere na tabela aluno
             const { error: alunoError } = await supabase
                 .from('aluno')
                 .insert({
@@ -177,7 +175,6 @@ export default {
                     auth_id: userId
                 });
 
-            // 3. Seta role como 'aluno' no profile
             if (userId) {
                 await supabase.from('profiles').upsert({
                     id: userId,

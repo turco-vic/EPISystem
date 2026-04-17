@@ -56,7 +56,7 @@ export default {
 }
 
 .header-link:visited {
-    color: #e2f9ff;
+    color: #ffffff;
 }
 
 .header-link:hover {

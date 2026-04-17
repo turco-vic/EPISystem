@@ -137,8 +137,6 @@ export default {
     flex: 1;
 }
 
-/* Estlos para a seção de apresentação */
-
 .apresentation-page {
     display: flex;
     flex-direction: row;
@@ -243,8 +241,6 @@ export default {
     display: block;
 }
 
-/* Estilos para a seção de check-box */
-
 .check-page {
     display: flex;
     flex-direction: column;
@@ -314,8 +310,6 @@ export default {
     color: #333333;
 }
 
-/* Estilos para a seção de implementação */
-
 .implementation-page {
     display: flex;
     flex-direction: row;
@@ -380,8 +374,6 @@ export default {
     flex: 1;
     padding: 6rem 10rem 6rem 3rem;
 }
-
-/* Estilos para a seção de dashboard */
 
 .dashboard-page {
     display: flex;
@@ -448,8 +440,6 @@ export default {
     font-size: 2rem;
     margin: 1rem;
 }
-
-/* Estilos para a responsividade do site */
 
 @media (max-width: 1200px) {
 

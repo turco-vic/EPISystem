@@ -8,17 +8,14 @@
             <h1 class="page-title">ESTOQUE</h1>
         </section>
 
-        <!-- LOADING -->
         <div v-if="loading" class="loading">
             <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
         </div>
 
         <template v-else>
 
-            <!-- ========== ADMIN ========== -->
             <template v-if="role === 'admin'">
 
-                <!-- Tabs -->
                 <div class="tabs">
                     <button :class="['tab', { active: tabAdmin === 'epis' }]" @click="tabAdmin = 'epis'">
                         <i class="fa-solid fa-boxes-stacked"></i> EPIs
@@ -29,7 +26,6 @@
                     </button>
                 </div>
 
-                <!-- Tab EPIs -->
                 <div v-if="tabAdmin === 'epis'">
                     <div class="section-header">
                         <h2 class="section-title">EPIs cadastrados</h2>
@@ -78,7 +74,6 @@
                     </div>
                 </div>
 
-                <!-- Tab Solicitações -->
                 <div v-if="tabAdmin === 'solicitacoes'">
                     <h2 class="section-title">Todas as solicitações</h2>
                     <div class="table-wrapper">
@@ -122,7 +117,6 @@
                 </div>
             </template>
 
-            <!-- ========== DOCENTE ========== -->
             <template v-else-if="role === 'docente'">
                 <div class="tabs">
                     <button :class="['tab', { active: tabDocente === 'epis' }]" @click="tabDocente = 'epis'">
@@ -137,7 +131,6 @@
                     </button>
                 </div>
 
-                <!-- EPIs disponíveis -->
                 <div v-if="tabDocente === 'epis'">
                     <div class="section-header">
                         <h2 class="section-title">EPIs disponíveis</h2>
@@ -158,7 +151,6 @@
                     </div>
                 </div>
 
-                <!-- Solicitações dos alunos -->
                 <div v-if="tabDocente === 'solicitacoes'">
                     <h2 class="section-title">Solicitações dos alunos</h2>
                     <div class="table-wrapper">
@@ -197,7 +189,6 @@
                     </div>
                 </div>
 
-                <!-- Minhas solicitações -->
                 <div v-if="tabDocente === 'minhas'">
                     <h2 class="section-title">Minhas solicitações</h2>
                     <div class="table-wrapper">
@@ -232,7 +223,6 @@
                 </div>
             </template>
 
-            <!-- ========== ALUNO ========== -->
             <template v-else-if="role === 'aluno'">
                 <div class="tabs">
                     <button :class="['tab', { active: tabAluno === 'epis' }]" @click="tabAluno = 'epis'">
@@ -247,13 +237,24 @@
                     <h2 class="section-title">EPIs disponíveis</h2>
                     <div class="epis-grid">
                         <div class="epi-card" v-for="epi in episDisponiveis" :key="epi.idepis">
-                            <div class="epi-card-icon"><i class="fa-solid fa-helmet-safety"></i></div>
-                            <div class="epi-card-info">
+                            <div class="epi-card-top">
+                                <div class="epi-card-icon"><i class="fa-solid fa-helmet-safety"></i></div>
+                                <span :class="['stock-chip', epi.quantidade <= 5 ? 'chip-low' : 'chip-ok']">
+                                    {{ epi.quantidade }} un.
+                                </span>
+                            </div>
+                            <div class="epi-card-body">
                                 <h3>{{ epi.nome }}</h3>
                                 <p>{{ epi.tipo }}</p>
-                                <span class="epi-qtd">{{ epi.quantidade }} unidades</span>
                             </div>
-                            <button class="btn-sm" @click="abrirModalSolicitar(epi, 'aluno')">Solicitar</button>
+                            <div class="epi-stock-bar">
+                                <div class="epi-stock-fill"
+                                    :style="{ width: Math.min(100, (epi.quantidade / 100) * 100) + '%' }"></div>
+                            </div>
+                            <button class="btn-sm btn-full"
+                                @click="abrirModalSolicitar(epi, role === 'aluno' ? 'aluno' : 'docente')">
+                                <i class="fa-solid fa-hand"></i> Solicitar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -286,7 +287,6 @@
 
         </template>
 
-        <!-- ========== MODAL EPI (admin) ========== -->
         <div class="modal-overlay" v-if="modalEpi" @click.self="modalEpi = false">
             <div class="modal">
                 <h2 class="modal-title">{{ editandoEpi ? 'Editar EPI' : 'Novo EPI' }}</h2>
@@ -316,7 +316,6 @@
             </div>
         </div>
 
-        <!-- ========== MODAL SOLICITAR LOTE (docente) ========== -->
         <div class="modal-overlay" v-if="modalLote" @click.self="modalLote = false">
             <div class="modal">
                 <h2 class="modal-title">Solicitar EPIs em lote</h2>
@@ -344,7 +343,6 @@
             </div>
         </div>
 
-        <!-- ========== MODAL SOLICITAR EPI ========== -->
         <div class="modal-overlay" v-if="modalSolicitar" @click.self="modalSolicitar = false">
             <div class="modal">
                 <div class="modal-epi-header">
@@ -418,14 +416,12 @@ export default {
         const solicitacoesAlunos = ref([]);
         const minhasEntregas = ref([]);
 
-        // Modal EPI
         const modalEpi = ref(false);
         const editandoEpi = ref(false);
         const formEpi = ref({ nome: '', tipo: '', quantidade: 0, disponivel: true, data_validade: '', codigo_patrimonio: '' });
         const modalError = ref('');
         const salvando = ref(false);
 
-        // Modal solicitar individual
         const modalSolicitar = ref(false);
         const epiSelecionado = ref(null);
         const tipoSolicitante = ref('');
@@ -467,7 +463,6 @@ export default {
             modalSolicitar.value = false;
         }
 
-        // Modal lote
         const modalLote = ref(false);
         const formLote = ref({ epi_id: '', quantidade: 1 });
 
@@ -489,7 +484,6 @@ export default {
         }
 
         async function carregarSolicitacoes() {
-            // solicitações = aluno_has_epis + funcionario_has_epis unificados
             const { data: sa } = await supabase
                 .from('aluno_has_epis')
                 .select('id_entrega_aluno, data_entrega, aluno(nome, sobrenome), epis(nome)');
@@ -563,7 +557,6 @@ export default {
             }));
         }
 
-        // ADMIN — CRUD EPI
         function abrirModalNovoEpi() {
             editandoEpi.value = false;
             formEpi.value = { nome: '', tipo: '', quantidade: 0, disponivel: true, data_validade: '', codigo_patrimonio: '' };
@@ -617,7 +610,6 @@ export default {
         }
 
         async function aprovarSolicitacao(s) {
-            // já aprovado automaticamente no modelo atual — apenas feedback
             alert(`Solicitação de ${s.solicitante} aprovada.`);
         }
 
@@ -630,7 +622,6 @@ export default {
             await carregarSolicitacoes();
         }
 
-        // DOCENTE
         function abrirModalSolicitarLote() {
             formLote.value = { epi_id: '', quantidade: 1 };
             modalError.value = '';
@@ -670,7 +661,6 @@ export default {
             await carregarEntregasFuncionario();
         }
 
-        // ALUNO
         async function solicitarEpiAluno(epi) {
             if (!alunoId.value) return;
             const { error } = await supabase.from('aluno_has_epis').insert({
@@ -734,8 +724,8 @@ export default {
 <style scoped>
 .main {
     min-height: 100vh;
-    background-color: #f0f4ff;
-    padding: 12vh 5rem 4rem 5rem;
+    background: linear-gradient(180deg, #f0f4ff 0%, #e8eeff 100%);
+    padding: 12vh 4rem 4rem 4rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -745,6 +735,12 @@ export default {
 .page-header {
     display: flex;
     flex-direction: column;
+    padding: 1.5rem 2rem;
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #d0daf0;
+    border-left: 6px solid #243c75;
+    box-shadow: 0 8px 32px rgba(36, 60, 117, 0.08);
 }
 
 .script {
@@ -758,7 +754,7 @@ export default {
 .page-title {
     font-family: 'Archivo Black', sans-serif;
     color: #243c75;
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 900;
     margin: 0;
     line-height: 1;
@@ -766,48 +762,49 @@ export default {
 
 .loading {
     font-family: 'Red Hat Display', sans-serif;
-    color: #243c75;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    color: #6b82b0;
+    font-size: 1rem;
+    text-align: center;
+    padding: 3rem;
 }
 
-/* Tabs */
 .tabs {
     display: flex;
-    gap: 0.5rem;
-    border-bottom: 2px solid #d0daf0;
-    padding-bottom: 0;
+    gap: 0.25rem;
+    background: #fff;
+    padding: 0.4rem;
+    border-radius: 12px;
+    border: 1px solid #d0daf0;
+    width: fit-content;
+    box-shadow: 0 4px 16px rgba(36, 60, 117, 0.05);
 }
 
 .tab {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 0.6rem 1.2rem;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: #6b82b0;
-    cursor: pointer;
-    margin-bottom: -2px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: color 0.2s ease;
-}
-
-.tab.active {
-    color: #243c75;
-    border-bottom-color: #243c75;
+    background: transparent;
+    border: none;
+    padding: 0.7rem 1.25rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #6b82b0;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .tab:hover {
     color: #243c75;
+    background: #f0f4ff;
 }
 
-/* Section header */
+.tab.active {
+    background: #243c75;
+    color: #e2f9ff;
+}
+
 .section-header {
     display: flex;
     align-items: center;
@@ -816,72 +813,83 @@ export default {
 }
 
 .section-title {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Archivo Black', sans-serif;
     color: #243c75;
-    font-size: 1.3rem;
-    margin: 0;
+    font-size: 1.4rem;
+    margin: 0 0 1rem 0;
 }
 
-/* Botões */
 .btn-primary {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #243c75;
+    background: #243c75;
     color: #e2f9ff;
     border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    padding: 0.7rem 1.3rem;
     font-family: 'Red Hat Display', sans-serif;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(36, 60, 117, 0.2);
 }
 
 .btn-primary:hover {
-    background-color: #1a2d5a;
+    background: #1a2d5a;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(36, 60, 117, 0.3);
 }
 
 .btn-primary:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
 }
 
 .btn-outline {
     background: transparent;
     border: 2px solid #243c75;
     color: #243c75;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 0.6rem 1.2rem;
     font-family: 'Red Hat Display', sans-serif;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .btn-outline:hover {
-    background-color: #243c75;
+    background: #243c75;
     color: #e2f9ff;
 }
 
 .btn-sm {
-    background-color: #243c75;
+    background: #243c75;
     color: #e2f9ff;
     border: none;
-    border-radius: 6px;
-    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    padding: 0.55rem 1rem;
     font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    justify-content: center;
 }
 
 .btn-sm:hover {
-    background-color: #1a2d5a;
+    background: #1a2d5a;
+}
+
+.btn-full {
+    width: 100%;
 }
 
 .btn-sm.btn-outline {
@@ -891,45 +899,47 @@ export default {
 }
 
 .btn-icon {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 6px;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.85rem;
-    background-color: #e8eeff;
+    background: #e8eeff;
     color: #243c75;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .btn-icon:hover {
-    background-color: #d0daf0;
+    background: #243c75;
+    color: #e2f9ff;
 }
 
 .btn-icon.btn-danger {
-    background-color: #fdecea;
-    color: #c0392b;
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
 .btn-icon.btn-danger:hover {
-    background-color: #f5c6c2;
+    background: #b91c1c;
+    color: #fff;
 }
 
 .btn-icon.btn-green {
-    background-color: #e8f5e9;
-    color: #16a34a;
+    background: #dcfce7;
+    color: #15803d;
 }
 
 .btn-icon.btn-green:hover {
-    background-color: #c8e6c9;
+    background: #15803d;
+    color: #fff;
 }
 
-/* Table */
 .table-wrapper {
-    background-color: #fff;
+    background: #fff;
     border-radius: 16px;
     border: 1px solid #d0daf0;
     box-shadow: 0 4px 24px rgba(36, 60, 117, 0.08);
@@ -945,9 +955,9 @@ export default {
     font-family: 'Anton', sans-serif;
     font-size: 0.75rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: #9aaac5;
-    background-color: #f8f9ff;
+    background: #f8f9ff;
     padding: 1rem 1.25rem;
     text-align: left;
     border-bottom: 1px solid #e8edf8;
@@ -957,7 +967,7 @@ export default {
     font-family: 'Red Hat Display', sans-serif;
     font-size: 0.95rem;
     color: #1a2b5e;
-    padding: 0.9rem 1.25rem;
+    padding: 0.95rem 1.25rem;
     border-bottom: 1px solid #edf0f8;
 }
 
@@ -966,7 +976,7 @@ export default {
 }
 
 .table tr:hover td {
-    background-color: #f8f9ff;
+    background: #f8f9ff;
 }
 
 .actions-cell {
@@ -978,125 +988,161 @@ export default {
 .empty-row {
     text-align: center;
     color: #9aaac5 !important;
-    padding: 2rem !important;
+    padding: 2.5rem !important;
     font-style: italic;
 }
 
-/* Badges */
 .badge {
     font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    padding: 0.2rem 0.7rem;
+    padding: 0.25rem 0.7rem;
     border-radius: 99px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
+    display: inline-block;
 }
 
 .badge-green {
-    background-color: #e8f5e9;
-    color: #16a34a;
+    background: #dcfce7;
+    color: #15803d;
 }
 
 .badge-red {
-    background-color: #fdecea;
-    color: #c0392b;
+    background: #fee2e2;
+    color: #b91c1c;
 }
 
 .badge-yellow {
-    background-color: #fff8e1;
-    color: #d97706;
+    background: #fef3c7;
+    color: #b45309;
 }
 
-/* EPIs grid (aluno/docente) */
 .epis-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.25rem;
 }
 
 .epi-card {
-    background-color: #fff;
+    background: #fff;
     border: 1px solid #d0daf0;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 1.25rem;
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 2px 12px rgba(36, 60, 117, 0.07);
-    transition: box-shadow 0.2s ease;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-shadow: 0 2px 12px rgba(36, 60, 117, 0.06);
+    transition: all 0.25s ease;
 }
 
 .epi-card:hover {
-    box-shadow: 0 4px 20px rgba(36, 60, 117, 0.14);
+    box-shadow: 0 12px 32px rgba(36, 60, 117, 0.14);
+    transform: translateY(-4px);
+    border-color: #243c75;
+}
+
+.epi-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .epi-card-icon {
     width: 3rem;
     height: 3rem;
-    background-color: #243c75;
+    background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
     color: #e2f9ff;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.3rem;
-    flex-shrink: 0;
 }
 
-.epi-card-info {
-    flex: 1;
+.stock-chip {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.chip-ok {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.chip-low {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.epi-card-body {
     display: flex;
     flex-direction: column;
-    gap: 0.1rem;
+    gap: 0.25rem;
+    min-height: 3.5rem;
 }
 
-.epi-card-info h3 {
-    font-family: 'Anton', sans-serif;
-    color: #1a2b5e;
-    font-size: 1rem;
+.epi-card-body h3 {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 1.05rem;
     margin: 0;
+    line-height: 1.2;
 }
 
-.epi-card-info p {
+.epi-card-body p {
     font-family: 'Red Hat Display', sans-serif;
     color: #6b82b0;
     font-size: 0.82rem;
     margin: 0;
 }
 
-.epi-qtd {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.78rem;
-    color: #16a34a;
-    font-weight: 700;
+.epi-stock-bar {
+    width: 100%;
+    height: 6px;
+    background: #e8eeff;
+    border-radius: 99px;
+    overflow: hidden;
 }
 
-/* Modal */
+.epi-stock-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #243c75 0%, #3a5ba8 100%);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(10, 20, 50, 0.55);
+    backdrop-filter: blur(4px);
     z-index: 2000;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
 }
 
 .modal {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 18px;
     padding: 2rem;
     width: 100%;
     max-width: 480px;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
 }
 
 .modal-title {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Archivo Black', sans-serif;
     color: #243c75;
     font-size: 1.3rem;
     margin: 0;
@@ -1111,7 +1157,7 @@ export default {
 .field {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.35rem;
 }
 
 .field.field-check {
@@ -1123,21 +1169,28 @@ export default {
 .field label {
     font-family: 'Anton', sans-serif;
     color: #243c75;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
 }
 
 .field input,
 .field select {
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #d0daf0;
-    border-radius: 6px;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+    border: 1.5px solid #d0daf0;
+    border-radius: 8px;
     height: 2.8rem;
     box-sizing: border-box;
     font-family: 'Red Hat Display', sans-serif;
     color: #1a2b5e;
+    transition: border-color 0.2s ease;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: #243c75;
 }
 
 .field input[type="checkbox"] {
@@ -1153,12 +1206,12 @@ export default {
 
 .error-msg {
     font-family: 'Red Hat Display', sans-serif;
-    color: #c0392b;
+    color: #b91c1c;
     font-size: 0.9rem;
-    background-color: #fdecea;
-    border: 1px solid #c0392b;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
     margin: 0;
 }
 
@@ -1173,7 +1226,7 @@ export default {
 .modal-epi-icon {
     width: 3.5rem;
     height: 3.5rem;
-    background-color: #243c75;
+    background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
     color: #e2f9ff;
     border-radius: 12px;
     display: flex;
@@ -1194,9 +1247,9 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    background-color: #f8f9ff;
-    border-radius: 10px;
-    padding: 1rem;
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 1.1rem;
 }
 
 .modal-info-row {
@@ -1208,16 +1261,16 @@ export default {
 .modal-info-label {
     font-family: 'Anton', sans-serif;
     color: #9aaac5;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
 }
 
 .modal-info-value {
     font-family: 'Red Hat Display', sans-serif;
     color: #1a2b5e;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .modal-confirm-text {
@@ -1231,7 +1284,7 @@ export default {
 
 @media (max-width: 768px) {
     .main {
-        padding: 10vh 1.5rem 3rem 1.5rem;
+        padding: 10vh 1.25rem 3rem 1.25rem;
     }
 
     .page-title {
@@ -1239,13 +1292,19 @@ export default {
     }
 
     .epis-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
     }
 
     .table th,
     .table td {
         padding: 0.75rem;
         font-size: 0.85rem;
+    }
+
+    .tabs {
+        width: 100%;
+        overflow-x: auto;
     }
 }
 </style>
