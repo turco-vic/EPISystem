@@ -95,7 +95,7 @@ export default {
 
 .sidebar-title {
     font-family: 'Anton', sans-serif;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 1.5rem;
     margin: 0;
 }
@@ -110,7 +110,7 @@ export default {
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    color: #e2f9ff;
+    color: #ebfbff;
     text-decoration: none;
     font-family: 'Red Hat Display', sans-serif;
     font-size: 1rem;
@@ -141,8 +141,8 @@ export default {
     width: 100%;
     gap: 0.6rem;
     background: transparent;
-    border: 2px solid #e2f9ff;
-    color: #e2f9ff;
+    border: 2px solid #ebfbff;
+    color: #ebfbff;
     font-family: 'Red Hat Display', sans-serif;
     font-size: 1rem;
     font-weight: 600;
@@ -153,7 +153,7 @@ export default {
 }
 
 .logout-btn:hover {
-    background-color: #e2f9ff;
+    background-color: #ebfbff;
     color: #243c75;
 }
 </style>

@@ -70,7 +70,7 @@
                 </div>
             </section>
             <section class="baseboard">
-                <Line backgroundColor="#e2f9ff" height="2px" />
+                <Line backgroundColor="#ebfbff" height="2px" />
                 <section class="baseboard-content">
                     <p class="login-text">Já tem uma conta?</p>
                     <router-link to="/login" class="login-link">Entrar</router-link>
@@ -211,7 +211,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: #e2f9ff;
+    background-color: #ebfbff;
     min-height: 100vh;
     padding-top: 10vh;
     box-sizing: border-box;
@@ -274,7 +274,7 @@ export default {
 
 .form-title {
     font-family: 'Anton', sans-serif;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 2rem;
     margin: 0;
 }
@@ -338,20 +338,20 @@ export default {
 
 .field label {
     font-family: 'Anton', sans-serif;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 1rem;
 }
 
 .field input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #e2f9ff;
+    border: 1px solid #ebfbff;
     border-radius: 4px;
     height: 3rem;
     box-sizing: border-box;
     width: 100%;
     background-color: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
 }
 
 .field input::placeholder {
@@ -372,7 +372,7 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 1rem;
 }
 
@@ -385,7 +385,7 @@ export default {
     padding: 0.75rem;
     font-size: 1.25rem;
     font-weight: bold;
-    background-color: #e2f9ff;
+    background-color: #ebfbff;
     color: #243c75;
     border: none;
     border-radius: 4px;
@@ -419,13 +419,13 @@ export default {
 
 .login-text {
     font-family: 'Red Hat Display', sans-serif;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 1rem;
 }
 
 .login-link {
     font-family: 'Red Hat Display', sans-serif;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 1rem;
     text-decoration: none;
 }

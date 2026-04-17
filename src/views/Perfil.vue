@@ -291,7 +291,7 @@ export default {
     flex-direction: column;
     align-items: center;
     gap: 0.85rem;
-    color: #e2f9ff;
+    color: #ebfbff;
     box-shadow: 0 16px 48px rgba(36, 60, 117, 0.3);
     position: relative;
     overflow: hidden;
@@ -413,7 +413,7 @@ export default {
 .stat-num {
     font-family: 'Archivo Black', sans-serif;
     font-size: 1.6rem;
-    color: #e2f9ff;
+    color: #ebfbff;
     line-height: 1;
 }
 
@@ -532,7 +532,7 @@ export default {
     width: 2.75rem;
     height: 2.75rem;
     background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
-    color: #e2f9ff;
+    color: #ebfbff;
     border-radius: 10px;
     display: flex;
     align-items: center;

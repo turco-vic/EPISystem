@@ -16,7 +16,7 @@ export default {
         },
         backgroundColor: {
             type: String,
-            default: "#e2f9ff"
+            default: "#ebfbff"
         }
 
     }
@@ -25,6 +25,6 @@ export default {
 
 <style scoped>
 .line {
-    background-color: #e2f9ff;
+    background-color: #ebfbff;
 }
 </style>

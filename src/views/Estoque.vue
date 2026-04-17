@@ -802,7 +802,7 @@ export default {
 
 .tab.active {
     background: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
 }
 
 .section-header {
@@ -824,7 +824,7 @@ export default {
     align-items: center;
     gap: 0.5rem;
     background: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
     border: none;
     border-radius: 10px;
     padding: 0.7rem 1.3rem;
@@ -863,12 +863,12 @@ export default {
 
 .btn-outline:hover {
     background: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
 }
 
 .btn-sm {
     background: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
     border: none;
     border-radius: 8px;
     padding: 0.55rem 1rem;
@@ -915,7 +915,7 @@ export default {
 
 .btn-icon:hover {
     background: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
 }
 
 .btn-icon.btn-danger {
@@ -1052,7 +1052,7 @@ export default {
     width: 3rem;
     height: 3rem;
     background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
-    color: #e2f9ff;
+    color: #ebfbff;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -1227,7 +1227,7 @@ export default {
     width: 3.5rem;
     height: 3.5rem;
     background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
-    color: #e2f9ff;
+    color: #ebfbff;
     border-radius: 12px;
     display: flex;
     align-items: center;

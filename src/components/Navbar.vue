@@ -50,7 +50,7 @@ export default {
 }
 
 .header-link {
-    color: #e2f9ff;
+    color: #ebfbff;
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -66,7 +66,7 @@ export default {
 .menu-btn {
     background: none;
     border: none;
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 2rem;
     cursor: pointer;
     padding: 0.75rem;

@@ -38,7 +38,7 @@ export default {
     justify-content: space-between;
     align-items: center;
     background-color: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
     height: 10vh;
     padding: 0 2rem;
     position: fixed;
@@ -60,7 +60,7 @@ export default {
 }
 
 .header-link {
-    color: #e2f9ff;
+    color: #ebfbff;
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -75,7 +75,7 @@ export default {
 }
 
 .nav-link {
-    color: #e2f9ff;
+    color: #ebfbff;
     font-family: 'Red Hat Display', sans-serif;
     text-decoration: none;
     font-size: 1.2rem;
@@ -91,13 +91,13 @@ export default {
     height: 3px;
     bottom: 0;
     left: 0;
-    background-color: #e2f9ff;
+    background-color: #ebfbff;
     transition: width 0.3s ease-in-out;
     border-radius: 2px;
 }
 
 .nav-link:hover {
-    color: #e2f9ff;
+    color: #ebfbff;
     transform: translateY(-2px);
 }
 
@@ -106,7 +106,7 @@ export default {
 }
 
 .user-icon {
-    color: #e2f9ff;
+    color: #ebfbff;
     font-size: 1.5rem;
     text-decoration: none;
     transition: color 0.3s ease, transform 0.3s ease;

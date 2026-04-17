@@ -425,7 +425,7 @@ export default {
     width: 2.5rem;
     height: 2.5rem;
     background: #243c75;
-    color: #e2f9ff;
+    color: #ebfbff;
     border-radius: 10px;
     display: flex;
     align-items: center;
