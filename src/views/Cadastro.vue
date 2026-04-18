@@ -439,6 +439,7 @@ export default {
     .left-side {
         width: 40%;
         padding: 2rem;
+        margin-top: 2rem;
     }
 
     .right-side {
