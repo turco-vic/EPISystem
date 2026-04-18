@@ -247,6 +247,7 @@ export default {
     .panel {
         padding: calc(10vh + 2rem) 3rem 3rem 3rem;
         gap: 3rem;
+        margin-top: 5rem;
     }
 
     .title {

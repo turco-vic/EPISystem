@@ -88,11 +88,13 @@
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
 import { ref, reactive } from "vue";
+import { useSupabase } from "../composables/useSupabase.js";
 
 export default {
     name: "Contato",
     components: { Header, Footer },
     setup() {
+        const { supabase } = useSupabase();
         const form = reactive({ nome: '', email: '', assunto: '', mensagem: '' });
         const enviando = ref(false);
         const enviado = ref(false);
@@ -109,8 +111,14 @@ export default {
                 return;
             }
             enviando.value = true;
-            await new Promise(r => setTimeout(r, 800));
+            const { error } = await supabase.from('mensagens_contato').insert({
+                nome: form.nome,
+                email: form.email,
+                assunto: form.assunto,
+                mensagem: form.mensagem
+            });
             enviando.value = false;
+            if (error) { erro.value = 'Erro ao enviar. Tente novamente.'; return; }
             enviado.value = true;
         }
 
@@ -377,6 +385,7 @@ a.channel:hover {
     .panel {
         padding: calc(10vh + 2rem) 3rem 3rem 3rem;
         gap: 3rem;
+        margin-top: 5rem;
     }
 
     .title {
