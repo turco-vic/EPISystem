@@ -222,7 +222,7 @@ export default {
     flex-direction: column;
     justify-content: center;
     width: 30%;
-    padding: 2rem 5rem 2rem 5rem;
+    padding: 2rem 5rem;
 }
 
 .script-title {
@@ -256,12 +256,12 @@ export default {
     align-items: center;
     justify-content: space-between;
     width: 45%;
-    min-height: 90vh;
+    height: auto;
     background-color: #243c75;
     border-radius: 15px;
     gap: 1rem;
-    padding: 2rem 4rem 2rem 4rem;
-    margin: 0 5rem 0 0;
+    padding: 2rem 4rem;
+    margin: 2rem 5rem;
 }
 
 .top-content {
