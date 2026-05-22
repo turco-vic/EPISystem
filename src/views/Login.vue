@@ -71,7 +71,7 @@ export default {
             loading.value = true;
             errorMsg.value = '';
 
-            const { error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabase.auth.signInWithPassword({
                 email: email.value,
                 password: password.value,
             });
@@ -80,6 +80,19 @@ export default {
 
             if (error) {
                 errorMsg.value = 'Email ou senha inválidos.';
+                return;
+            }
+
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', data.user.id)
+                .single();
+
+            const role = profile?.role;
+
+            if (role === 'aluno') {
+                router.push('/estoque');
             } else {
                 router.push('/dashboard');
             }

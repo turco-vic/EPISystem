@@ -9,6 +9,7 @@ import Cadastro from '../views/Cadastro.vue'
 import Dashboard from '../views/Dashboard.vue'
 import Estoque from '../views/Estoque.vue'
 import Perfil from '../views/Perfil.vue'
+import CadastroFuncionario from '../views/CadastroFuncionarioView.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -24,12 +25,17 @@ const routes = [
     {
         path: '/estoque',
         component: Estoque,
-        meta: { requiresAuth: true, roles: ['admin'] }
+        meta: { requiresAuth: true, roles: ['admin', 'docente', 'aluno'] }
     },
     {
         path: '/perfil',
         component: Perfil,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/cadastro-funcionario',
+        component: CadastroFuncionario,
+        meta: { requiresAuth: true, roles: ['admin'] }
     },
     {
         path: '/:pathMatch(.*)*',
