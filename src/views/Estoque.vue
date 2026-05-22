@@ -139,8 +139,23 @@
                             <i class="fa-solid fa-layer-group"></i> Solicitar em lote
                         </button>
                     </div>
+                    <div class="filtros-bar">
+                        <div class="filtro-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input v-model="filtroNome" type="text" placeholder="Buscar EPIs...">
+                        </div>
+                        <select v-model="filtroTipo">
+                            <option value="">Todos os tipos</option>
+                            <option v-for="tipo in tiposDisponiveis" :key="tipo" :value="tipo">{{ tipo }}</option>
+                        </select>
+                        <select v-model="filtroDisponibilidade">
+                            <option value="">Todas as disponibilidades</option>
+                            <option value="disponivel">Disponível</option>
+                            <option value="baixo">Estoque baixo</option>
+                        </select>
+                    </div>
                     <div class="epis-grid">
-                        <div class="epi-card" v-for="epi in episDisponiveis" :key="epi.idepis">
+                        <div class="epi-card" v-for="epi in episFiltrados" :key="epi.idepis">
                             <div class="epi-card-top">
                                 <div class="epi-card-icon"><i :class="getIcone(epi)"></i></div>
                                 <span :class="['stock-chip', epi.quantidade <= 5 ? 'chip-low' : 'chip-ok']">
@@ -158,6 +173,9 @@
                             <button class="btn-sm btn-full" @click="abrirModalSolicitar(epi, 'docente')">
                                 <i class="fa-solid fa-hand"></i> Solicitar
                             </button>
+                        </div>
+                        <div v-if="episFiltrados.length === 0" class="filtro-empty">
+                            Nenhum EPI encontrado com esses filtros.
                         </div>
                     </div>
                 </div>
@@ -248,9 +266,26 @@
                 </div>
 
                 <div v-if="tabAluno === 'epis'">
-                    <h2 class="section-title">EPIs disponíveis</h2>
+                    <div class="section-header">
+                        <h2 class="section-title">EPIs disponíveis</h2>
+                    </div>
+                    <div class="filtros-bar">
+                        <div class="filtro-search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input v-model="filtroNome" type="text" placeholder="Buscar EPIs...">
+                        </div>
+                        <select v-model="filtroTipo">
+                            <option value="">Todos os tipos</option>
+                            <option v-for="tipo in tiposDisponiveis" :key="tipo" :value="tipo">{{ tipo }}</option>
+                        </select>
+                        <select v-model="filtroDisponibilidade">
+                            <option value="">Todas as disponibilidades</option>
+                            <option value="disponivel">Disponível</option>
+                            <option value="baixo">Estoque baixo</option>
+                        </select>
+                    </div>
                     <div class="epis-grid">
-                        <div class="epi-card" v-for="epi in episDisponiveis" :key="epi.idepis">
+                        <div class="epi-card" v-for="epi in episFiltrados" :key="epi.idepis">
                             <div class="epi-card-top">
                                 <div class="epi-card-icon"><i :class="getIcone(epi)"></i></div>
                                 <span :class="['stock-chip', epi.quantidade <= 5 ? 'chip-low' : 'chip-ok']">
@@ -268,6 +303,9 @@
                             <button class="btn-sm btn-full" @click="abrirModalSolicitar(epi, 'aluno')">
                                 <i class="fa-solid fa-hand"></i> Solicitar
                             </button>
+                        </div>
+                        <div v-if="episFiltrados.length === 0" class="filtro-empty">
+                            Nenhum EPI encontrado com esses filtros.
                         </div>
                     </div>
                 </div>
@@ -325,9 +363,9 @@
                 <p v-if="modalError" class="error-msg">{{ modalError }}</p>
                 <div class="modal-actions">
                     <button class="btn-outline" @click="modalEpi = false">Cancelar</button>
-                    <button class="btn-primary" @click="salvarEpi" :disabled="salvando">
-                        {{ salvando ? 'Salvando...' : 'Salvar' }}
-                    </button>
+                    <button class="btn-primary" @click="salvarEpi" :disabled="salvando">{{ salvando ? 'Salvando...' :
+                        'Salvar'
+                        }}</button>
                 </div>
             </div>
         </div>
@@ -352,9 +390,9 @@
                 <p v-if="modalError" class="error-msg">{{ modalError }}</p>
                 <div class="modal-actions">
                     <button class="btn-outline" @click="modalLote = false">Cancelar</button>
-                    <button class="btn-primary" @click="confirmarLote" :disabled="salvando">
-                        {{ salvando ? 'Enviando...' : 'Solicitar' }}
-                    </button>
+                    <button class="btn-primary" @click="confirmarLote" :disabled="salvando">{{ salvando ? 'Enviando...'
+                        :
+                        'Solicitar' }}</button>
                 </div>
             </div>
         </div>
@@ -403,9 +441,8 @@
                 <p v-if="modalError" class="error-msg">{{ modalError }}</p>
                 <div class="modal-actions">
                     <button class="btn-outline" @click="modalSolicitar = false">Cancelar</button>
-                    <button class="btn-primary" @click="confirmarSolicitacao" :disabled="salvando">
-                        {{ salvando ? 'Solicitando...' : 'Confirmar solicitação' }}
-                    </button>
+                    <button class="btn-primary" @click="confirmarSolicitacao" :disabled="salvando">{{ salvando ?
+                        'Solicitando...' : 'Confirmar solicitação' }}</button>
                 </div>
             </div>
         </div>
@@ -441,6 +478,27 @@ export default {
 
         const epis = ref([]);
         const episDisponiveis = computed(() => epis.value.filter(e => e.disponivel && e.quantidade > 0));
+
+        const filtroNome = ref('');
+        const filtroTipo = ref('');
+        const filtroDisponibilidade = ref('');
+
+        const tiposDisponiveis = computed(() => {
+            const tipos = epis.value.map(e => e.tipo).filter(Boolean);
+            return [...new Set(tipos)].sort();
+        });
+
+        const episFiltrados = computed(() => {
+            return episDisponiveis.value.filter(e => {
+                const nomeOk = !filtroNome.value || e.nome.toLowerCase().includes(filtroNome.value.toLowerCase());
+                const tipoOk = !filtroTipo.value || e.tipo === filtroTipo.value;
+                const dispOk = !filtroDisponibilidade.value ||
+                    (filtroDisponibilidade.value === 'disponivel' && e.quantidade > 5) ||
+                    (filtroDisponibilidade.value === 'baixo' && e.quantidade <= 5);
+                return nomeOk && tipoOk && dispOk;
+            });
+        });
+
         const solicitacoes = ref([]);
         const solicitacoesAlunos = ref([]);
         const minhasEntregas = ref([]);
@@ -492,7 +550,6 @@ export default {
                 modalError.value = 'Quantidade inválida.';
                 return;
             }
-
             salvando.value = true;
             modalError.value = '';
             const hoje = new Date().toISOString().split('T')[0];
@@ -577,13 +634,9 @@ export default {
                 const emails = [...new Set(sf.map(s => s.funcionario?.email).filter(Boolean))];
                 let rolesMap = {};
                 if (emails.length > 0) {
-                    const { data: profs } = await supabase
-                        .from('profiles')
-                        .select('email, role')
-                        .in('email', emails);
+                    const { data: profs } = await supabase.from('profiles').select('email, role').in('email', emails);
                     if (profs) profs.forEach(p => { rolesMap[p.email] = p.role; });
                 }
-
                 sf.forEach(s => {
                     const r = rolesMap[s.funcionario?.email];
                     let tipo = 'Funcionário';
@@ -752,10 +805,7 @@ export default {
 
         async function devolverEpi(entrega) {
             await supabase.from('funcionario_has_epis')
-                .update({
-                    data_devolucao: new Date().toISOString().split('T')[0],
-                    status: 'devolvido'
-                })
+                .update({ data_devolucao: new Date().toISOString().split('T')[0], status: 'devolvido' })
                 .eq('id_entrega_func', entrega.id);
             await carregarEntregasFuncionario();
         }
@@ -797,7 +847,8 @@ export default {
         return {
             sidebarOpen, loading, role,
             tabAdmin, tabDocente, tabAluno,
-            epis, episDisponiveis, solicitacoes, solicitacoesAlunos, minhasEntregas,
+            epis, episDisponiveis, episFiltrados, solicitacoes, solicitacoesAlunos, minhasEntregas,
+            filtroNome, filtroTipo, filtroDisponibilidade, tiposDisponiveis,
             modalEpi, editandoEpi, formEpi, modalError, salvando,
             modalLote, formLote,
             formatDate, getBadgeStatus, formatStatus, getIcone,
@@ -1108,6 +1159,76 @@ export default {
     color: #b45309;
 }
 
+.filtros-bar {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.filtro-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    border: 1.5px solid #d0daf0;
+    border-radius: 10px;
+    padding: 0 1rem;
+    flex: 1;
+    min-width: 180px;
+    height: 2.8rem;
+    transition: border-color 0.2s ease;
+}
+
+.filtro-search:focus-within {
+    border-color: #243c75;
+}
+
+.filtro-search i {
+    color: #9aaac5;
+    font-size: 0.85rem;
+}
+
+.filtro-search input {
+    border: none;
+    outline: none;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    color: #1a2b5e;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+}
+
+.filtros-bar select {
+    height: 2.8rem;
+    padding: 0 1rem;
+    border: 1.5px solid #d0daf0;
+    border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    color: #1a2b5e;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    min-width: 160px;
+}
+
+.filtros-bar select:focus {
+    outline: none;
+    border-color: #243c75;
+}
+
+.filtro-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-family: 'Red Hat Display', sans-serif;
+    color: #9aaac5;
+    font-size: 0.95rem;
+    font-style: italic;
+    padding: 2.5rem;
+}
+
 .epis-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -1363,15 +1484,6 @@ export default {
     font-weight: 700;
 }
 
-.modal-confirm-text {
-    font-family: 'Red Hat Display', sans-serif;
-    color: #243c75;
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-    text-align: center;
-}
-
 .qtd-section {
     display: flex;
     flex-direction: column;
@@ -1458,6 +1570,14 @@ export default {
     .tabs {
         width: 100%;
         overflow-x: auto;
+    }
+
+    .filtros-bar {
+        flex-direction: column;
+    }
+
+    .filtros-bar select {
+        min-width: 100%;
     }
 }
 </style>
