@@ -19,41 +19,102 @@
         </section>
 
         <section class="cards-grid">
-            <div class="stat-card">
-                <div class="stat-head">
-                    <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-helmet-safety"></i></div>
-                    <span class="stat-trend"><i class="fa-solid fa-arrow-trend-up"></i> estoque</span>
+            <template v-if="role === 'admin'">
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-helmet-safety"></i></div>
+                        <span class="stat-trend">estoque</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.episEstoque }}</h2>
+                    <p class="stat-label">EPIs em estoque</p>
                 </div>
-                <h2 class="stat-number">{{ stats.episEstoque }}</h2>
-                <p class="stat-label">EPIs em estoque</p>
-            </div>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span class="stat-trend trend-amber">ativos</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.emprestimosAtivos }}</h2>
+                    <p class="stat-label">Empréstimos ativos</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                        <span class="stat-trend trend-green">total</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.totalEntregas }}</h2>
+                    <p class="stat-label">Total de entregas</p>
+                </div>
+                <div class="stat-card stat-alert">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <span class="stat-trend trend-red">atenção</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.estoqueCritico }}</h2>
+                    <p class="stat-label">Estoque crítico</p>
+                </div>
+            </template>
 
-            <div class="stat-card">
-                <div class="stat-head">
-                    <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                    <span class="stat-trend trend-amber">ativos</span>
+            <template v-else-if="role === 'docente'">
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-helmet-safety"></i></div>
+                        <span class="stat-trend">comigo</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.episComigo }}</h2>
+                    <p class="stat-label">EPIs com você</p>
                 </div>
-                <h2 class="stat-number">{{ stats.emprestimosAtivos }}</h2>
-                <p class="stat-label">Empréstimos ativos</p>
-            </div>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span class="stat-trend trend-amber">pendentes</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.solicitacoesPendentes }}</h2>
+                    <p class="stat-label">Solicitações dos alunos</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
+                        <span class="stat-trend trend-green">aprovadas</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.totalEntregas }}</h2>
+                    <p class="stat-label">Entregas aprovadas</p>
+                </div>
+                <div class="stat-card stat-alert">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <span class="stat-trend trend-red">atenção</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.estoqueCritico }}</h2>
+                    <p class="stat-label">Estoque crítico</p>
+                </div>
+            </template>
 
-            <div class="stat-card">
-                <div class="stat-head">
-                    <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
-                    <span class="stat-trend trend-green">total</span>
+            <template v-else-if="role === 'aluno'">
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-helmet-safety"></i></div>
+                        <span class="stat-trend">comigo</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.episComigo }}</h2>
+                    <p class="stat-label">EPIs com você</p>
                 </div>
-                <h2 class="stat-number">{{ stats.totalEntregas }}</h2>
-                <p class="stat-label">Total de entregas</p>
-            </div>
-
-            <div class="stat-card stat-alert">
-                <div class="stat-head">
-                    <div class="stat-icon stat-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <span class="stat-trend trend-red">atenção</span>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span class="stat-trend trend-amber">pendentes</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.solicitacoesPendentes }}</h2>
+                    <p class="stat-label">Solicitações pendentes</p>
                 </div>
-                <h2 class="stat-number">{{ stats.estoqueCritico }}</h2>
-                <p class="stat-label">Estoque crítico</p>
-            </div>
+                <div class="stat-card stat-alert">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <span class="stat-trend trend-red">atenção</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.avisosValidade }}</h2>
+                    <p class="stat-label">Avisos de validade</p>
+                </div>
+            </template>
         </section>
 
         <section class="actions-section">
@@ -66,7 +127,8 @@
                     <div class="action-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
                     <div class="action-text">
                         <span class="action-title">{{ role === 'admin' ? 'Gerenciar estoque' : 'Ver EPIs' }}</span>
-                        <span class="action-desc">{{ role === 'admin' ? 'CRUD de equipamentos' : 'Catálogo disponível' }}</span>
+                        <span class="action-desc">{{ role === 'admin' ? 'CRUD de equipamentos' : 'Catálogo disponível'
+                            }}</span>
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
@@ -76,6 +138,15 @@
                     <div class="action-text">
                         <span class="action-title">Solicitações</span>
                         <span class="action-desc">Aprovar pendências</span>
+                    </div>
+                    <i class="fa-solid fa-arrow-right action-arrow"></i>
+                </router-link>
+
+                <router-link v-if="role === 'admin'" to="/cadastro-funcionario" class="action-card">
+                    <div class="action-icon"><i class="fa-solid fa-user-plus"></i></div>
+                    <div class="action-text">
+                        <span class="action-title">Cadastrar funcionário</span>
+                        <span class="action-desc">Adicionar docente ou funcionário</span>
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
@@ -97,6 +168,28 @@
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
+            </div>
+        </section>
+
+        <section v-if="role === 'aluno' || role === 'docente'" class="atividade-section">
+            <div class="section-head">
+                <h2 class="section-title">Atividade recente</h2>
+                <span class="section-sub">Suas últimas solicitações</span>
+            </div>
+            <div class="atividade-lista">
+                <div v-if="atividadeRecente.length === 0" class="atividade-empty">
+                    Nenhuma atividade recente.
+                </div>
+                <div v-for="a in atividadeRecente" :key="a.id" class="atividade-item">
+                    <div class="atividade-icon">
+                        <i class="fa-solid fa-helmet-safety"></i>
+                    </div>
+                    <div class="atividade-info">
+                        <span class="atividade-nome">{{ a.epi_nome }}</span>
+                        <span class="atividade-data">{{ formatDate(a.data) }}</span>
+                    </div>
+                    <span :class="['badge', getBadge(a.status)]">{{ formatStatus(a.status) }}</span>
+                </div>
             </div>
         </section>
     </main>
@@ -125,7 +218,34 @@ export default {
         const firstName = computed(() => userName.value.split(' ')[0] || 'Usuário');
         const roleLabel = computed(() => ({ aluno: 'Aluno', docente: 'Docente', admin: 'Administrador' })[role.value] || '—');
 
-        const stats = ref({ episEstoque: 0, emprestimosAtivos: 0, totalEntregas: 0, estoqueCritico: 0 });
+        const stats = ref({
+            episEstoque: 0,
+            emprestimosAtivos: 0,
+            totalEntregas: 0,
+            estoqueCritico: 0,
+            episComigo: 0,
+            solicitacoesPendentes: 0,
+            avisosValidade: 0
+        });
+
+        const atividadeRecente = ref([]);
+
+        function formatDate(d) {
+            if (!d) return '—';
+            const [y, m, day] = d.split('-');
+            return `${day}/${m}/${y}`;
+        }
+
+        function getBadge(s) {
+            if (s === 'aprovado' || s === 'entregue' || s === 'devolvido') return 'badge-green';
+            if (s === 'rejeitado') return 'badge-red';
+            return 'badge-yellow';
+        }
+
+        function formatStatus(s) {
+            if (!s) return 'Pendente';
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
 
         onMounted(async () => {
             const { data } = await supabase.auth.getSession();
@@ -142,27 +262,91 @@ export default {
             if (profile?.full_name) userName.value = profile.full_name;
             if (profile?.role) role.value = profile.role;
 
-            const { data: epis } = await supabase.from('epis').select('quantidade, disponivel');
-            if (epis) {
-                stats.value.episEstoque = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
-                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+            if (role.value === 'admin') {
+                const { data: epis } = await supabase.from('epis').select('quantidade, disponivel');
+                if (epis) {
+                    stats.value.episEstoque = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                    stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+                }
+                const { data: funcEntregas } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_devolucao');
+                const { data: alunoEntregas } = await supabase.from('aluno_has_epis').select('id_entrega_aluno');
+                if (funcEntregas) {
+                    stats.value.emprestimosAtivos = funcEntregas.filter(e => !e.data_devolucao).length;
+                    stats.value.totalEntregas += funcEntregas.length;
+                }
+                if (alunoEntregas) stats.value.totalEntregas += alunoEntregas.length;
             }
 
-            const { data: funcEntregas } = await supabase
-                .from('funcionario_has_epis')
-                .select('id_entrega_func, data_devolucao');
-            const { data: alunoEntregas } = await supabase
-                .from('aluno_has_epis')
-                .select('id_entrega_aluno');
+            if (role.value === 'docente') {
+                const { data: func } = await supabase.from('funcionario').select('idfuncionario').eq('email', userEmail.value).single();
+                if (func) {
+                    const { data: minhas } = await supabase
+                        .from('funcionario_has_epis')
+                        .select('status, epis(nome), data_entrega')
+                        .eq('funcionario_id', func.idfuncionario)
+                        .order('data_entrega', { ascending: false })
+                        .limit(5);
+                    if (minhas) {
+                        stats.value.episComigo = minhas.filter(e => e.status === 'aprovado').length;
+                        atividadeRecente.value = minhas.map((e, i) => ({
+                            id: i,
+                            epi_nome: e.epis?.nome,
+                            data: e.data_entrega,
+                            status: e.status
+                        }));
+                    }
+                }
+                const { data: solPendentes } = await supabase
+                    .from('aluno_has_epis')
+                    .select('id_entrega_aluno')
+                    .eq('status', 'pendente');
+                if (solPendentes) stats.value.solicitacoesPendentes = solPendentes.length;
 
-            if (funcEntregas) {
-                stats.value.emprestimosAtivos = funcEntregas.filter(e => !e.data_devolucao).length;
-                stats.value.totalEntregas += funcEntregas.length;
+                const { data: epis } = await supabase.from('epis').select('quantidade');
+                if (epis) stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+
+                const { data: funcEntregas } = await supabase
+                    .from('funcionario_has_epis')
+                    .select('id_entrega_func')
+                    .eq('status', 'aprovado');
+                if (funcEntregas) stats.value.totalEntregas = funcEntregas.length;
             }
-            if (alunoEntregas) stats.value.totalEntregas += alunoEntregas.length;
+
+            if (role.value === 'aluno') {
+                const { data: aluno } = await supabase.from('aluno').select('idaluno').eq('auth_id', user.id).single();
+                if (aluno) {
+                    const { data: minhas } = await supabase
+                        .from('aluno_has_epis')
+                        .select('id_entrega_aluno, status, epis(nome, data_validade), data_entrega')
+                        .eq('aluno_id', aluno.idaluno)
+                        .order('data_entrega', { ascending: false })
+                        .limit(5);
+                    if (minhas) {
+                        stats.value.episComigo = minhas.filter(e => e.status === 'aprovado').length;
+                        stats.value.solicitacoesPendentes = minhas.filter(e => e.status === 'pendente').length;
+                        const hoje = new Date();
+                        stats.value.avisosValidade = minhas.filter(e => {
+                            if (!e.epis?.data_validade) return false;
+                            const validade = new Date(e.epis.data_validade);
+                            const diff = (validade - hoje) / (1000 * 60 * 60 * 24);
+                            return diff >= 0 && diff <= 30;
+                        }).length;
+                        atividadeRecente.value = minhas.map(e => ({
+                            id: e.id_entrega_aluno,
+                            epi_nome: e.epis?.nome,
+                            data: e.data_entrega,
+                            status: e.status
+                        }));
+                    }
+                }
+            }
         });
 
-        return { userName, firstName, userEmail, role, roleLabel, sidebarOpen, stats, today };
+        return {
+            userName, firstName, userEmail, role, roleLabel,
+            sidebarOpen, stats, today,
+            atividadeRecente, formatDate, getBadge, formatStatus
+        };
     }
 }
 </script>
@@ -239,9 +423,20 @@ export default {
     letter-spacing: 0.1em;
 }
 
-.pill-aluno { background: #dcfce7; color: #15803d; }
-.pill-docente { background: #fef3c7; color: #b45309; }
-.pill-admin { background: #fee2e2; color: #b91c1c; }
+.pill-aluno {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.pill-docente {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.pill-admin {
+    background: #fee2e2;
+    color: #b91c1c;
+}
 
 .hero-email {
     font-family: 'Red Hat Display', sans-serif;
@@ -334,10 +529,25 @@ export default {
     font-size: 1.15rem;
 }
 
-.stat-icon-blue { background: #e8eeff; color: #243c75; }
-.stat-icon-amber { background: #fef3c7; color: #b45309; }
-.stat-icon-green { background: #dcfce7; color: #15803d; }
-.stat-icon-red { background: #fee2e2; color: #b91c1c; }
+.stat-icon-blue {
+    background: #e8eeff;
+    color: #243c75;
+}
+
+.stat-icon-amber {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.stat-icon-green {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.stat-icon-red {
+    background: #fee2e2;
+    color: #b91c1c;
+}
 
 .stat-trend {
     font-family: 'Red Hat Display', sans-serif;
@@ -348,9 +558,17 @@ export default {
     letter-spacing: 0.08em;
 }
 
-.trend-amber { color: #b45309; }
-.trend-green { color: #15803d; }
-.trend-red { color: #b91c1c; }
+.trend-amber {
+    color: #b45309;
+}
+
+.trend-green {
+    color: #15803d;
+}
+
+.trend-red {
+    color: #b91c1c;
+}
 
 .stat-number {
     font-family: 'Archivo Black', sans-serif;
@@ -360,7 +578,9 @@ export default {
     line-height: 1;
 }
 
-.stat-alert .stat-number { color: #b91c1c; }
+.stat-alert .stat-number {
+    color: #b91c1c;
+}
 
 .stat-label {
     font-family: 'Red Hat Display', sans-serif;
@@ -465,23 +685,157 @@ export default {
     transform: translateX(4px);
 }
 
+.atividade-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.atividade-lista {
+    background: #fff;
+    border: 1px solid #d0daf0;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(36, 60, 117, 0.06);
+}
+
+.atividade-empty {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #9aaac5;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 2.5rem;
+    font-style: italic;
+}
+
+.atividade-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #edf0f8;
+    transition: background 0.2s ease;
+}
+
+.atividade-item:last-child {
+    border-bottom: none;
+}
+
+.atividade-item:hover {
+    background: #f8f9ff;
+}
+
+.atividade-icon {
+    width: 2.2rem;
+    height: 2.2rem;
+    background: #e8eeff;
+    color: #243c75;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.atividade-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    flex: 1;
+}
+
+.atividade-nome {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #1a2b5e;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.atividade-data {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #9aaac5;
+    font-size: 0.8rem;
+}
+
+.badge {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.badge-green {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge-red {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge-yellow {
+    background: #fef3c7;
+    color: #b45309;
+}
+
 @media (max-width: 1024px) {
-    .cards-grid { grid-template-columns: repeat(2, 1fr); }
-    .hero { flex-direction: column; align-items: flex-start; }
-    .hero-date { align-self: stretch; align-items: flex-start; }
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .hero-date {
+        align-self: stretch;
+        align-items: flex-start;
+    }
 }
 
 @media (max-width: 768px) {
-    .main { padding: 10vh 1.25rem 3rem 1.25rem; gap: 2rem; }
-    .hero { padding: 1.5rem; }
-    .username { font-size: 2.5rem; }
-    .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-    .stat-card { padding: 1.25rem; }
-    .stat-number { font-size: 2.25rem; }
-    .actions-grid { grid-template-columns: 1fr; }
+    .main {
+        padding: 10vh 1.25rem 3rem 1.25rem;
+        gap: 2rem;
+    }
+
+    .hero {
+        padding: 1.5rem;
+    }
+
+    .username {
+        font-size: 2.5rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .stat-number {
+        font-size: 2.25rem;
+    }
+
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
-    .cards-grid { grid-template-columns: 1fr; }
+    .cards-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
