@@ -95,14 +95,15 @@
                                     <td>{{ s.epi_nome }}</td>
                                     <td>{{ formatDate(s.data) }}</td>
                                     <td>
-                                        <span :class="['badge', getBadgeStatus(s.status)]">{{ s.status }}</span>
+                                        <span :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status)
+                                            }}</span>
                                     </td>
                                     <td class="actions-cell">
-                                        <button v-if="s.status === 'Pendente'" class="btn-icon btn-green"
+                                        <button v-if="s.status === 'pendente'" class="btn-icon btn-green"
                                             @click="aprovarSolicitacao(s)" title="Aprovar">
                                             <i class="fa-solid fa-check"></i>
                                         </button>
-                                        <button v-if="s.status === 'Pendente'" class="btn-icon btn-danger"
+                                        <button v-if="s.status === 'pendente'" class="btn-icon btn-danger"
                                             @click="rejeitarSolicitacao(s)" title="Rejeitar">
                                             <i class="fa-solid fa-xmark"></i>
                                         </button>
@@ -140,13 +141,23 @@
                     </div>
                     <div class="epis-grid">
                         <div class="epi-card" v-for="epi in episDisponiveis" :key="epi.idepis">
-                            <div class="epi-card-icon"><i class="fa-solid fa-helmet-safety"></i></div>
-                            <div class="epi-card-info">
+                            <div class="epi-card-top">
+                                <div class="epi-card-icon"><i :class="getIcone(epi)"></i></div>
+                                <span :class="['stock-chip', epi.quantidade <= 5 ? 'chip-low' : 'chip-ok']">
+                                    {{ epi.quantidade }} un.
+                                </span>
+                            </div>
+                            <div class="epi-card-body">
                                 <h3>{{ epi.nome }}</h3>
                                 <p>{{ epi.tipo }}</p>
-                                <span class="epi-qtd">{{ epi.quantidade }} unidades</span>
                             </div>
-                            <button class="btn-sm" @click="abrirModalSolicitar(epi, 'docente')">Solicitar</button>
+                            <div class="epi-stock-bar">
+                                <div class="epi-stock-fill"
+                                    :style="{ width: Math.min(100, (epi.quantidade / 100) * 100) + '%' }"></div>
+                            </div>
+                            <button class="btn-sm btn-full" @click="abrirModalSolicitar(epi, 'docente')">
+                                <i class="fa-solid fa-hand"></i> Solicitar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -169,13 +180,14 @@
                                     <td>{{ s.solicitante }}</td>
                                     <td>{{ s.epi_nome }}</td>
                                     <td>{{ formatDate(s.data) }}</td>
-                                    <td><span :class="['badge', getBadgeStatus(s.status)]">{{ s.status }}</span></td>
+                                    <td><span :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status)
+                                            }}</span></td>
                                     <td class="actions-cell">
-                                        <button v-if="s.status === 'Pendente'" class="btn-icon btn-green"
+                                        <button v-if="s.status === 'pendente'" class="btn-icon btn-green"
                                             @click="aprovarSolicitacao(s)">
                                             <i class="fa-solid fa-check"></i>
                                         </button>
-                                        <button v-if="s.status === 'Pendente'" class="btn-icon btn-danger"
+                                        <button v-if="s.status === 'pendente'" class="btn-icon btn-danger"
                                             @click="rejeitarSolicitacao(s)">
                                             <i class="fa-solid fa-xmark"></i>
                                         </button>
@@ -197,6 +209,7 @@
                                 <tr>
                                     <th>EPI</th>
                                     <th>Data entrega</th>
+                                    <th>Status</th>
                                     <th>Devolução</th>
                                     <th>Ações</th>
                                 </tr>
@@ -205,17 +218,18 @@
                                 <tr v-for="e in minhasEntregas" :key="e.id">
                                     <td>{{ e.epi_nome }}</td>
                                     <td>{{ formatDate(e.data_entrega) }}</td>
+                                    <td><span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status)
+                                            }}</span></td>
                                     <td>{{ e.data_devolucao ? formatDate(e.data_devolucao) : '—' }}</td>
                                     <td>
-                                        <button v-if="!e.data_devolucao" class="btn-sm btn-outline"
-                                            @click="devolverEpi(e)">
+                                        <button v-if="!e.data_devolucao && e.status === 'aprovado'"
+                                            class="btn-sm btn-outline" @click="devolverEpi(e)">
                                             Devolver
                                         </button>
-                                        <span v-else class="badge badge-green">Devolvido</span>
                                     </td>
                                 </tr>
                                 <tr v-if="minhasEntregas.length === 0">
-                                    <td colspan="4" class="empty-row">Nenhuma entrega registrada.</td>
+                                    <td colspan="5" class="empty-row">Nenhuma entrega registrada.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -238,7 +252,7 @@
                     <div class="epis-grid">
                         <div class="epi-card" v-for="epi in episDisponiveis" :key="epi.idepis">
                             <div class="epi-card-top">
-                                <div class="epi-card-icon"><i class="fa-solid fa-helmet-safety"></i></div>
+                                <div class="epi-card-icon"><i :class="getIcone(epi)"></i></div>
                                 <span :class="['stock-chip', epi.quantidade <= 5 ? 'chip-low' : 'chip-ok']">
                                     {{ epi.quantidade }} un.
                                 </span>
@@ -251,8 +265,7 @@
                                 <div class="epi-stock-fill"
                                     :style="{ width: Math.min(100, (epi.quantidade / 100) * 100) + '%' }"></div>
                             </div>
-                            <button class="btn-sm btn-full"
-                                @click="abrirModalSolicitar(epi, role === 'aluno' ? 'aluno' : 'docente')">
+                            <button class="btn-sm btn-full" @click="abrirModalSolicitar(epi, 'aluno')">
                                 <i class="fa-solid fa-hand"></i> Solicitar
                             </button>
                         </div>
@@ -260,14 +273,15 @@
                 </div>
 
                 <div v-if="tabAluno === 'minhas'">
-                    <h2 class="section-title">Meus EPIs</h2>
+                    <h2 class="section-title">Minhas solicitações</h2>
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>EPI</th>
                                     <th>Tipo</th>
-                                    <th>Data de entrega</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -275,9 +289,11 @@
                                     <td>{{ e.epi_nome }}</td>
                                     <td>{{ e.epi_tipo }}</td>
                                     <td>{{ formatDate(e.data_entrega) }}</td>
+                                    <td><span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status)
+                                            }}</span></td>
                                 </tr>
                                 <tr v-if="minhasEntregas.length === 0">
-                                    <td colspan="3" class="empty-row">Nenhum EPI recebido ainda.</td>
+                                    <td colspan="4" class="empty-row">Nenhuma solicitação ainda.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -346,7 +362,7 @@
         <div class="modal-overlay" v-if="modalSolicitar" @click.self="modalSolicitar = false">
             <div class="modal">
                 <div class="modal-epi-header">
-                    <div class="modal-epi-icon"><i class="fa-solid fa-helmet-safety"></i></div>
+                    <div class="modal-epi-icon"><i :class="getIcone(epiSelecionado)"></i></div>
                     <div>
                         <h2 class="modal-title">{{ epiSelecionado?.nome }}</h2>
                         <p class="modal-epi-tipo">{{ epiSelecionado?.tipo }}</p>
@@ -370,7 +386,20 @@
                         <span class="modal-info-value">{{ dataHoje }}</span>
                     </div>
                 </div>
-                <p class="modal-confirm-text">Confirmar solicitação deste EPI?</p>
+                <div class="qtd-section">
+                    <label class="qtd-label">Quantidade desejada</label>
+                    <div class="qtd-control">
+                        <button class="qtd-btn" @click="decQtd" :disabled="qtdSolicitacao <= 1">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <input v-model.number="qtdSolicitacao" type="number" min="1"
+                            :max="epiSelecionado?.quantidade || 1" class="qtd-input">
+                        <button class="qtd-btn" @click="incQtd"
+                            :disabled="qtdSolicitacao >= (epiSelecionado?.quantidade || 1)">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
                 <p v-if="modalError" class="error-msg">{{ modalError }}</p>
                 <div class="modal-actions">
                     <button class="btn-outline" @click="modalSolicitar = false">Cancelar</button>
@@ -425,36 +454,69 @@ export default {
         const modalSolicitar = ref(false);
         const epiSelecionado = ref(null);
         const tipoSolicitante = ref('');
+        const qtdSolicitacao = ref(1);
         const dataHoje = new Date().toLocaleDateString('pt-BR');
+
+        function getIcone(epi) {
+            if (!epi) return 'fa-solid fa-helmet-safety';
+            const texto = `${epi.tipo || ''} ${epi.nome || ''}`.toLowerCase();
+            if (texto.includes('cabeça') || texto.includes('capacete')) return 'fa-solid fa-helmet-safety';
+            if (texto.includes('pé') || texto.includes('pes') || texto.includes('bota') || texto.includes('calçado')) return 'fa-solid fa-shoe-prints';
+            if (texto.includes('mão') || texto.includes('mao') || texto.includes('luva')) return 'fa-solid fa-mitten';
+            if (texto.includes('respirat') || texto.includes('máscara') || texto.includes('mascara') || texto.includes('pff')) return 'fa-solid fa-mask-face';
+            if (texto.includes('visual') || texto.includes('óculos') || texto.includes('oculos')) return 'fa-solid fa-glasses';
+            if (texto.includes('auditiv') || texto.includes('auricular') || texto.includes('ouvido')) return 'fa-solid fa-ear-listen';
+            if (texto.includes('corpo') || texto.includes('avental') || texto.includes('macacão') || texto.includes('macacao')) return 'fa-solid fa-shirt';
+            return 'fa-solid fa-helmet-safety';
+        }
 
         function abrirModalSolicitar(epi, tipo) {
             epiSelecionado.value = epi;
             tipoSolicitante.value = tipo;
+            qtdSolicitacao.value = 1;
             modalError.value = '';
             modalSolicitar.value = true;
         }
 
+        function incQtd() {
+            if (qtdSolicitacao.value < (epiSelecionado.value?.quantidade || 1)) qtdSolicitacao.value++;
+        }
+
+        function decQtd() {
+            if (qtdSolicitacao.value > 1) qtdSolicitacao.value--;
+        }
+
         async function confirmarSolicitacao() {
+            const qtd = parseInt(qtdSolicitacao.value) || 1;
+            if (qtd < 1 || qtd > (epiSelecionado.value?.quantidade || 0)) {
+                modalError.value = 'Quantidade inválida.';
+                return;
+            }
+
             salvando.value = true;
             modalError.value = '';
             const hoje = new Date().toISOString().split('T')[0];
 
             if (tipoSolicitante.value === 'aluno') {
                 if (!alunoId.value) { modalError.value = 'Aluno não identificado.'; salvando.value = false; return; }
-                const { error } = await supabase.from('aluno_has_epis').insert({
+                const inserts = Array.from({ length: qtd }, () => ({
                     aluno_id: alunoId.value,
                     epis_id: epiSelecionado.value.idepis,
-                    data_entrega: hoje
-                });
+                    data_entrega: hoje,
+                    status: 'pendente'
+                }));
+                const { error } = await supabase.from('aluno_has_epis').insert(inserts);
                 if (error) { modalError.value = 'Erro ao solicitar.'; salvando.value = false; return; }
                 await carregarEntregasAluno();
             } else {
                 if (!funcionarioId.value) { modalError.value = 'Funcionário não identificado.'; salvando.value = false; return; }
-                const { error } = await supabase.from('funcionario_has_epis').insert({
+                const inserts = Array.from({ length: qtd }, () => ({
                     funcionario_id: funcionarioId.value,
                     epis_id: epiSelecionado.value.idepis,
-                    data_entrega: hoje
-                });
+                    data_entrega: hoje,
+                    status: 'pendente'
+                }));
+                const { error } = await supabase.from('funcionario_has_epis').insert(inserts);
                 if (error) { modalError.value = 'Erro ao solicitar.'; salvando.value = false; return; }
                 await carregarEntregasFuncionario();
             }
@@ -473,9 +535,14 @@ export default {
         }
 
         function getBadgeStatus(s) {
-            if (s === 'Aprovado') return 'badge-green';
-            if (s === 'Rejeitado') return 'badge-red';
+            if (s === 'aprovado' || s === 'entregue' || s === 'devolvido') return 'badge-green';
+            if (s === 'rejeitado') return 'badge-red';
             return 'badge-yellow';
+        }
+
+        function formatStatus(s) {
+            if (!s) return 'Pendente';
+            return s.charAt(0).toUpperCase() + s.slice(1);
         }
 
         async function carregarEpis() {
@@ -486,32 +553,55 @@ export default {
         async function carregarSolicitacoes() {
             const { data: sa } = await supabase
                 .from('aluno_has_epis')
-                .select('id_entrega_aluno, data_entrega, aluno(nome, sobrenome), epis(nome)');
+                .select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome)')
+                .order('data_entrega', { ascending: false });
+
             const { data: sf } = await supabase
                 .from('funcionario_has_epis')
-                .select('id_entrega_func, data_entrega, funcionario(nome, sobrenome), epis(nome)');
+                .select('id_entrega_func, data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome)')
+                .order('data_entrega', { ascending: false });
 
             const lista = [];
             if (sa) sa.forEach(s => lista.push({
                 id: `a-${s.id_entrega_aluno}`,
-                solicitante: `${s.aluno?.nome} ${s.aluno?.sobrenome}`,
+                solicitante: `${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim(),
                 tipo_solicitante: 'Aluno',
                 epi_nome: s.epis?.nome,
                 data: s.data_entrega,
-                status: 'Aprovado',
+                status: s.status || 'pendente',
                 origem: 'aluno',
                 origem_id: s.id_entrega_aluno
             }));
-            if (sf) sf.forEach(s => lista.push({
-                id: `f-${s.id_entrega_func}`,
-                solicitante: `${s.funcionario?.nome} ${s.funcionario?.sobrenome}`,
-                tipo_solicitante: 'Funcionário',
-                epi_nome: s.epis?.nome,
-                data: s.data_entrega,
-                status: s.data_devolucao ? 'Devolvido' : 'Aprovado',
-                origem: 'funcionario',
-                origem_id: s.id_entrega_func
-            }));
+
+            if (sf) {
+                const emails = [...new Set(sf.map(s => s.funcionario?.email).filter(Boolean))];
+                let rolesMap = {};
+                if (emails.length > 0) {
+                    const { data: profs } = await supabase
+                        .from('profiles')
+                        .select('email, role')
+                        .in('email', emails);
+                    if (profs) profs.forEach(p => { rolesMap[p.email] = p.role; });
+                }
+
+                sf.forEach(s => {
+                    const r = rolesMap[s.funcionario?.email];
+                    let tipo = 'Funcionário';
+                    if (r === 'docente') tipo = 'Docente';
+                    else if (r === 'admin') tipo = 'Admin';
+                    lista.push({
+                        id: `f-${s.id_entrega_func}`,
+                        solicitante: `${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim(),
+                        tipo_solicitante: tipo,
+                        epi_nome: s.epis?.nome,
+                        data: s.data_entrega,
+                        status: s.status || 'pendente',
+                        origem: 'funcionario',
+                        origem_id: s.id_entrega_func
+                    });
+                });
+            }
+
             solicitacoes.value = lista;
         }
 
@@ -519,13 +609,15 @@ export default {
             if (!alunoId.value) return;
             const { data } = await supabase
                 .from('aluno_has_epis')
-                .select('id_entrega_aluno, data_entrega, epis(nome, tipo)')
-                .eq('aluno_id', alunoId.value);
+                .select('id_entrega_aluno, data_entrega, status, epis(nome, tipo)')
+                .eq('aluno_id', alunoId.value)
+                .order('data_entrega', { ascending: false });
             if (data) minhasEntregas.value = data.map(e => ({
                 id: e.id_entrega_aluno,
                 epi_nome: e.epis?.nome,
                 epi_tipo: e.epis?.tipo,
-                data_entrega: e.data_entrega
+                data_entrega: e.data_entrega,
+                status: e.status || 'pendente'
             }));
         }
 
@@ -533,26 +625,30 @@ export default {
             if (!funcionarioId.value) return;
             const { data } = await supabase
                 .from('funcionario_has_epis')
-                .select('id_entrega_func, data_entrega, data_devolucao, epis(nome)')
-                .eq('funcionario_id', funcionarioId.value);
+                .select('id_entrega_func, data_entrega, data_devolucao, status, epis(nome)')
+                .eq('funcionario_id', funcionarioId.value)
+                .order('data_entrega', { ascending: false });
             if (data) minhasEntregas.value = data.map(e => ({
                 id: e.id_entrega_func,
                 epi_nome: e.epis?.nome,
                 data_entrega: e.data_entrega,
-                data_devolucao: e.data_devolucao
+                data_devolucao: e.data_devolucao,
+                status: e.status || 'pendente'
             }));
         }
 
         async function carregarSolicitacoesAlunos() {
             const { data } = await supabase
                 .from('aluno_has_epis')
-                .select('id_entrega_aluno, data_entrega, aluno(nome, sobrenome), epis(nome)');
+                .select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome)')
+                .order('data_entrega', { ascending: false });
             if (data) solicitacoesAlunos.value = data.map(s => ({
                 id: `a-${s.id_entrega_aluno}`,
-                solicitante: `${s.aluno?.nome} ${s.aluno?.sobrenome}`,
+                solicitante: `${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim(),
                 epi_nome: s.epis?.nome,
                 data: s.data_entrega,
-                status: 'Aprovado',
+                status: s.status || 'pendente',
+                origem: 'aluno',
                 origem_id: s.id_entrega_aluno
             }));
         }
@@ -610,16 +706,21 @@ export default {
         }
 
         async function aprovarSolicitacao(s) {
-            alert(`Solicitação de ${s.solicitante} aprovada.`);
+            const tabela = s.origem === 'aluno' ? 'aluno_has_epis' : 'funcionario_has_epis';
+            const idCol = s.origem === 'aluno' ? 'id_entrega_aluno' : 'id_entrega_func';
+            const { error } = await supabase.from(tabela).update({ status: 'aprovado' }).eq(idCol, s.origem_id);
+            if (error) { alert('Erro ao aprovar solicitação.'); return; }
+            if (role.value === 'admin') await carregarSolicitacoes();
+            if (role.value === 'docente') await carregarSolicitacoesAlunos();
         }
 
         async function rejeitarSolicitacao(s) {
-            if (s.origem === 'aluno') {
-                await supabase.from('aluno_has_epis').delete().eq('id_entrega_aluno', s.origem_id);
-            } else {
-                await supabase.from('funcionario_has_epis').delete().eq('id_entrega_func', s.origem_id);
-            }
-            await carregarSolicitacoes();
+            const tabela = s.origem === 'aluno' ? 'aluno_has_epis' : 'funcionario_has_epis';
+            const idCol = s.origem === 'aluno' ? 'id_entrega_aluno' : 'id_entrega_func';
+            const { error } = await supabase.from(tabela).update({ status: 'rejeitado' }).eq(idCol, s.origem_id);
+            if (error) { alert('Erro ao rejeitar solicitação.'); return; }
+            if (role.value === 'admin') await carregarSolicitacoes();
+            if (role.value === 'docente') await carregarSolicitacoesAlunos();
         }
 
         function abrirModalSolicitarLote() {
@@ -635,7 +736,12 @@ export default {
             salvando.value = true;
             const inserts = [];
             for (let i = 0; i < formLote.value.quantidade; i++) {
-                inserts.push({ funcionario_id: funcionarioId.value, epis_id: formLote.value.epi_id, data_entrega: new Date().toISOString().split('T')[0] });
+                inserts.push({
+                    funcionario_id: funcionarioId.value,
+                    epis_id: formLote.value.epi_id,
+                    data_entrega: new Date().toISOString().split('T')[0],
+                    status: 'pendente'
+                });
             }
             const { error } = await supabase.from('funcionario_has_epis').insert(inserts);
             salvando.value = false;
@@ -644,31 +750,14 @@ export default {
             modalLote.value = false;
         }
 
-        async function solicitarEpi(epi) {
-            if (!funcionarioId.value) return;
-            const { error } = await supabase.from('funcionario_has_epis').insert({
-                funcionario_id: funcionarioId.value,
-                epis_id: epi.idepis,
-                data_entrega: new Date().toISOString().split('T')[0]
-            });
-            if (!error) { alert(`${epi.nome} solicitado com sucesso!`); await carregarEntregasFuncionario(); }
-        }
-
         async function devolverEpi(entrega) {
             await supabase.from('funcionario_has_epis')
-                .update({ data_devolucao: new Date().toISOString().split('T')[0] })
+                .update({
+                    data_devolucao: new Date().toISOString().split('T')[0],
+                    status: 'devolvido'
+                })
                 .eq('id_entrega_func', entrega.id);
             await carregarEntregasFuncionario();
-        }
-
-        async function solicitarEpiAluno(epi) {
-            if (!alunoId.value) return;
-            const { error } = await supabase.from('aluno_has_epis').insert({
-                aluno_id: alunoId.value,
-                epis_id: epi.idepis,
-                data_entrega: new Date().toISOString().split('T')[0]
-            });
-            if (!error) { alert(`${epi.nome} solicitado com sucesso!`); await carregarEntregasAluno(); }
         }
 
         onMounted(async () => {
@@ -684,6 +773,8 @@ export default {
             await carregarEpis();
 
             if (role.value === 'admin') {
+                const { data: func } = await supabase.from('funcionario').select('idfuncionario').eq('email', userEmail.value).single();
+                if (func) funcionarioId.value = func.idfuncionario;
                 await carregarSolicitacoes();
             }
 
@@ -709,13 +800,12 @@ export default {
             epis, episDisponiveis, solicitacoes, solicitacoesAlunos, minhasEntregas,
             modalEpi, editandoEpi, formEpi, modalError, salvando,
             modalLote, formLote,
-            formatDate, getBadgeStatus,
+            formatDate, getBadgeStatus, formatStatus, getIcone,
             abrirModalNovoEpi, abrirModalEditarEpi, salvarEpi, deletarEpi,
             aprovarSolicitacao, rejeitarSolicitacao,
-            modalSolicitar, epiSelecionado, dataHoje,
-            abrirModalSolicitar, confirmarSolicitacao,
-            abrirModalSolicitarLote, confirmarLote, solicitarEpi, devolverEpi,
-            solicitarEpiAluno
+            modalSolicitar, epiSelecionado, dataHoje, qtdSolicitacao,
+            abrirModalSolicitar, confirmarSolicitacao, incQtd, decQtd,
+            abrirModalSolicitarLote, confirmarLote, devolverEpi
         };
     }
 }
@@ -1280,6 +1370,69 @@ export default {
     font-weight: 600;
     margin: 0;
     text-align: center;
+}
+
+.qtd-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.qtd-label {
+    font-family: 'Anton', sans-serif;
+    color: #243c75;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.qtd-control {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.qtd-btn {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 10px;
+    border: 1.5px solid #243c75;
+    background: #fff;
+    color: #243c75;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.qtd-btn:hover:not(:disabled) {
+    background: #243c75;
+    color: #fff;
+}
+
+.qtd-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.qtd-input {
+    width: 4.5rem;
+    height: 2.6rem;
+    text-align: center;
+    border: 1.5px solid #d0daf0;
+    border-radius: 8px;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.1rem;
+    color: #243c75;
+    box-sizing: border-box;
+}
+
+.qtd-input:focus {
+    outline: none;
+    border-color: #243c75;
 }
 
 @media (max-width: 768px) {
