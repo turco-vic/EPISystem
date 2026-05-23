@@ -52,8 +52,8 @@
                 <div class="field field-full">
                     <label>Status</label>
                     <select v-model="form.status">
-                        <option value="ativo">Ativo</option>
-                        <option value="inativo">Inativo</option>
+                        <option value="Ativo">Ativo</option>
+                        <option value="Inativo">Inativo</option>
                     </select>
                 </div>
             </div>
@@ -69,6 +69,49 @@
             </div>
         </div>
 
+        <div class="lista-section">
+            <div class="lista-header">
+                <h2 class="section-title">Funcionários cadastrados</h2>
+                <span class="lista-count">{{ funcionarios.length }} registros</span>
+            </div>
+
+            <div v-if="loadingLista" class="loading">
+                <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+            </div>
+
+            <div class="table-wrapper" v-else>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Função</th>
+                            <th>Telefone</th>
+                            <th>Status</th>
+                            <th>Cadastro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="f in funcionarios" :key="f.idfuncionario">
+                            <td>{{ f.nome }} {{ f.sobrenome }}</td>
+                            <td>{{ f.email }}</td>
+                            <td>{{ f.funcao || '—' }}</td>
+                            <td>{{ f.telefone || '—' }}</td>
+                            <td>
+                                <span :class="['badge', f.status === 'Ativo' ? 'badge-green' : 'badge-red']">
+                                    {{ f.status || '—' }}
+                                </span>
+                            </td>
+                            <td>{{ f.role || 'docente' }}</td>
+                        </tr>
+                        <tr v-if="funcionarios.length === 0">
+                            <td colspan="6" class="empty-row">Nenhum funcionário cadastrado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 </template>
 
@@ -76,7 +119,7 @@
 import NavBar from "../components/Navbar.vue";
 import Sidebar from "../components/Sidebar.vue";
 import { useSupabase } from "../composables/useSupabase.js";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 export default {
     name: 'CadastroFuncionario',
@@ -88,6 +131,8 @@ export default {
         const errorMsg = ref('');
         const successMsg = ref('');
         const showSenha = ref(false);
+        const funcionarios = ref([]);
+        const loadingLista = ref(true);
 
         const form = ref({
             nome: '',
@@ -98,7 +143,7 @@ export default {
             funcao: '',
             data_nascimento: '',
             telefone: '',
-            status: 'ativo'
+            status: 'Ativo'
         });
 
         function formatCPF(e) {
@@ -117,9 +162,30 @@ export default {
         }
 
         function limparForm() {
-            form.value = { nome: '', sobrenome: '', cpf: '', email: '', senha: '', funcao: '', data_nascimento: '', telefone: '', status: 'ativo' };
+            form.value = { nome: '', sobrenome: '', cpf: '', email: '', senha: '', funcao: '', data_nascimento: '', telefone: '', status: 'Ativo' };
             errorMsg.value = '';
             successMsg.value = '';
+        }
+
+        async function carregarFuncionarios() {
+            loadingLista.value = true;
+            const { data } = await supabase
+                .from('funcionario')
+                .select('idfuncionario, nome, sobrenome, email, funcao, telefone, status')
+                .order('nome');
+            if (data) {
+                const emails = data.map(f => f.email).filter(Boolean);
+                let rolesMap = {};
+                if (emails.length > 0) {
+                    const { data: profs } = await supabase
+                        .from('profiles')
+                        .select('email, role')
+                        .in('email', emails);
+                    if (profs) profs.forEach(p => { rolesMap[p.email] = p.role; });
+                }
+                funcionarios.value = data.map(f => ({ ...f, role: rolesMap[f.email] || 'docente' }));
+            }
+            loadingLista.value = false;
         }
 
         async function cadastrar() {
@@ -184,10 +250,16 @@ export default {
 
             successMsg.value = `Funcionário ${form.value.nome} cadastrado com sucesso!`;
             limparForm();
+            await carregarFuncionarios();
         }
+
+        onMounted(async () => {
+            await carregarFuncionarios();
+        });
 
         return {
             sidebarOpen, form, salvando, errorMsg, successMsg, showSenha,
+            funcionarios, loadingLista,
             formatCPF, formatTelefone, limparForm, cadastrar
         };
     }
@@ -384,6 +456,112 @@ export default {
     margin: 0;
 }
 
+.lista-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.lista-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.lista-count {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.82rem;
+    color: #9aaac5;
+    background: #e8eeff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-weight: 600;
+}
+
+.loading {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #6b82b0;
+    font-size: 1rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.table-wrapper {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #d0daf0;
+    box-shadow: 0 4px 24px rgba(36, 60, 117, 0.08);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    font-family: 'Anton', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9aaac5;
+    background: #f8f9ff;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #e8edf8;
+}
+
+.table td {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.95rem;
+    color: #1a2b5e;
+    padding: 0.95rem 1.25rem;
+    border-bottom: 1px solid #edf0f8;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover td {
+    background: #f8f9ff;
+}
+
+.empty-row {
+    text-align: center;
+    color: #9aaac5 !important;
+    padding: 2.5rem !important;
+    font-style: italic;
+}
+
+.badge {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-block;
+}
+
+.badge-green {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge-red {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
 @media (max-width: 768px) {
     .main {
         padding: 10vh 1.25rem 3rem 1.25rem;
@@ -395,6 +573,12 @@ export default {
 
     .field-full {
         max-width: 100%;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
     }
 }
 </style>
