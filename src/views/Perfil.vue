@@ -33,6 +33,15 @@
                     <i class="fa-solid fa-calendar"></i>
                     <span>Desde {{ createdAt }}</span>
                 </div>
+
+                <div class="profile-actions">
+                    <button class="btn-edit" @click="abrirModalEditar">
+                        <i class="fa-solid fa-pen"></i> Editar perfil
+                    </button>
+                    <button class="btn-sair" @click="sair">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sair
+                    </button>
+                </div>
             </aside>
 
             <div class="right-col">
@@ -118,6 +127,34 @@
             </div>
         </section>
     </main>
+
+    <div class="modal-overlay" v-if="modalEditar" @click.self="modalEditar = false">
+        <div class="modal">
+            <h2 class="modal-title"><i class="fa-solid fa-pen"></i> Editar perfil</h2>
+            <div class="modal-form">
+                <div class="field">
+                    <label>Nome</label>
+                    <input v-model="formEditar.nome" type="text" placeholder="Seu nome">
+                </div>
+                <div class="field">
+                    <label>Sobrenome</label>
+                    <input v-model="formEditar.sobrenome" type="text" placeholder="Seu sobrenome">
+                </div>
+                <div class="field">
+                    <label>Telefone</label>
+                    <input v-model="formEditar.telefone" type="text" placeholder="(00) 00000-0000">
+                </div>
+            </div>
+            <p v-if="editarError" class="error-msg">{{ editarError }}</p>
+            <p v-if="editarSucesso" class="success-msg">Dados atualizados com sucesso!</p>
+            <div class="modal-actions">
+                <button class="btn-outline" @click="modalEditar = false">Cancelar</button>
+                <button class="btn-primary" @click="salvarEdicao" :disabled="salvando">
+                    {{ salvando ? 'Salvando...' : 'Salvar' }}
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -145,6 +182,13 @@ export default {
         const funcionarioData = ref(null);
         const episEntregues = ref([]);
         const emprestimosAtivos = ref(0);
+        const userId = ref('');
+
+        const modalEditar = ref(false);
+        const formEditar = ref({ nome: '', sobrenome: '', telefone: '' });
+        const editarError = ref('');
+        const editarSucesso = ref(false);
+        const salvando = ref(false);
 
         const roleLabel = computed(() => ({ aluno: 'Aluno', docente: 'Docente', admin: 'Administrador' })[role.value] || role.value);
         const roleClass = computed(() => ({
@@ -159,11 +203,65 @@ export default {
             return `${day}/${m}/${y}`;
         }
 
+        function abrirModalEditar() {
+            formEditar.value = {
+                nome: nome.value,
+                sobrenome: sobrenome.value,
+                telefone: alunoData.value?.telefone || funcionarioData.value?.telefone || ''
+            };
+            editarError.value = '';
+            editarSucesso.value = false;
+            modalEditar.value = true;
+        }
+
+        async function salvarEdicao() {
+            salvando.value = true;
+            editarError.value = '';
+            editarSucesso.value = false;
+
+            const novoNomeCompleto = `${formEditar.value.nome} ${formEditar.value.sobrenome}`.trim();
+
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({ full_name: novoNomeCompleto })
+                .eq('id', userId.value);
+
+            if (profileError) { editarError.value = 'Erro ao salvar.'; salvando.value = false; return; }
+
+            if (role.value === 'aluno' && alunoData.value) {
+                await supabase.from('aluno')
+                    .update({ nome: formEditar.value.nome, sobrenome: formEditar.value.sobrenome, telefone: formEditar.value.telefone })
+                    .eq('idaluno', alunoData.value.idaluno);
+            }
+
+            if ((role.value === 'docente' || role.value === 'admin') && funcionarioData.value) {
+                await supabase.from('funcionario')
+                    .update({ nome: formEditar.value.nome, sobrenome: formEditar.value.sobrenome, telefone: formEditar.value.telefone })
+                    .eq('idfuncionario', funcionarioData.value.idfuncionario);
+            }
+
+            fullName.value = novoNomeCompleto;
+            nome.value = formEditar.value.nome;
+            sobrenome.value = formEditar.value.sobrenome;
+            if (alunoData.value) alunoData.value = { ...alunoData.value, telefone: formEditar.value.telefone };
+            if (funcionarioData.value) funcionarioData.value = { ...funcionarioData.value, telefone: formEditar.value.telefone };
+
+            salvando.value = false;
+            editarSucesso.value = true;
+            setTimeout(() => { modalEditar.value = false; editarSucesso.value = false; }, 1200);
+        }
+
+        async function sair() {
+            await supabase.auth.signOut();
+            router.push('/login');
+        }
+
         onMounted(async () => {
             const { data } = await supabase.auth.getSession();
             if (!data.session) { router.push('/login'); return; }
 
             const user = data.session.user;
+            userId.value = user.id;
             userEmail.value = user.email;
             createdAt.value = new Date(user.created_at).toLocaleDateString('pt-BR');
 
@@ -231,7 +329,9 @@ export default {
         return {
             sidebarOpen, fullName, nome, sobrenome, userEmail, role,
             roleLabel, roleClass, createdAt, alunoData, funcionarioData,
-            episEntregues, emprestimosAtivos, formatDate
+            episEntregues, emprestimosAtivos, formatDate,
+            modalEditar, formEditar, editarError, editarSucesso, salvando,
+            abrirModalEditar, salvarEdicao, sair
         };
     }
 }
@@ -440,6 +540,60 @@ export default {
     gap: 0.5rem;
 }
 
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.btn-edit {
+    width: 100%;
+    padding: 0.7rem;
+    background: rgba(226, 249, 255, 0.15);
+    border: 1.5px solid rgba(226, 249, 255, 0.3);
+    color: #ebfbff;
+    border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+    background: rgba(226, 249, 255, 0.25);
+    border-color: rgba(226, 249, 255, 0.5);
+}
+
+.btn-sair {
+    width: 100%;
+    padding: 0.7rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1.5px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-sair:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: rgba(239, 68, 68, 0.6);
+}
+
 .right-col {
     display: flex;
     flex-direction: column;
@@ -589,6 +743,148 @@ export default {
     font-family: 'Red Hat Display', sans-serif;
     margin: 0;
     font-size: 0.95rem;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 20, 50, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal {
+    background: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+}
+
+.modal-title {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 1.2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.field label {
+    font-family: 'Anton', sans-serif;
+    color: #243c75;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.field input {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+    border: 1.5px solid #d0daf0;
+    border-radius: 8px;
+    height: 2.8rem;
+    box-sizing: border-box;
+    font-family: 'Red Hat Display', sans-serif;
+    color: #1a2b5e;
+    transition: border-color 0.2s ease;
+}
+
+.field input:focus {
+    outline: none;
+    border-color: #243c75;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #243c75;
+    color: #ebfbff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.3rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #1a2d5a;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #243c75;
+    color: #243c75;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+    background: #243c75;
+    color: #ebfbff;
+}
+
+.error-msg {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #b91c1c;
+    font-size: 0.9rem;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0;
+}
+
+.success-msg {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #15803d;
+    font-size: 0.9rem;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0;
 }
 
 @media (max-width: 1024px) {
