@@ -11,6 +11,14 @@
                     <i class="fa-solid fa-boxes-stacked"></i>
                     <span>Estoque</span>
                 </router-link>
+                <router-link v-if="role === 'admin'" to="/gerenciamento-usuarios" class="nav-item" @click="close">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Usuários</span>
+                </router-link>
+                <router-link v-if="role === 'admin'" to="/cadastro-funcionario" class="nav-item" @click="close">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Cadastrar funcionário</span>
+                </router-link>
                 <router-link to="/perfil" class="nav-item" @click="close">
                     <i class="fa-solid fa-circle-user"></i>
                     <span>Perfil</span>
@@ -30,6 +38,7 @@
 <script>
 import { useSupabase } from "../composables/useSupabase.js";
 import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 
 export default {
     name: "Sidebar",
@@ -43,6 +52,7 @@ export default {
     setup(props, { emit }) {
         const { supabase } = useSupabase();
         const router = useRouter();
+        const role = ref('');
 
         function close() {
             emit('close');
@@ -53,7 +63,18 @@ export default {
             router.push('/login');
         }
 
-        return { close, handleLogout };
+        onMounted(async () => {
+            const { data } = await supabase.auth.getSession();
+            if (!data.session) return;
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', data.session.user.id)
+                .single();
+            if (profile) role.value = profile.role;
+        });
+
+        return { close, handleLogout, role };
     }
 };
 </script>

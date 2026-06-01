@@ -75,9 +75,8 @@ export default {
                 password: password.value,
             });
 
-            loading.value = false;
-
             if (error) {
+                loading.value = false;
                 errorMsg.value = 'Email ou senha inválidos.';
                 return;
             }
@@ -91,10 +90,32 @@ export default {
             const role = profile?.role;
 
             if (role === 'aluno') {
+                const { data: aluno } = await supabase
+                    .from('aluno')
+                    .select('status')
+                    .eq('auth_id', data.user.id)
+                    .single();
+
+                if (aluno?.status === 'pendente') {
+                    await supabase.auth.signOut();
+                    loading.value = false;
+                    errorMsg.value = 'Seu cadastro ainda está aguardando aprovação de um administrador.';
+                    return;
+                }
+
+                if (aluno?.status === 'inativo') {
+                    await supabase.auth.signOut();
+                    loading.value = false;
+                    errorMsg.value = 'Sua conta foi desativada. Entre em contato com a administração.';
+                    return;
+                }
+
                 router.push('/estoque');
             } else {
                 router.push('/dashboard');
             }
+
+            loading.value = false;
         }
 
         return { email, password, loading, errorMsg, handleLogin, showPassword };

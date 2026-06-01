@@ -7,6 +7,7 @@
             <i class="fa-solid fa-bars"></i>
         </button>
     </nav>
+    <div class="page-spacer"></div>
 </template>
 
 <script>
@@ -31,13 +32,14 @@ export default {
     left: 0;
     width: 100%;
     height: 10vh;
+    min-height: 60px;
     background-color: #243c75;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 1.5rem;
     box-sizing: border-box;
-    z-index: 998;
+    z-index: 1001;
 }
 
 .navbar-title {
@@ -72,6 +74,8 @@ export default {
     padding: 0.75rem;
     border-radius: 6px;
     transition: transform 0.2s ease;
+    position: relative;
+    z-index: 1002;
 }
 
 .menu-btn:hover {

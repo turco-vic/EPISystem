@@ -10,6 +10,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Estoque from '../views/Estoque.vue'
 import Perfil from '../views/Perfil.vue'
 import CadastroFuncionario from '../views/CadastroFuncionarioView.vue'
+import GerenciamentoUsuarios from '../views/GerenciamentoUsuarios.vue'
 
 const routes = [
     { path: '/', component: Home },
@@ -35,6 +36,11 @@ const routes = [
     {
         path: '/cadastro-funcionario',
         component: CadastroFuncionario,
+        meta: { requiresAuth: true, roles: ['admin'] }
+    },
+    {
+        path: '/gerenciamento-usuarios',
+        component: GerenciamentoUsuarios,
         meta: { requiresAuth: true, roles: ['admin'] }
     },
     {

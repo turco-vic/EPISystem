@@ -15,7 +15,7 @@
                     <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
                     <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
                 </div>
-                <div class="form">
+                <div v-if="!cadastroConcluido" class="form">
                     <div class="row">
                         <div class="field">
                             <label for="nome">Nome</label>
@@ -68,8 +68,15 @@
                         {{ loading ? 'Criando conta...' : 'Criar conta' }}
                     </button>
                 </div>
+                <div v-else class="pending-box">
+                    <div class="pending-icon"><i class="fa-solid fa-clock"></i></div>
+                    <h2 class="pending-title">Cadastro enviado!</h2>
+                    <p class="pending-desc">Seu cadastro está aguardando aprovação de um administrador. Você receberá
+                        acesso assim que for aprovado.</p>
+                    <router-link to="/login" class="btn-voltar">Voltar ao login</router-link>
+                </div>
             </section>
-            <section class="baseboard">
+            <section class="baseboard" v-if="!cadastroConcluido">
                 <Line backgroundColor="#ebfbff" height="2px" />
                 <section class="baseboard-content">
                     <p class="login-text">Já tem uma conta?</p>
@@ -108,6 +115,7 @@ export default {
         const successMsg = ref('');
         const showPassword = ref(false);
         const showConfirm = ref(false);
+        const cadastroConcluido = ref(false);
 
         function formatCPF(e) {
             let v = e.target.value.replace(/\D/g, '');
@@ -171,7 +179,8 @@ export default {
                     senha: 'inutilizado',
                     data_nascimento: nascimento.value,
                     telefone: telefone.value || null,
-                    auth_id: userId
+                    auth_id: userId,
+                    status: 'pendente'
                 });
 
             if (userId) {
@@ -183,6 +192,8 @@ export default {
                 });
             }
 
+            await supabase.auth.signOut();
+
             loading.value = false;
 
             if (alunoError) {
@@ -190,14 +201,13 @@ export default {
                 return;
             }
 
-            successMsg.value = 'Conta criada com sucesso!';
-            setTimeout(() => router.push('/dashboard'), 1500);
+            cadastroConcluido.value = true;
         }
 
         return {
             nome, sobrenome, cpf, email, nascimento, telefone,
             password, confirm, loading, errorMsg, successMsg,
-            showPassword, showConfirm,
+            showPassword, showConfirm, cadastroConcluido,
             handleSignup, formatCPF, formatTelefone
         };
     }
@@ -399,6 +409,61 @@ export default {
 .form button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.pending-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 1rem;
+    text-align: center;
+    width: 100%;
+}
+
+.pending-icon {
+    width: 4rem;
+    height: 4rem;
+    background: rgba(235, 251, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: #ebfbff;
+}
+
+.pending-title {
+    font-family: 'Archivo Black', sans-serif;
+    color: #ebfbff;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.pending-desc {
+    font-family: 'Red Hat Display', sans-serif;
+    color: rgba(235, 251, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.btn-voltar {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.7rem 1.5rem;
+    background: #ebfbff;
+    color: #243c75;
+    border-radius: 8px;
+    font-family: 'Red Hat Display', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.btn-voltar:hover {
+    background: #d3d3d3;
 }
 
 .baseboard {
