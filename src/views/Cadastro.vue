@@ -78,7 +78,6 @@
             </section>
         </aside>
     </main>
-    <Footer />
 </template>
 
 <script>
