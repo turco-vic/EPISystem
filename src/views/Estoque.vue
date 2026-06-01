@@ -96,7 +96,7 @@
                                     <td>{{ formatDate(s.data) }}</td>
                                     <td>
                                         <span :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status)
-                                            }}</span>
+                                        }}</span>
                                     </td>
                                     <td class="actions-cell">
                                         <button v-if="s.status === 'pendente'" class="btn-icon btn-green"
@@ -199,7 +199,7 @@
                                     <td>{{ s.epi_nome }}</td>
                                     <td>{{ formatDate(s.data) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status)
-                                            }}</span></td>
+                                    }}</span></td>
                                     <td class="actions-cell">
                                         <button v-if="s.status === 'pendente'" class="btn-icon btn-green"
                                             @click="aprovarSolicitacao(s)">
@@ -237,7 +237,7 @@
                                     <td>{{ e.epi_nome }}</td>
                                     <td>{{ formatDate(e.data_entrega) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status)
-                                            }}</span></td>
+                                    }}</span></td>
                                     <td>{{ e.data_devolucao ? formatDate(e.data_devolucao) : '—' }}</td>
                                     <td>
                                         <button v-if="!e.data_devolucao && e.status === 'aprovado'"
@@ -328,7 +328,7 @@
                                     <td>{{ e.epi_tipo }}</td>
                                     <td>{{ formatDate(e.data_entrega) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status)
-                                            }}</span></td>
+                                    }}</span></td>
                                 </tr>
                                 <tr v-if="minhasEntregas.length === 0">
                                     <td colspan="4" class="empty-row">Nenhuma solicitação ainda.</td>
@@ -365,7 +365,7 @@
                     <button class="btn-outline" @click="modalEpi = false">Cancelar</button>
                     <button class="btn-primary" @click="salvarEpi" :disabled="salvando">{{ salvando ? 'Salvando...' :
                         'Salvar'
-                        }}</button>
+                    }}</button>
                 </div>
             </div>
         </div>
@@ -454,7 +454,7 @@
 import NavBar from "../components/Navbar.vue";
 import Sidebar from "../components/Sidebar.vue";
 import { useSupabase } from "../composables/useSupabase.js";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, inject } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
@@ -463,6 +463,7 @@ export default {
     setup() {
         const { supabase } = useSupabase();
         const router = useRouter();
+        const showToast = inject("showToast");
         const sidebarOpen = ref(false);
 
         const loading = ref(true);
@@ -601,6 +602,7 @@ export default {
 
             salvando.value = false;
             modalSolicitar.value = false;
+            showToast('Solicitação enviada com sucesso.', 'success');
         }
 
         const modalLote = ref(false);
@@ -774,6 +776,7 @@ export default {
             await carregarEpis();
             salvando.value = false;
             modalEpi.value = false;
+            showToast(editandoEpi.value ? 'EPI atualizado com sucesso.' : 'EPI criado com sucesso.', 'success');
         }
 
         async function deletarEpi(id) {
@@ -793,12 +796,12 @@ export default {
                 .single();
 
             if (erroConsulta || !epiAtual) {
-                alert('Erro ao verificar estoque.');
+                showToast('Erro ao verificar estoque.', 'error');
                 return;
             }
 
             if (epiAtual.quantidade <= 0) {
-                alert('Não é possível aprovar: estoque zerado para este EPI.');
+                showToast('Não é possível aprovar: estoque zerado para este EPI.', 'error');
                 return;
             }
 
@@ -808,7 +811,7 @@ export default {
                 .eq(idCol, s.origem_id);
 
             if (erroStatus) {
-                alert('Erro ao aprovar solicitação.');
+                showToast('Erro ao aprovar solicitação.', 'error');
                 return;
             }
 
@@ -818,7 +821,9 @@ export default {
                 .eq('idepis', s.epi_id);
 
             if (erroEstoque) {
-                alert('Solicitação aprovada, mas erro ao atualizar estoque. Verifique manualmente.');
+                showToast('Solicitação aprovada, mas erro ao atualizar estoque. Verifique manualmente.', 'warning');
+            } else {
+                showToast('Solicitação aprovada com sucesso.', 'success');
             }
 
             await carregarEpis();
@@ -830,7 +835,8 @@ export default {
             const tabela = s.origem === 'aluno' ? 'aluno_has_epis' : 'funcionario_has_epis';
             const idCol = s.origem === 'aluno' ? 'id_entrega_aluno' : 'id_entrega_func';
             const { error } = await supabase.from(tabela).update({ status: 'rejeitado' }).eq(idCol, s.origem_id);
-            if (error) { alert('Erro ao rejeitar solicitação.'); return; }
+            if (error) { showToast('Erro ao rejeitar solicitação.', 'error'); return; }
+            showToast('Solicitação rejeitada.', 'warning');
             if (role.value === 'admin') await carregarSolicitacoes();
             if (role.value === 'docente') await carregarSolicitacoesAlunos();
         }
@@ -887,6 +893,7 @@ export default {
             const { error } = await supabase.from('funcionario_has_epis').insert(inserts);
             salvando.value = false;
             if (error) { modalError.value = 'Erro ao solicitar.'; return; }
+            showToast('Solicitação em lote enviada com sucesso.', 'success');
             await carregarEntregasFuncionario();
             modalLote.value = false;
         }
