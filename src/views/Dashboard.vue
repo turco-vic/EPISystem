@@ -2,6 +2,7 @@
     <NavBar @toggle="sidebarOpen = !sidebarOpen" />
     <Sidebar :isOpen="sidebarOpen" @close="sidebarOpen = false" />
     <main class="main">
+
         <section class="hero">
             <div class="hero-accent"></div>
             <div class="hero-content">
@@ -23,26 +24,26 @@
                 <div class="stat-card">
                     <div class="stat-head">
                         <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-helmet-safety"></i></div>
-                        <span class="stat-trend">estoque</span>
+                        <span class="stat-trend">total</span>
                     </div>
-                    <h2 class="stat-number">{{ stats.episEstoque }}</h2>
-                    <p class="stat-label">EPIs em estoque</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-head">
-                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <span class="stat-trend trend-amber">ativos</span>
-                    </div>
-                    <h2 class="stat-number">{{ stats.emprestimosAtivos }}</h2>
-                    <p class="stat-label">Empréstimos ativos</p>
+                    <h2 class="stat-number">{{ stats.totalEpis }}</h2>
+                    <p class="stat-label">Total de EPIs registrados</p>
                 </div>
                 <div class="stat-card">
                     <div class="stat-head">
                         <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
-                        <span class="stat-trend trend-green">total</span>
+                        <span class="stat-trend trend-green">disponível</span>
                     </div>
-                    <h2 class="stat-number">{{ stats.totalEntregas }}</h2>
-                    <p class="stat-label">Total de entregas</p>
+                    <h2 class="stat-number">{{ stats.episDisponiveis }}</h2>
+                    <p class="stat-label">{{ stats.disponibilidadePct }}% do total</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span class="stat-trend trend-amber">em uso</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.emprestimosAtivos }}</h2>
+                    <p class="stat-label">Entregas ativas</p>
                 </div>
                 <div class="stat-card stat-alert">
                     <div class="stat-head">
@@ -117,6 +118,120 @@
             </template>
         </section>
 
+        <template v-if="role === 'admin' || role === 'docente'">
+            <section class="charts-row">
+                <div class="chart-card chart-barras">
+                    <div class="chart-card-head">
+                        <h2 class="chart-title">Estoque por tipo</h2>
+                    </div>
+                    <div class="barras-lista">
+                        <div v-if="estoquePorTipo.length === 0" class="chart-empty">Sem dados.</div>
+                        <div v-for="item in estoquePorTipo" :key="item.tipo" class="barra-row">
+                            <span class="barra-label">{{ item.tipo }}</span>
+                            <div class="barra-track">
+                                <div class="barra-fill" :style="{ width: item.pct + '%' }"></div>
+                            </div>
+                            <span class="barra-valor">{{ item.total }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card chart-donut">
+                    <div class="chart-card-head">
+                        <h2 class="chart-title">Disponibilidade</h2>
+                    </div>
+                    <div class="donut-wrapper">
+                        <svg viewBox="0 0 120 120" class="donut-svg">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e8eeff" stroke-width="14" />
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#243c75" stroke-width="14"
+                                stroke-linecap="round" :stroke-dasharray="`${donutPct * 3.1416} ${314.16}`"
+                                stroke-dashoffset="78.54" transform="rotate(-90 60 60)"
+                                style="transition: stroke-dasharray 0.8s ease;" />
+                        </svg>
+                        <div class="donut-center">
+                            <span class="donut-pct">{{ stats.disponibilidadePct }}%</span>
+                            <span class="donut-sub">Disponíveis</span>
+                        </div>
+                    </div>
+                    <p class="donut-msg">{{ donutMsg }}</p>
+                </div>
+            </section>
+
+            <section class="table-section">
+                <div class="section-head">
+                    <h2 class="section-title">Entregas recentes</h2>
+                    <span class="section-sub">Últimas solicitações aprovadas</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>EPI</th>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="e in entregasRecentes" :key="e.id">
+                                <td>{{ e.nome }}</td>
+                                <td>{{ e.epi }}</td>
+                                <td>{{ formatDate(e.data) }}</td>
+                                <td>{{ e.tipo }}</td>
+                                <td><span :class="['badge', getBadge(e.status)]">{{ formatStatus(e.status) }}</span>
+                                </td>
+                            </tr>
+                            <tr v-if="entregasRecentes.length === 0">
+                                <td colspan="5" class="empty-row">Nenhuma entrega registrada.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="table-section" v-if="devolucoesPendentes.length > 0 || role === 'admin'">
+                <div class="section-head">
+                    <h2 class="section-title">Devoluções pendentes</h2>
+                    <span class="section-sub">EPIs aprovados ainda não devolvidos</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th v-if="role === 'admin'">Email</th>
+                                <th>EPI</th>
+                                <th>Patrimônio</th>
+                                <th>Data entrega</th>
+                                <th>Tipo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="d in devolucoesPendentes" :key="d.id">
+                                <td>{{ d.nome }}</td>
+                                <td v-if="role === 'admin'">{{ d.email }}</td>
+                                <td>{{ d.epi }}</td>
+                                <td>{{ d.patrimonio || '—' }}</td>
+                                <td>{{ formatDate(d.data) }}</td>
+                                <td>{{ d.tipo }}</td>
+                                <td>
+                                    <span :class="['badge', d.urgente ? 'badge-red' : 'badge-yellow']">
+                                        {{ d.urgente ? 'Urgente' : 'Pendente' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr v-if="devolucoesPendentes.length === 0">
+                                <td :colspan="role === 'admin' ? 7 : 6" class="empty-row">Nenhuma devolução pendente.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </template>
+
         <section class="actions-section">
             <div class="section-head">
                 <h2 class="section-title">Ações rápidas</h2>
@@ -132,7 +247,6 @@
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
-
                 <router-link v-if="role === 'admin'" to="/estoque" class="action-card">
                     <div class="action-icon"><i class="fa-solid fa-clipboard-check"></i></div>
                     <div class="action-text">
@@ -141,7 +255,6 @@
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
-
                 <router-link v-if="role === 'admin'" to="/cadastro-funcionario" class="action-card">
                     <div class="action-icon"><i class="fa-solid fa-user-plus"></i></div>
                     <div class="action-text">
@@ -150,7 +263,6 @@
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
-
                 <router-link v-if="role === 'aluno' || role === 'docente'" to="/estoque" class="action-card">
                     <div class="action-icon"><i class="fa-solid fa-hand"></i></div>
                     <div class="action-text">
@@ -159,7 +271,6 @@
                     </div>
                     <i class="fa-solid fa-arrow-right action-arrow"></i>
                 </router-link>
-
                 <router-link to="/perfil" class="action-card">
                     <div class="action-icon"><i class="fa-solid fa-user"></i></div>
                     <div class="action-text">
@@ -171,19 +282,15 @@
             </div>
         </section>
 
-        <section v-if="role === 'aluno' || role === 'docente'" class="atividade-section">
+        <section v-if="role === 'aluno'" class="atividade-section">
             <div class="section-head">
                 <h2 class="section-title">Atividade recente</h2>
                 <span class="section-sub">Suas últimas solicitações</span>
             </div>
             <div class="atividade-lista">
-                <div v-if="atividadeRecente.length === 0" class="atividade-empty">
-                    Nenhuma atividade recente.
-                </div>
+                <div v-if="atividadeRecente.length === 0" class="atividade-empty">Nenhuma atividade recente.</div>
                 <div v-for="a in atividadeRecente" :key="a.id" class="atividade-item">
-                    <div class="atividade-icon">
-                        <i class="fa-solid fa-helmet-safety"></i>
-                    </div>
+                    <div class="atividade-icon"><i class="fa-solid fa-helmet-safety"></i></div>
                     <div class="atividade-info">
                         <span class="atividade-nome">{{ a.epi_nome }}</span>
                         <span class="atividade-data">{{ formatDate(a.data) }}</span>
@@ -192,6 +299,7 @@
                 </div>
             </div>
         </section>
+
     </main>
 </template>
 
@@ -219,7 +327,9 @@ export default {
         const roleLabel = computed(() => ({ aluno: 'Aluno', docente: 'Docente', admin: 'Administrador' })[role.value] || '—');
 
         const stats = ref({
-            episEstoque: 0,
+            totalEpis: 0,
+            episDisponiveis: 0,
+            disponibilidadePct: 0,
             emprestimosAtivos: 0,
             totalEntregas: 0,
             estoqueCritico: 0,
@@ -228,7 +338,18 @@ export default {
             avisosValidade: 0
         });
 
+        const estoquePorTipo = ref([]);
+        const entregasRecentes = ref([]);
+        const devolucoesPendentes = ref([]);
         const atividadeRecente = ref([]);
+
+        const donutPct = computed(() => (stats.value.disponibilidadePct / 100) * 314.16);
+        const donutMsg = computed(() => {
+            const p = stats.value.disponibilidadePct;
+            if (p >= 70) return 'Estoque suficiente. Reavaliar em breve.';
+            if (p >= 40) return 'Estoque moderado. Acompanhe as solicitações.';
+            return 'Estoque baixo. Reposição recomendada.';
+        });
 
         function formatDate(d) {
             if (!d) return '—';
@@ -247,6 +368,159 @@ export default {
             return s.charAt(0).toUpperCase() + s.slice(1);
         }
 
+        async function carregarDadosAdmin(userEm) {
+            const { data: epis } = await supabase.from('epis').select('quantidade, disponivel, tipo');
+            if (epis) {
+                const total = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                const disponiveis = epis.filter(e => e.disponivel && (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                stats.value.totalEpis = total;
+                stats.value.episDisponiveis = disponiveis;
+                stats.value.disponibilidadePct = total > 0 ? Math.round((disponiveis / total) * 100) : 0;
+                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+
+                const tiposMap = {};
+                epis.forEach(e => {
+                    const t = e.tipo || 'Sem tipo';
+                    tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0);
+                });
+                const maxVal = Math.max(...Object.values(tiposMap), 1);
+                estoquePorTipo.value = Object.entries(tiposMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([tipo, total]) => ({ tipo, total, pct: Math.round((total / maxVal) * 100) }));
+            }
+
+            const { data: funcEntregas } = await supabase
+                .from('funcionario_has_epis')
+                .select('id_entrega_func, data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, codigo_patrimonio, tipo)')
+                .order('data_entrega', { ascending: false })
+                .limit(20);
+
+            const { data: alunoEntregas } = await supabase
+                .from('aluno_has_epis')
+                .select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome, codigo_patrimonio, tipo)')
+                .order('data_entrega', { ascending: false })
+                .limit(20);
+
+            const recentes = [];
+            const devPendentes = [];
+            const hoje = new Date();
+
+            if (funcEntregas) {
+                stats.value.emprestimosAtivos = funcEntregas.filter(e => e.status === 'aprovado' && !e.data_devolucao).length;
+                funcEntregas.forEach(e => {
+                    recentes.push({
+                        id: `f-${e.id_entrega_func}`,
+                        nome: `${e.funcionario?.nome || ''} ${e.funcionario?.sobrenome || ''}`.trim(),
+                        epi: e.epis?.nome,
+                        data: e.data_entrega,
+                        tipo: 'Funcionário',
+                        status: e.status
+                    });
+                    if (e.status === 'aprovado' && !e.data_devolucao) {
+                        const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
+                        devPendentes.push({
+                            id: `f-${e.id_entrega_func}`,
+                            nome: `${e.funcionario?.nome || ''} ${e.funcionario?.sobrenome || ''}`.trim(),
+                            email: e.funcionario?.email || '—',
+                            epi: e.epis?.nome,
+                            patrimonio: e.epis?.codigo_patrimonio,
+                            data: e.data_entrega,
+                            tipo: 'Funcionário',
+                            urgente: diasAtivo > 30
+                        });
+                    }
+                });
+            }
+
+            if (alunoEntregas) {
+                alunoEntregas.forEach(e => {
+                    recentes.push({
+                        id: `a-${e.id_entrega_aluno}`,
+                        nome: `${e.aluno?.nome || ''} ${e.aluno?.sobrenome || ''}`.trim(),
+                        epi: e.epis?.nome,
+                        data: e.data_entrega,
+                        tipo: 'Aluno',
+                        status: e.status
+                    });
+                });
+            }
+
+            entregasRecentes.value = recentes
+                .sort((a, b) => (b.data || '').localeCompare(a.data || ''))
+                .slice(0, 8);
+
+            devolucoesPendentes.value = devPendentes
+                .sort((a, b) => (b.urgente ? 1 : 0) - (a.urgente ? 1 : 0));
+        }
+
+        async function carregarDadosDocente(userEm) {
+            const { data: func } = await supabase.from('funcionario').select('idfuncionario').eq('email', userEm).single();
+            if (!func) return;
+
+            const { data: minhas } = await supabase
+                .from('funcionario_has_epis')
+                .select('id_entrega_func, status, data_entrega, data_devolucao, epis(nome, codigo_patrimonio, tipo)')
+                .eq('funcionario_id', func.idfuncionario)
+                .order('data_entrega', { ascending: false });
+
+            if (minhas) {
+                stats.value.episComigo = minhas.filter(e => e.status === 'aprovado' && !e.data_devolucao).length;
+                stats.value.totalEntregas = minhas.filter(e => e.status === 'aprovado').length;
+
+                const hoje = new Date();
+                entregasRecentes.value = minhas
+                    .filter(e => e.status === 'aprovado')
+                    .slice(0, 8)
+                    .map(e => ({
+                        id: e.id_entrega_func,
+                        nome: 'Você',
+                        epi: e.epis?.nome,
+                        data: e.data_entrega,
+                        tipo: 'Docente',
+                        status: e.status
+                    }));
+
+                devolucoesPendentes.value = minhas
+                    .filter(e => e.status === 'aprovado' && !e.data_devolucao)
+                    .map(e => {
+                        const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
+                        return {
+                            id: e.id_entrega_func,
+                            nome: 'Você',
+                            epi: e.epis?.nome,
+                            patrimonio: e.epis?.codigo_patrimonio,
+                            data: e.data_entrega,
+                            tipo: 'Docente',
+                            urgente: diasAtivo > 30
+                        };
+                    });
+            }
+
+            const { data: solPendentes } = await supabase
+                .from('aluno_has_epis')
+                .select('id_entrega_aluno')
+                .eq('status', 'pendente');
+            if (solPendentes) stats.value.solicitacoesPendentes = solPendentes.length;
+
+            const { data: epis } = await supabase.from('epis').select('quantidade, disponivel, tipo');
+            if (epis) {
+                const total = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                const disponiveis = epis.filter(e => e.disponivel && (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                stats.value.disponibilidadePct = total > 0 ? Math.round((disponiveis / total) * 100) : 0;
+                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+
+                const tiposMap = {};
+                epis.forEach(e => {
+                    const t = e.tipo || 'Sem tipo';
+                    tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0);
+                });
+                const maxVal = Math.max(...Object.values(tiposMap), 1);
+                estoquePorTipo.value = Object.entries(tiposMap)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([tipo, total]) => ({ tipo, total, pct: Math.round((total / maxVal) * 100) }));
+            }
+        }
+
         onMounted(async () => {
             const { data } = await supabase.auth.getSession();
             if (!data.session) { router.push('/login'); return; }
@@ -262,55 +536,8 @@ export default {
             if (profile?.full_name) userName.value = profile.full_name;
             if (profile?.role) role.value = profile.role;
 
-            if (role.value === 'admin') {
-                const { data: epis } = await supabase.from('epis').select('quantidade, disponivel');
-                if (epis) {
-                    stats.value.episEstoque = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
-                    stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
-                }
-                const { data: funcEntregas } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_devolucao');
-                const { data: alunoEntregas } = await supabase.from('aluno_has_epis').select('id_entrega_aluno');
-                if (funcEntregas) {
-                    stats.value.emprestimosAtivos = funcEntregas.filter(e => !e.data_devolucao).length;
-                    stats.value.totalEntregas += funcEntregas.length;
-                }
-                if (alunoEntregas) stats.value.totalEntregas += alunoEntregas.length;
-            }
-
-            if (role.value === 'docente') {
-                const { data: func } = await supabase.from('funcionario').select('idfuncionario').eq('email', userEmail.value).single();
-                if (func) {
-                    const { data: minhas } = await supabase
-                        .from('funcionario_has_epis')
-                        .select('status, epis(nome), data_entrega')
-                        .eq('funcionario_id', func.idfuncionario)
-                        .order('data_entrega', { ascending: false })
-                        .limit(5);
-                    if (minhas) {
-                        stats.value.episComigo = minhas.filter(e => e.status === 'aprovado').length;
-                        atividadeRecente.value = minhas.map((e, i) => ({
-                            id: i,
-                            epi_nome: e.epis?.nome,
-                            data: e.data_entrega,
-                            status: e.status
-                        }));
-                    }
-                }
-                const { data: solPendentes } = await supabase
-                    .from('aluno_has_epis')
-                    .select('id_entrega_aluno')
-                    .eq('status', 'pendente');
-                if (solPendentes) stats.value.solicitacoesPendentes = solPendentes.length;
-
-                const { data: epis } = await supabase.from('epis').select('quantidade');
-                if (epis) stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
-
-                const { data: funcEntregas } = await supabase
-                    .from('funcionario_has_epis')
-                    .select('id_entrega_func')
-                    .eq('status', 'aprovado');
-                if (funcEntregas) stats.value.totalEntregas = funcEntregas.length;
-            }
+            if (role.value === 'admin') await carregarDadosAdmin(user.email);
+            if (role.value === 'docente') await carregarDadosDocente(user.email);
 
             if (role.value === 'aluno') {
                 const { data: aluno } = await supabase.from('aluno').select('idaluno').eq('auth_id', user.id).single();
@@ -345,7 +572,9 @@ export default {
         return {
             userName, firstName, userEmail, role, roleLabel,
             sidebarOpen, stats, today,
-            atividadeRecente, formatDate, getBadge, formatStatus
+            estoquePorTipo, entregasRecentes, devolucoesPendentes,
+            atividadeRecente, donutPct, donutMsg,
+            formatDate, getBadge, formatStatus
         };
     }
 }
@@ -590,7 +819,138 @@ export default {
     font-weight: 500;
 }
 
-.actions-section {
+.charts-row {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 1.25rem;
+}
+
+.chart-card {
+    background: #fff;
+    border: 1px solid #d0daf0;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 24px rgba(36, 60, 117, 0.06);
+}
+
+.chart-card-head {
+    margin-bottom: 1.5rem;
+}
+
+.chart-title {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 1.1rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.barras-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.chart-empty {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #9aaac5;
+    font-size: 0.9rem;
+    font-style: italic;
+    padding: 1rem 0;
+}
+
+.barra-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 40px;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.barra-label {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.88rem;
+    color: #1a2b5e;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.barra-track {
+    height: 10px;
+    background: #e8eeff;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.barra-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #243c75 0%, #3a5ba8 100%);
+    border-radius: 99px;
+    transition: width 0.6s ease;
+}
+
+.barra-valor {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 0.88rem;
+    color: #243c75;
+    text-align: right;
+}
+
+.chart-donut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.donut-wrapper {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 1rem auto;
+}
+
+.donut-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut-pct {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.9rem;
+    color: #243c75;
+    line-height: 1;
+}
+
+.donut-sub {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.72rem;
+    color: #9aaac5;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.15rem;
+}
+
+.donut-msg {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.82rem;
+    color: #6b82b0;
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.table-section {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
@@ -615,6 +975,87 @@ export default {
     font-size: 0.9rem;
 }
 
+.table-wrapper {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #d0daf0;
+    box-shadow: 0 4px 24px rgba(36, 60, 117, 0.08);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    font-family: 'Anton', sans-serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #9aaac5;
+    background: #f8f9ff;
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #e8edf8;
+}
+
+.table td {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.95rem;
+    color: #1a2b5e;
+    padding: 0.95rem 1.25rem;
+    border-bottom: 1px solid #edf0f8;
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover td {
+    background: #f8f9ff;
+}
+
+.empty-row {
+    text-align: center;
+    color: #9aaac5 !important;
+    padding: 2.5rem !important;
+    font-style: italic;
+}
+
+.badge {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.badge-green {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.badge-red {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge-yellow {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
 .actions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -631,8 +1072,6 @@ export default {
     border-radius: 14px;
     text-decoration: none;
     transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
 }
 
 .action-card:hover {
@@ -758,31 +1197,16 @@ export default {
     font-size: 0.8rem;
 }
 
-.badge {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.25rem 0.7rem;
-    border-radius: 99px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    display: inline-block;
-    white-space: nowrap;
-}
+@media (max-width: 1100px) {
+    .charts-row {
+        grid-template-columns: 1fr;
+    }
 
-.badge-green {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.badge-red {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.badge-yellow {
-    background: #fef3c7;
-    color: #b45309;
+    .chart-donut {
+        max-width: 400px;
+        margin: 0 auto;
+        width: 100%;
+    }
 }
 
 @media (max-width: 1024px) {
@@ -830,6 +1254,10 @@ export default {
 
     .actions-grid {
         grid-template-columns: 1fr;
+    }
+
+    .barra-row {
+        grid-template-columns: 120px 1fr 36px;
     }
 }
 
