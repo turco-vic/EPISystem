@@ -236,6 +236,22 @@
             <div class="section-head">
                 <h2 class="section-title">Ações rápidas</h2>
                 <span class="section-sub">O que você quer fazer?</span>
+                <div v-if="role === 'admin'" class="export-group">
+                    <span class="export-label">CSV</span>
+                    <button class="btn-export" @click="exportarEpis" :disabled="exportando">
+                        <i class="fa-solid fa-file-csv"></i> EPIs
+                    </button>
+                    <button class="btn-export" @click="exportarSolicitacoes" :disabled="exportando">
+                        <i class="fa-solid fa-file-csv"></i> Solicitações
+                    </button>
+                    <span class="export-label">PDF</span>
+                    <button class="btn-export btn-export-pdf" @click="exportarEpisPdf" :disabled="exportando">
+                        <i class="fa-solid fa-file-pdf"></i> EPIs
+                    </button>
+                    <button class="btn-export btn-export-pdf" @click="exportarSolicitacoesPdf" :disabled="exportando">
+                        <i class="fa-solid fa-file-pdf"></i> Solicitações
+                    </button>
+                </div>
             </div>
             <div class="actions-grid">
                 <router-link to="/estoque" class="action-card">
@@ -307,7 +323,7 @@
 import NavBar from "../components/Navbar.vue";
 import Sidebar from "../components/Sidebar.vue";
 import { useSupabase } from "../composables/useSupabase.js";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, inject } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
@@ -316,7 +332,9 @@ export default {
     setup() {
         const { supabase } = useSupabase();
         const router = useRouter();
+        const showToast = inject("showToast");
         const sidebarOpen = ref(false);
+        const exportando = ref(false);
 
         const userName = ref('Usuário');
         const role = ref('');
@@ -366,6 +384,218 @@ export default {
         function formatStatus(s) {
             if (!s) return 'Pendente';
             return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        function baixarCsv(conteudo, nomeArquivo) {
+            const bom = '\uFEFF';
+            const blob = new Blob([bom + conteudo], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nomeArquivo;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function escaparCsv(val) {
+            if (val === null || val === undefined) return '';
+            const str = String(val);
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        }
+
+        async function exportarEpis() {
+            exportando.value = true;
+            const { data, error } = await supabase
+                .from('epis')
+                .select('nome, tipo, quantidade, disponivel, data_validade, codigo_patrimonio')
+                .order('nome');
+            if (error || !data) {
+                showToast('Erro ao exportar EPIs.', 'error');
+                exportando.value = false;
+                return;
+            }
+            const cabecalho = ['Nome', 'Tipo', 'Quantidade', 'Disponível', 'Validade', 'Código Patrimônio'];
+            const linhas = data.map(e => [
+                escaparCsv(e.nome),
+                escaparCsv(e.tipo),
+                escaparCsv(e.quantidade),
+                escaparCsv(e.disponivel ? 'Sim' : 'Não'),
+                escaparCsv(e.data_validade ? formatDate(e.data_validade) : ''),
+                escaparCsv(e.codigo_patrimonio)
+            ].join(','));
+            const csv = [cabecalho.join(','), ...linhas].join('\n');
+            const data_hoje = new Date().toISOString().split('T')[0];
+            baixarCsv(csv, `epis_${data_hoje}.csv`);
+            showToast('EPIs exportados com sucesso.', 'success');
+            exportando.value = false;
+        }
+
+        async function exportarSolicitacoes() {
+            exportando.value = true;
+            const { data: sa, error: ea } = await supabase
+                .from('aluno_has_epis')
+                .select('data_entrega, status, aluno(nome, sobrenome), epis(nome, tipo)')
+                .order('data_entrega', { ascending: false });
+            const { data: sf, error: ef } = await supabase
+                .from('funcionario_has_epis')
+                .select('data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, tipo)')
+                .order('data_entrega', { ascending: false });
+            if ((ea && ef) || (!sa && !sf)) {
+                showToast('Erro ao exportar solicitações.', 'error');
+                exportando.value = false;
+                return;
+            }
+            const cabecalho = ['Solicitante', 'Email', 'Tipo', 'EPI', 'Tipo EPI', 'Data Entrega', 'Data Devolução', 'Status'];
+            const linhas = [];
+            if (sa) sa.forEach(s => linhas.push([
+                escaparCsv(`${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim()),
+                escaparCsv('—'),
+                escaparCsv('Aluno'),
+                escaparCsv(s.epis?.nome),
+                escaparCsv(s.epis?.tipo),
+                escaparCsv(s.data_entrega ? formatDate(s.data_entrega) : ''),
+                escaparCsv(''),
+                escaparCsv(formatStatus(s.status))
+            ].join(',')));
+            if (sf) sf.forEach(s => linhas.push([
+                escaparCsv(`${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim()),
+                escaparCsv(s.funcionario?.email || ''),
+                escaparCsv('Funcionário'),
+                escaparCsv(s.epis?.nome),
+                escaparCsv(s.epis?.tipo),
+                escaparCsv(s.data_entrega ? formatDate(s.data_entrega) : ''),
+                escaparCsv(s.data_devolucao ? formatDate(s.data_devolucao) : ''),
+                escaparCsv(formatStatus(s.status))
+            ].join(',')));
+            const csv = [cabecalho.join(','), ...linhas].join('\n');
+            const data_hoje = new Date().toISOString().split('T')[0];
+            baixarCsv(csv, `solicitacoes_${data_hoje}.csv`);
+            showToast('Solicitações exportadas com sucesso.', 'success');
+            exportando.value = false;
+        }
+
+        function abrirJanelaPdf(html) {
+            const win = window.open('', '_blank');
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            setTimeout(() => { win.print(); }, 600);
+        }
+
+        function estilosPdf() {
+            return `
+                <style>
+                    * { box-sizing: border-box; margin: 0; padding: 0; }
+                    body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a2b5e; background: #fff; padding: 2rem; }
+                    h1 { font-size: 1.4rem; color: #243c75; margin-bottom: 0.25rem; }
+                    p.sub { font-size: 0.8rem; color: #6b82b0; margin-bottom: 1.5rem; }
+                    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+                    thead tr { background: #243c75; color: #fff; }
+                    th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
+                    td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #e8edf8; }
+                    tr:nth-child(even) td { background: #f8f9ff; }
+                    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
+                    .badge-green { background: #dcfce7; color: #15803d; }
+                    .badge-red { background: #fee2e2; color: #b91c1c; }
+                    .badge-yellow { background: #fef3c7; color: #b45309; }
+                    @media print { body { padding: 0; } }
+                </style>
+            `;
+        }
+
+        async function exportarEpisPdf() {
+            exportando.value = true;
+            const { data, error } = await supabase
+                .from('epis')
+                .select('nome, tipo, quantidade, disponivel, data_validade, codigo_patrimonio')
+                .order('nome');
+            if (error || !data) {
+                showToast('Erro ao exportar EPIs.', 'error');
+                exportando.value = false;
+                return;
+            }
+            const data_hoje = new Date().toLocaleDateString('pt-BR');
+            const linhas = data.map(e => `
+                <tr>
+                    <td>${e.nome || ''}</td>
+                    <td>${e.tipo || ''}</td>
+                    <td>${e.quantidade ?? ''}</td>
+                    <td><span class="badge ${e.disponivel ? 'badge-green' : 'badge-red'}">${e.disponivel ? 'Sim' : 'Não'}</span></td>
+                    <td>${e.data_validade ? formatDate(e.data_validade) : '—'}</td>
+                    <td>${e.codigo_patrimonio || '—'}</td>
+                </tr>
+            `).join('');
+            const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>EPIs — ${data_hoje}</title>${estilosPdf()}</head><body>
+                <h1>Relatório de EPIs</h1>
+                <p class="sub">Gerado em ${data_hoje} &nbsp;|&nbsp; ${data.length} registro(s)</p>
+                <table>
+                    <thead><tr><th>Nome</th><th>Tipo</th><th>Qtd</th><th>Disponível</th><th>Validade</th><th>Patrimônio</th></tr></thead>
+                    <tbody>${linhas}</tbody>
+                </table>
+            </body></html>`;
+            abrirJanelaPdf(html);
+            exportando.value = false;
+        }
+
+        async function exportarSolicitacoesPdf() {
+            exportando.value = true;
+            const { data: sa } = await supabase
+                .from('aluno_has_epis')
+                .select('data_entrega, status, aluno(nome, sobrenome), epis(nome, tipo)')
+                .order('data_entrega', { ascending: false });
+            const { data: sf } = await supabase
+                .from('funcionario_has_epis')
+                .select('data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, tipo)')
+                .order('data_entrega', { ascending: false });
+            if (!sa && !sf) {
+                showToast('Erro ao exportar solicitações.', 'error');
+                exportando.value = false;
+                return;
+            }
+            const data_hoje = new Date().toLocaleDateString('pt-BR');
+            const linhas = [];
+            if (sa) sa.forEach(s => {
+                const status = formatStatus(s.status);
+                const cls = s.status === 'aprovado' || s.status === 'entregue' || s.status === 'devolvido' ? 'badge-green' : s.status === 'rejeitado' ? 'badge-red' : 'badge-yellow';
+                linhas.push(`<tr>
+                    <td>${`${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim()}</td>
+                    <td>—</td>
+                    <td>Aluno</td>
+                    <td>${s.epis?.nome || ''}</td>
+                    <td>${s.epis?.tipo || ''}</td>
+                    <td>${s.data_entrega ? formatDate(s.data_entrega) : '—'}</td>
+                    <td>—</td>
+                    <td><span class="badge ${cls}">${status}</span></td>
+                </tr>`);
+            });
+            if (sf) sf.forEach(s => {
+                const status = formatStatus(s.status);
+                const cls = s.status === 'aprovado' || s.status === 'entregue' || s.status === 'devolvido' ? 'badge-green' : s.status === 'rejeitado' ? 'badge-red' : 'badge-yellow';
+                linhas.push(`<tr>
+                    <td>${`${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim()}</td>
+                    <td>${s.funcionario?.email || ''}</td>
+                    <td>Funcionário</td>
+                    <td>${s.epis?.nome || ''}</td>
+                    <td>${s.epis?.tipo || ''}</td>
+                    <td>${s.data_entrega ? formatDate(s.data_entrega) : '—'}</td>
+                    <td>${s.data_devolucao ? formatDate(s.data_devolucao) : '—'}</td>
+                    <td><span class="badge ${cls}">${status}</span></td>
+                </tr>`);
+            });
+            const total = (sa?.length || 0) + (sf?.length || 0);
+            const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Solicitações — ${data_hoje}</title>${estilosPdf()}</head><body>
+                <h1>Relatório de Solicitações</h1>
+                <p class="sub">Gerado em ${data_hoje} &nbsp;|&nbsp; ${total} registro(s)</p>
+                <table>
+                    <thead><tr><th>Solicitante</th><th>Email</th><th>Tipo</th><th>EPI</th><th>Tipo EPI</th><th>Entrega</th><th>Devolução</th><th>Status</th></tr></thead>
+                    <tbody>${linhas.join('')}</tbody>
+                </table>
+            </body></html>`;
+            abrirJanelaPdf(html);
+            exportando.value = false;
         }
 
         async function carregarDadosAdmin(userEm) {
@@ -571,10 +801,11 @@ export default {
 
         return {
             userName, firstName, userEmail, role, roleLabel,
-            sidebarOpen, stats, today,
+            sidebarOpen, stats, today, exportando,
             estoquePorTipo, entregasRecentes, devolucoesPendentes,
             atividadeRecente, donutPct, donutMsg,
-            formatDate, getBadge, formatStatus
+            formatDate, getBadge, formatStatus,
+            exportarEpis, exportarSolicitacoes, exportarEpisPdf, exportarSolicitacoesPdf
         };
     }
 }
@@ -958,8 +1189,9 @@ export default {
 
 .section-head {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .section-title {
@@ -973,6 +1205,59 @@ export default {
     font-family: 'Red Hat Display', sans-serif;
     color: #9aaac5;
     font-size: 0.9rem;
+    flex: 1;
+}
+
+.export-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.export-label {
+    font-family: 'Anton', sans-serif;
+    font-size: 0.68rem;
+    color: #9aaac5;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    align-self: center;
+}
+
+.btn-export-pdf {
+    background: #7f1d1d;
+}
+
+.btn-export-pdf:hover:not(:disabled) {
+    background: #991b1b;
+    box-shadow: 0 4px 12px rgba(127, 29, 29, 0.35);
+}
+
+.btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #243c75;
+    color: #ebfbff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.55rem 1rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.btn-export:hover:not(:disabled) {
+    background: #1a2d5a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(36, 60, 117, 0.25);
+}
+
+.btn-export:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .table-wrapper {
@@ -1258,6 +1543,15 @@ export default {
 
     .barra-row {
         grid-template-columns: 120px 1fr 36px;
+    }
+
+    .export-group {
+        width: 100%;
+    }
+
+    .btn-export {
+        flex: 1;
+        justify-content: center;
     }
 }
 
