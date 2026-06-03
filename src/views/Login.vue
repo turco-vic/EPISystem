@@ -112,19 +112,24 @@ export default {
 
                 router.push('/estoque');
             } else {
-                const { data: func } = await supabase
-                    .from('funcionario')
-                    .select('status')
-                    .eq('email', data.user.email)
-                    .single();
-
-                if (!func || func?.status === 'Inativo') {
-                    await supabase.auth.signOut();
-                    loading.value = false;
-                    errorMsg.value = 'Sua conta foi desativada. Entre em contato com a administração.';
-                    return;
+                if (role === 'docente') {
+                    const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+                    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+                    try {
+                        const res = await fetch(
+                            `${supabaseUrl}/rest/v1/funcionario?email=eq.${encodeURIComponent(data.user.email)}&select=status&limit=1`,
+                            { headers: { 'apikey': serviceKey, 'Authorization': `Bearer ${serviceKey}` } }
+                        );
+                        const funcData = await res.json();
+                        const func = funcData?.[0];
+                        if (func?.status === 'Inativo') {
+                            await supabase.auth.signOut();
+                            loading.value = false;
+                            errorMsg.value = 'Sua conta foi desativada. Entre em contato com a administração.';
+                            return;
+                        }
+                    } catch (e) { }
                 }
-
                 router.push('/dashboard');
             }
 
