@@ -79,37 +79,58 @@
                 <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
             </div>
 
-            <div class="table-wrapper" v-else>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Função</th>
-                            <th>Telefone</th>
-                            <th>Status</th>
-                            <th>Cadastro</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="f in funcionarios" :key="f.idfuncionario">
-                            <td>{{ f.nome }} {{ f.sobrenome }}</td>
-                            <td>{{ f.email }}</td>
-                            <td>{{ f.funcao || '—' }}</td>
-                            <td>{{ f.telefone || '—' }}</td>
-                            <td>
-                                <span :class="['badge', f.status === 'Ativo' ? 'badge-green' : 'badge-red']">
-                                    {{ f.status || '—' }}
-                                </span>
-                            </td>
-                            <td>{{ f.role || 'docente' }}</td>
-                        </tr>
-                        <tr v-if="funcionarios.length === 0">
-                            <td colspan="6" class="empty-row">Nenhum funcionário cadastrado.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <template v-else>
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Função</th>
+                                <th>Telefone</th>
+                                <th>Status</th>
+                                <th>Cadastro</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="f in funcionarios" :key="f.idfuncionario">
+                                <td>{{ f.nome }} {{ f.sobrenome }}</td>
+                                <td>{{ f.email }}</td>
+                                <td>{{ f.funcao || '—' }}</td>
+                                <td>{{ f.telefone || '—' }}</td>
+                                <td>
+                                    <span :class="['badge', f.status === 'Ativo' ? 'badge-green' : 'badge-red']">
+                                        {{ f.status || '—' }}
+                                    </span>
+                                </td>
+                                <td>{{ f.role || 'docente' }}</td>
+                            </tr>
+                            <tr v-if="funcionarios.length === 0">
+                                <td colspan="6" class="empty-row">Nenhum funcionário cadastrado.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="cards-mobile">
+                    <div v-if="funcionarios.length === 0" class="card-empty">Nenhum funcionário cadastrado.</div>
+                    <div v-for="f in funcionarios" :key="f.idfuncionario" class="func-card">
+                        <div class="func-card-header">
+                            <span class="func-card-nome">{{ f.nome }} {{ f.sobrenome }}</span>
+                            <span :class="['badge', f.status === 'Ativo' ? 'badge-green' : 'badge-red']">{{ f.status ||
+                                '—' }}</span>
+                        </div>
+                        <div class="func-card-row"><span class="func-card-label">Email</span><span>{{ f.email }}</span>
+                        </div>
+                        <div class="func-card-row"><span class="func-card-label">Função</span><span>{{ f.funcao || '—'
+                                }}</span></div>
+                        <div class="func-card-row"><span class="func-card-label">Telefone</span><span>{{ f.telefone ||
+                                '—' }}</span></div>
+                        <div class="func-card-row"><span class="func-card-label">Tipo</span><span>{{ f.role || 'docente'
+                                }}</span></div>
+                    </div>
+                </div>
+            </template>
         </div>
 
     </main>
@@ -135,15 +156,8 @@ export default {
         const loadingLista = ref(true);
 
         const form = ref({
-            nome: '',
-            sobrenome: '',
-            cpf: '',
-            email: '',
-            senha: '',
-            funcao: '',
-            data_nascimento: '',
-            telefone: '',
-            status: 'Ativo'
+            nome: '', sobrenome: '', cpf: '', email: '', senha: '',
+            funcao: '', data_nascimento: '', telefone: '', status: 'Ativo'
         });
 
         function formatCPF(e) {
@@ -177,10 +191,7 @@ export default {
                 const emails = data.map(f => f.email).filter(Boolean);
                 let rolesMap = {};
                 if (emails.length > 0) {
-                    const { data: profs } = await supabase
-                        .from('profiles')
-                        .select('email, role')
-                        .in('email', emails);
+                    const { data: profs } = await supabase.from('profiles').select('email, role').in('email', emails);
                     if (profs) profs.forEach(p => { rolesMap[p.email] = p.role; });
                 }
                 funcionarios.value = data.map(f => ({ ...f, role: rolesMap[f.email] || 'docente' }));
@@ -204,21 +215,33 @@ export default {
 
             salvando.value = true;
 
-            const { data, error: authError } = await supabase.auth.signUp({
-                email: form.value.email,
-                password: form.value.senha,
-                options: {
-                    data: { full_name: `${form.value.nome} ${form.value.sobrenome}` }
-                }
+            const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+
+            const res = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': serviceKey,
+                    'Authorization': `Bearer ${serviceKey}`
+                },
+                body: JSON.stringify({
+                    email: form.value.email,
+                    password: form.value.senha,
+                    email_confirm: true,
+                    user_metadata: { full_name: `${form.value.nome} ${form.value.sobrenome}` }
+                })
             });
 
-            if (authError) {
-                errorMsg.value = authError.message || 'Erro ao criar conta.';
+            const authData = await res.json();
+
+            if (!res.ok || authData.error) {
+                errorMsg.value = authData.msg || authData.error || 'Erro ao criar conta.';
                 salvando.value = false;
                 return;
             }
 
-            const userId = data.user?.id;
+            const userId = authData.id;
 
             const { error: funcError } = await supabase.from('funcionario').insert({
                 nome: form.value.nome,
@@ -270,7 +293,7 @@ export default {
 .main {
     min-height: 100vh;
     background: linear-gradient(180deg, #f0f4ff 0%, #e8eeff 100%);
-    padding: 12vh 4rem 4rem 4rem;
+    padding: 2rem 4rem 4rem 4rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -562,9 +585,70 @@ export default {
     color: #b91c1c;
 }
 
+.cards-mobile {
+    display: none;
+}
+
+.func-card {
+    background: #fff;
+    border: 1px solid #d0daf0;
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    box-shadow: 0 2px 12px rgba(36, 60, 117, 0.06);
+}
+
+.func-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.func-card-nome {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 0.98rem;
+}
+
+.func-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.88rem;
+    color: #1a2b5e;
+    border-top: 1px solid #f0f4ff;
+    padding-top: 0.5rem;
+}
+
+.func-card-label {
+    font-family: 'Anton', sans-serif;
+    font-size: 0.7rem;
+    color: #9aaac5;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+}
+
+.card-empty {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #9aaac5;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 2.5rem;
+    font-style: italic;
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #d0daf0;
+}
+
 @media (max-width: 768px) {
     .main {
-        padding: 10vh 1.25rem 3rem 1.25rem;
+        padding: 1.25rem 1.25rem 3rem 1.25rem;
     }
 
     .page-title {
@@ -575,10 +659,24 @@ export default {
         max-width: 100%;
     }
 
-    .table th,
-    .table td {
-        padding: 0.75rem;
-        font-size: 0.85rem;
+    .table-wrapper {
+        display: none;
+    }
+
+    .cards-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-outline {
+        width: 100%;
+        justify-content: center;
     }
 }
 </style>

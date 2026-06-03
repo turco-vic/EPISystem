@@ -24,10 +24,10 @@
                 <div class="stat-card">
                     <div class="stat-head">
                         <div class="stat-icon stat-icon-blue"><i class="fa-solid fa-helmet-safety"></i></div>
-                        <span class="stat-trend">total</span>
+                        <span class="stat-trend">estoque</span>
                     </div>
                     <h2 class="stat-number">{{ stats.totalEpis }}</h2>
-                    <p class="stat-label">Total de EPIs registrados</p>
+                    <p class="stat-label">Unidades em estoque</p>
                 </div>
                 <div class="stat-card">
                     <div class="stat-head">
@@ -35,23 +35,23 @@
                         <span class="stat-trend trend-green">disponível</span>
                     </div>
                     <h2 class="stat-number">{{ stats.episDisponiveis }}</h2>
-                    <p class="stat-label">{{ stats.disponibilidadePct }}% do total</p>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-head">
-                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
-                        <span class="stat-trend trend-amber">em uso</span>
-                    </div>
-                    <h2 class="stat-number">{{ stats.emprestimosAtivos }}</h2>
-                    <p class="stat-label">Entregas ativas</p>
+                    <p class="stat-label">{{ stats.disponibilidadePct }}% disponíveis</p>
                 </div>
                 <div class="stat-card stat-alert">
                     <div class="stat-head">
-                        <div class="stat-icon stat-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <span class="stat-trend trend-red">atenção</span>
+                        <div class="stat-icon stat-icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <span class="stat-trend trend-amber">pendentes</span>
                     </div>
-                    <h2 class="stat-number">{{ stats.estoqueCritico }}</h2>
-                    <p class="stat-label">Estoque crítico</p>
+                    <h2 class="stat-number">{{ stats.solicitacoesPendentes }}</h2>
+                    <p class="stat-label">Solicitações aguardando</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-head">
+                        <div class="stat-icon stat-icon-red"><i class="fa-solid fa-right-left"></i></div>
+                        <span class="stat-trend trend-red">em uso</span>
+                    </div>
+                    <h2 class="stat-number">{{ stats.episEmUso }}</h2>
+                    <p class="stat-label">EPIs pendentes de devolução</p>
                 </div>
             </template>
 
@@ -75,10 +75,10 @@
                 <div class="stat-card">
                     <div class="stat-head">
                         <div class="stat-icon stat-icon-green"><i class="fa-solid fa-circle-check"></i></div>
-                        <span class="stat-trend trend-green">aprovadas</span>
+                        <span class="stat-trend trend-green">disponíveis</span>
                     </div>
-                    <h2 class="stat-number">{{ stats.totalEntregas }}</h2>
-                    <p class="stat-label">Entregas aprovadas</p>
+                    <h2 class="stat-number">{{ stats.episDisponiveis }}</h2>
+                    <p class="stat-label">{{ stats.disponibilidadePct }}% do estoque</p>
                 </div>
                 <div class="stat-card stat-alert">
                     <div class="stat-head">
@@ -158,41 +158,39 @@
 
             <section class="table-section">
                 <div class="section-head">
-                    <h2 class="section-title">Entregas recentes</h2>
-                    <span class="section-sub">Últimas solicitações aprovadas</span>
+                    <h2 class="section-title">Solicitações pendentes</h2>
+                    <span class="section-sub">Aguardando aprovação</span>
                 </div>
                 <div class="table-wrapper">
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Nome</th>
+                                <th>Solicitante</th>
                                 <th>EPI</th>
                                 <th>Data</th>
                                 <th>Tipo</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="e in entregasRecentes" :key="e.id">
+                            <tr v-for="e in solicitacoesPendentes" :key="e.id">
                                 <td>{{ e.nome }}</td>
                                 <td>{{ e.epi }}</td>
                                 <td>{{ formatDate(e.data) }}</td>
                                 <td>{{ e.tipo }}</td>
-                                <td><span :class="['badge', getBadge(e.status)]">{{ formatStatus(e.status) }}</span>
-                                </td>
                             </tr>
-                            <tr v-if="entregasRecentes.length === 0">
-                                <td colspan="5" class="empty-row">Nenhuma entrega registrada.</td>
+                            <tr v-if="solicitacoesPendentes.length === 0">
+                                <td colspan="4" class="empty-row">Nenhuma solicitação pendente.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="cards-mobile">
-                    <div v-if="entregasRecentes.length === 0" class="card-empty">Nenhuma entrega registrada.</div>
-                    <div v-for="e in entregasRecentes" :key="e.id" class="info-card">
+                    <div v-if="solicitacoesPendentes.length === 0" class="card-empty">Nenhuma solicitação pendente.
+                    </div>
+                    <div v-for="e in solicitacoesPendentes" :key="e.id" class="info-card">
                         <div class="info-card-header">
                             <span class="info-card-nome">{{ e.nome }}</span>
-                            <span :class="['badge', getBadge(e.status)]">{{ formatStatus(e.status) }}</span>
+                            <span class="badge badge-yellow">Pendente</span>
                         </div>
                         <div class="info-card-row"><span class="info-card-label">EPI</span><span>{{ e.epi }}</span>
                         </div>
@@ -204,10 +202,10 @@
                 </div>
             </section>
 
-            <section class="table-section" v-if="devolucoesPendentes.length > 0 || role === 'admin'">
+            <section class="table-section">
                 <div class="section-head">
-                    <h2 class="section-title">Devoluções pendentes</h2>
-                    <span class="section-sub">EPIs aprovados ainda não devolvidos</span>
+                    <h2 class="section-title">EPIs em uso</h2>
+                    <span class="section-sub">Aprovados e ainda não devolvidos</span>
                 </div>
                 <div class="table-wrapper">
                     <table class="table">
@@ -219,11 +217,11 @@
                                 <th>Patrimônio</th>
                                 <th>Data entrega</th>
                                 <th>Tipo</th>
-                                <th>Status</th>
+                                <th>Situação</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="d in devolucoesPendentes" :key="d.id">
+                            <tr v-for="d in episEmUso" :key="d.id">
                                 <td>{{ d.nome }}</td>
                                 <td v-if="role === 'admin'">{{ d.email }}</td>
                                 <td>{{ d.epi }}</td>
@@ -231,25 +229,24 @@
                                 <td>{{ formatDate(d.data) }}</td>
                                 <td>{{ d.tipo }}</td>
                                 <td>
-                                    <span :class="['badge', d.urgente ? 'badge-red' : 'badge-yellow']">
-                                        {{ d.urgente ? 'Urgente' : 'Pendente' }}
+                                    <span :class="['badge', d.atrasado ? 'badge-red' : 'badge-blue']">
+                                        {{ d.atrasado ? 'Atrasado' : 'Em uso' }}
                                     </span>
                                 </td>
                             </tr>
-                            <tr v-if="devolucoesPendentes.length === 0">
-                                <td :colspan="role === 'admin' ? 7 : 6" class="empty-row">Nenhuma devolução pendente.
-                                </td>
+                            <tr v-if="episEmUso.length === 0">
+                                <td :colspan="role === 'admin' ? 7 : 6" class="empty-row">Nenhum EPI em uso.</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="cards-mobile">
-                    <div v-if="devolucoesPendentes.length === 0" class="card-empty">Nenhuma devolução pendente.</div>
-                    <div v-for="d in devolucoesPendentes" :key="d.id" class="info-card">
+                    <div v-if="episEmUso.length === 0" class="card-empty">Nenhum EPI em uso.</div>
+                    <div v-for="d in episEmUso" :key="d.id" class="info-card">
                         <div class="info-card-header">
                             <span class="info-card-nome">{{ d.nome }}</span>
-                            <span :class="['badge', d.urgente ? 'badge-red' : 'badge-yellow']">{{ d.urgente ? 'Urgente'
-                                : 'Pendente' }}</span>
+                            <span :class="['badge', d.atrasado ? 'badge-red' : 'badge-blue']">{{ d.atrasado ? 'Atrasado'
+                                : 'Em uso' }}</span>
                         </div>
                         <div v-if="role === 'admin'" class="info-card-row"><span
                                 class="info-card-label">Email</span><span>{{ d.email }}</span></div>
@@ -272,19 +269,16 @@
                 <span class="section-sub">O que você quer fazer?</span>
                 <div v-if="role === 'admin'" class="export-group">
                     <span class="export-label">CSV</span>
-                    <button class="btn-export" @click="exportarEpis" :disabled="exportando">
-                        <i class="fa-solid fa-file-csv"></i> EPIs
-                    </button>
-                    <button class="btn-export" @click="exportarSolicitacoes" :disabled="exportando">
-                        <i class="fa-solid fa-file-csv"></i> Solicitações
-                    </button>
+                    <button class="btn-export" @click="exportarEpis" :disabled="exportando"><i
+                            class="fa-solid fa-file-csv"></i>
+                        EPIs</button>
+                    <button class="btn-export" @click="exportarSolicitacoes" :disabled="exportando"><i
+                            class="fa-solid fa-file-csv"></i> Solicitações</button>
                     <span class="export-label">PDF</span>
-                    <button class="btn-export btn-export-pdf" @click="exportarEpisPdf" :disabled="exportando">
-                        <i class="fa-solid fa-file-pdf"></i> EPIs
-                    </button>
-                    <button class="btn-export btn-export-pdf" @click="exportarSolicitacoesPdf" :disabled="exportando">
-                        <i class="fa-solid fa-file-pdf"></i> Solicitações
-                    </button>
+                    <button class="btn-export btn-export-pdf" @click="exportarEpisPdf" :disabled="exportando"><i
+                            class="fa-solid fa-file-pdf"></i> EPIs</button>
+                    <button class="btn-export btn-export-pdf" @click="exportarSolicitacoesPdf" :disabled="exportando"><i
+                            class="fa-solid fa-file-pdf"></i> Solicitações</button>
                 </div>
             </div>
             <div class="actions-grid">
@@ -382,17 +376,16 @@ export default {
             totalEpis: 0,
             episDisponiveis: 0,
             disponibilidadePct: 0,
-            emprestimosAtivos: 0,
-            totalEntregas: 0,
+            episEmUso: 0,
+            solicitacoesPendentes: 0,
             estoqueCritico: 0,
             episComigo: 0,
-            solicitacoesPendentes: 0,
             avisosValidade: 0
         });
 
         const estoquePorTipo = ref([]);
-        const entregasRecentes = ref([]);
-        const devolucoesPendentes = ref([]);
+        const solicitacoesPendentes = ref([]);
+        const episEmUso = ref([]);
         const atividadeRecente = ref([]);
 
         const donutPct = computed(() => (stats.value.disponibilidadePct / 100) * 314.16);
@@ -434,7 +427,7 @@ export default {
         function escaparCsv(val) {
             if (val === null || val === undefined) return '';
             const str = String(val);
-            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            if (str.includes(';') || str.includes('"') || str.includes('\n')) {
                 return `"${str.replace(/"/g, '""')}"`;
             }
             return str;
@@ -442,71 +435,26 @@ export default {
 
         async function exportarEpis() {
             exportando.value = true;
-            const { data, error } = await supabase
-                .from('epis')
-                .select('nome, tipo, quantidade, disponivel, data_validade, codigo_patrimonio')
-                .order('nome');
-            if (error || !data) {
-                showToast('Erro ao exportar EPIs.', 'error');
-                exportando.value = false;
-                return;
-            }
+            const { data, error } = await supabase.from('epis').select('nome, tipo, quantidade, disponivel, data_validade, codigo_patrimonio').order('nome');
+            if (error || !data) { showToast('Erro ao exportar EPIs.', 'error'); exportando.value = false; return; }
             const cabecalho = ['Nome', 'Tipo', 'Quantidade', 'Disponível', 'Validade', 'Código Patrimônio'];
-            const linhas = data.map(e => [
-                escaparCsv(e.nome),
-                escaparCsv(e.tipo),
-                escaparCsv(e.quantidade),
-                escaparCsv(e.disponivel ? 'Sim' : 'Não'),
-                escaparCsv(e.data_validade ? formatDate(e.data_validade) : ''),
-                escaparCsv(e.codigo_patrimonio)
-            ].join(';'));
+            const linhas = data.map(e => [escaparCsv(e.nome), escaparCsv(e.tipo), escaparCsv(e.quantidade), escaparCsv(e.disponivel ? 'Sim' : 'Não'), escaparCsv(e.data_validade ? formatDate(e.data_validade) : ''), escaparCsv(e.codigo_patrimonio)].join(';'));
             const csv = [cabecalho.join(';'), ...linhas].join('\n');
-            const data_hoje = new Date().toISOString().split('T')[0];
-            baixarCsv(csv, `epis_${data_hoje}.csv`);
+            baixarCsv(csv, `epis_${new Date().toISOString().split('T')[0]}.csv`);
             showToast('EPIs exportados com sucesso.', 'success');
             exportando.value = false;
         }
 
         async function exportarSolicitacoes() {
             exportando.value = true;
-            const { data: sa, error: ea } = await supabase
-                .from('aluno_has_epis')
-                .select('data_entrega, status, aluno(nome, sobrenome), epis(nome, tipo)')
-                .order('data_entrega', { ascending: false });
-            const { data: sf, error: ef } = await supabase
-                .from('funcionario_has_epis')
-                .select('data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, tipo)')
-                .order('data_entrega', { ascending: false });
-            if ((ea && ef) || (!sa && !sf)) {
-                showToast('Erro ao exportar solicitações.', 'error');
-                exportando.value = false;
-                return;
-            }
+            const { data: sa } = await supabase.from('aluno_has_epis').select('data_entrega, status, aluno(nome, sobrenome), epis(nome, tipo)').order('data_entrega', { ascending: false });
+            const { data: sf } = await supabase.from('funcionario_has_epis').select('data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, tipo)').order('data_entrega', { ascending: false });
+            if (!sa && !sf) { showToast('Erro ao exportar solicitações.', 'error'); exportando.value = false; return; }
             const cabecalho = ['Solicitante', 'Email', 'Tipo', 'EPI', 'Tipo EPI', 'Data Entrega', 'Data Devolução', 'Status'];
             const linhas = [];
-            if (sa) sa.forEach(s => linhas.push([
-                escaparCsv(`${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim()),
-                escaparCsv('—'),
-                escaparCsv('Aluno'),
-                escaparCsv(s.epis?.nome),
-                escaparCsv(s.epis?.tipo),
-                escaparCsv(s.data_entrega ? formatDate(s.data_entrega) : ''),
-                escaparCsv(''),
-                escaparCsv(formatStatus(s.status))
-            ].join(';')));
-            if (sf) sf.forEach(s => linhas.push([
-                escaparCsv(`${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim()),
-                escaparCsv(s.funcionario?.email || ''),
-                escaparCsv('Funcionário'),
-                escaparCsv(s.epis?.nome),
-                escaparCsv(s.epis?.tipo),
-                escaparCsv(s.data_entrega ? formatDate(s.data_entrega) : ''),
-                escaparCsv(s.data_devolucao ? formatDate(s.data_devolucao) : ''),
-                escaparCsv(formatStatus(s.status))
-            ].join(';')));
-            const csv = [cabecalho.join(';'), ...linhas].join('\n');
-            const data_hoje = new Date().toISOString().split('T')[0];
-            baixarCsv(csv, `solicitacoes_${data_hoje}.csv`);
+            if (sa) sa.forEach(s => linhas.push([escaparCsv(`${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim()), escaparCsv('—'), escaparCsv('Aluno'), escaparCsv(s.epis?.nome), escaparCsv(s.epis?.tipo), escaparCsv(s.data_entrega ? formatDate(s.data_entrega) : ''), escaparCsv(''), escaparCsv(formatStatus(s.status))].join(';')));
+            if (sf) sf.forEach(s => linhas.push([escaparCsv(`${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim()), escaparCsv(s.funcionario?.email || ''), escaparCsv('Funcionário'), escaparCsv(s.epis?.nome), escaparCsv(s.epis?.tipo), escaparCsv(s.data_entrega ? formatDate(s.data_entrega) : ''), escaparCsv(s.data_devolucao ? formatDate(s.data_devolucao) : ''), escaparCsv(formatStatus(s.status))].join(';')));
+            baixarCsv([cabecalho.join(';'), ...linhas].join('\n'), `solicitacoes_${new Date().toISOString().split('T')[0]}.csv`);
             showToast('Solicitações exportadas com sucesso.', 'success');
             exportando.value = false;
         }
@@ -520,191 +468,95 @@ export default {
         }
 
         function estilosPdf() {
-            return `
-                <style>
-                    * { box-sizing: border-box; margin: 0; padding: 0; }
-                    body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a2b5e; background: #fff; padding: 2rem; }
-                    h1 { font-size: 1.4rem; color: #243c75; margin-bottom: 0.25rem; }
-                    p.sub { font-size: 0.8rem; color: #6b82b0; margin-bottom: 1.5rem; }
-                    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-                    thead tr { background: #243c75; color: #fff; }
-                    th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; }
-                    td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #e8edf8; }
-                    tr:nth-child(even) td { background: #f8f9ff; }
-                    .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; }
-                    .badge-green { background: #dcfce7; color: #15803d; }
-                    .badge-red { background: #fee2e2; color: #b91c1c; }
-                    .badge-yellow { background: #fef3c7; color: #b45309; }
-                    @media print { body { padding: 0; } }
-                </style>
-            `;
+            return `<style>* { box-sizing: border-box; margin: 0; padding: 0; } body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a2b5e; background: #fff; padding: 2rem; } h1 { font-size: 1.4rem; color: #243c75; margin-bottom: 0.25rem; } p.sub { font-size: 0.8rem; color: #6b82b0; margin-bottom: 1.5rem; } table { width: 100%; border-collapse: collapse; font-size: 0.82rem; } thead tr { background: #243c75; color: #fff; } th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.7rem; } td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #e8edf8; } tr:nth-child(even) td { background: #f8f9ff; } .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; } .badge-green { background: #dcfce7; color: #15803d; } .badge-red { background: #fee2e2; color: #b91c1c; } .badge-yellow { background: #fef3c7; color: #b45309; } @media print { body { padding: 0; } }</style>`;
         }
 
         async function exportarEpisPdf() {
             exportando.value = true;
-            const { data, error } = await supabase
-                .from('epis')
-                .select('nome, tipo, quantidade, disponivel, data_validade, codigo_patrimonio')
-                .order('nome');
-            if (error || !data) {
-                showToast('Erro ao exportar EPIs.', 'error');
-                exportando.value = false;
-                return;
-            }
+            const { data, error } = await supabase.from('epis').select('nome, tipo, quantidade, disponivel, data_validade, codigo_patrimonio').order('nome');
+            if (error || !data) { showToast('Erro ao exportar EPIs.', 'error'); exportando.value = false; return; }
             const data_hoje = new Date().toLocaleDateString('pt-BR');
-            const linhas = data.map(e => `
-                <tr>
-                    <td>${e.nome || ''}</td>
-                    <td>${e.tipo || ''}</td>
-                    <td>${e.quantidade ?? ''}</td>
-                    <td><span class="badge ${e.disponivel ? 'badge-green' : 'badge-red'}">${e.disponivel ? 'Sim' : 'Não'}</span></td>
-                    <td>${e.data_validade ? formatDate(e.data_validade) : '—'}</td>
-                    <td>${e.codigo_patrimonio || '—'}</td>
-                </tr>
-            `).join('');
-            const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>EPIs — ${data_hoje}</title>${estilosPdf()}</head><body>
-                <h1>Relatório de EPIs</h1>
-                <p class="sub">Gerado em ${data_hoje} &nbsp;|&nbsp; ${data.length} registro(s)</p>
-                <table>
-                    <thead><tr><th>Nome</th><th>Tipo</th><th>Qtd</th><th>Disponível</th><th>Validade</th><th>Patrimônio</th></tr></thead>
-                    <tbody>${linhas}</tbody>
-                </table>
-            </body></html>`;
-            abrirJanelaPdf(html);
+            const linhas = data.map(e => `<tr><td>${e.nome || ''}</td><td>${e.tipo || ''}</td><td>${e.quantidade ?? ''}</td><td><span class="badge ${e.disponivel ? 'badge-green' : 'badge-red'}">${e.disponivel ? 'Sim' : 'Não'}</span></td><td>${e.data_validade ? formatDate(e.data_validade) : '—'}</td><td>${e.codigo_patrimonio || '—'}</td></tr>`).join('');
+            abrirJanelaPdf(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>EPIs — ${data_hoje}</title>${estilosPdf()}</head><body><h1>Relatório de EPIs</h1><p class="sub">Gerado em ${data_hoje} | ${data.length} registro(s)</p><table><thead><tr><th>Nome</th><th>Tipo</th><th>Qtd</th><th>Disponível</th><th>Validade</th><th>Patrimônio</th></tr></thead><tbody>${linhas}</tbody></table></body></html>`);
             exportando.value = false;
         }
 
         async function exportarSolicitacoesPdf() {
             exportando.value = true;
-            const { data: sa } = await supabase
-                .from('aluno_has_epis')
-                .select('data_entrega, status, aluno(nome, sobrenome), epis(nome, tipo)')
-                .order('data_entrega', { ascending: false });
-            const { data: sf } = await supabase
-                .from('funcionario_has_epis')
-                .select('data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, tipo)')
-                .order('data_entrega', { ascending: false });
-            if (!sa && !sf) {
-                showToast('Erro ao exportar solicitações.', 'error');
-                exportando.value = false;
-                return;
-            }
+            const { data: sa } = await supabase.from('aluno_has_epis').select('data_entrega, status, aluno(nome, sobrenome), epis(nome, tipo)').order('data_entrega', { ascending: false });
+            const { data: sf } = await supabase.from('funcionario_has_epis').select('data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, tipo)').order('data_entrega', { ascending: false });
+            if (!sa && !sf) { showToast('Erro ao exportar solicitações.', 'error'); exportando.value = false; return; }
             const data_hoje = new Date().toLocaleDateString('pt-BR');
             const linhas = [];
-            if (sa) sa.forEach(s => {
-                const status = formatStatus(s.status);
-                const cls = s.status === 'aprovado' || s.status === 'entregue' || s.status === 'devolvido' ? 'badge-green' : s.status === 'rejeitado' ? 'badge-red' : 'badge-yellow';
-                linhas.push(`<tr>
-                    <td>${`${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim()}</td>
-                    <td>—</td><td>Aluno</td>
-                    <td>${s.epis?.nome || ''}</td><td>${s.epis?.tipo || ''}</td>
-                    <td>${s.data_entrega ? formatDate(s.data_entrega) : '—'}</td>
-                    <td>—</td>
-                    <td><span class="badge ${cls}">${status}</span></td>
-                </tr>`);
-            });
-            if (sf) sf.forEach(s => {
-                const status = formatStatus(s.status);
-                const cls = s.status === 'aprovado' || s.status === 'entregue' || s.status === 'devolvido' ? 'badge-green' : s.status === 'rejeitado' ? 'badge-red' : 'badge-yellow';
-                linhas.push(`<tr>
-                    <td>${`${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim()}</td>
-                    <td>${s.funcionario?.email || ''}</td><td>Funcionário</td>
-                    <td>${s.epis?.nome || ''}</td><td>${s.epis?.tipo || ''}</td>
-                    <td>${s.data_entrega ? formatDate(s.data_entrega) : '—'}</td>
-                    <td>${s.data_devolucao ? formatDate(s.data_devolucao) : '—'}</td>
-                    <td><span class="badge ${cls}">${status}</span></td>
-                </tr>`);
-            });
+            const cls = s => s === 'aprovado' || s === 'entregue' || s === 'devolvido' ? 'badge-green' : s === 'rejeitado' ? 'badge-red' : 'badge-yellow';
+            if (sa) sa.forEach(s => linhas.push(`<tr><td>${`${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim()}</td><td>—</td><td>Aluno</td><td>${s.epis?.nome || ''}</td><td>${s.epis?.tipo || ''}</td><td>${s.data_entrega ? formatDate(s.data_entrega) : '—'}</td><td>—</td><td><span class="badge ${cls(s.status)}">${formatStatus(s.status)}</span></td></tr>`));
+            if (sf) sf.forEach(s => linhas.push(`<tr><td>${`${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim()}</td><td>${s.funcionario?.email || ''}</td><td>Funcionário</td><td>${s.epis?.nome || ''}</td><td>${s.epis?.tipo || ''}</td><td>${s.data_entrega ? formatDate(s.data_entrega) : '—'}</td><td>${s.data_devolucao ? formatDate(s.data_devolucao) : '—'}</td><td><span class="badge ${cls(s.status)}">${formatStatus(s.status)}</span></td></tr>`));
             const total = (sa?.length || 0) + (sf?.length || 0);
-            const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Solicitações — ${data_hoje}</title>${estilosPdf()}</head><body>
-                <h1>Relatório de Solicitações</h1>
-                <p class="sub">Gerado em ${data_hoje} &nbsp;|&nbsp; ${total} registro(s)</p>
-                <table>
-                    <thead><tr><th>Solicitante</th><th>Email</th><th>Tipo</th><th>EPI</th><th>Tipo EPI</th><th>Entrega</th><th>Devolução</th><th>Status</th></tr></thead>
-                    <tbody>${linhas.join('')}</tbody>
-                </table>
-            </body></html>`;
-            abrirJanelaPdf(html);
+            abrirJanelaPdf(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Solicitações — ${data_hoje}</title>${estilosPdf()}</head><body><h1>Relatório de Solicitações</h1><p class="sub">Gerado em ${data_hoje} | ${total} registro(s)</p><table><thead><tr><th>Solicitante</th><th>Email</th><th>Tipo</th><th>EPI</th><th>Tipo EPI</th><th>Entrega</th><th>Devolução</th><th>Status</th></tr></thead><tbody>${linhas.join('')}</tbody></table></body></html>`);
             exportando.value = false;
         }
 
         async function carregarDadosAdmin(userEm) {
-            const { data: epis } = await supabase.from('epis').select('quantidade, disponivel, tipo');
+            const { data: epis } = await supabase.from('epis').select('quantidade, tipo');
             if (epis) {
                 const total = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
-                const disponiveis = epis.filter(e => e.disponivel && (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                const disponiveis = epis.filter(e => (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
                 stats.value.totalEpis = total;
                 stats.value.episDisponiveis = disponiveis;
                 stats.value.disponibilidadePct = total > 0 ? Math.round((disponiveis / total) * 100) : 0;
-                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5 && (e.quantidade || 0) > 0).length;
                 const tiposMap = {};
-                epis.forEach(e => {
-                    const t = e.tipo || 'Sem tipo';
-                    tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0);
-                });
+                epis.forEach(e => { const t = e.tipo || 'Sem tipo'; tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0); });
                 const maxVal = Math.max(...Object.values(tiposMap), 1);
-                estoquePorTipo.value = Object.entries(tiposMap)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([tipo, total]) => ({ tipo, total, pct: Math.round((total / maxVal) * 100) }));
+                estoquePorTipo.value = Object.entries(tiposMap).sort((a, b) => b[1] - a[1]).map(([tipo, total]) => ({ tipo, total, pct: Math.round((total / maxVal) * 100) }));
             }
-            const { data: funcEntregas } = await supabase
-                .from('funcionario_has_epis')
-                .select('id_entrega_func, data_entrega, data_devolucao, status, funcionario(nome, sobrenome, email), epis(nome, codigo_patrimonio, tipo)')
-                .order('data_entrega', { ascending: false })
-                .limit(20);
-            const { data: alunoEntregas } = await supabase
-                .from('aluno_has_epis')
-                .select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome, codigo_patrimonio, tipo)')
-                .order('data_entrega', { ascending: false })
-                .limit(20);
-            const recentes = [];
-            const devPendentes = [];
+
+            const { data: sa } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome)').eq('status', 'pendente').order('data_entrega', { ascending: false });
+            const { data: sf } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, status, funcionario(nome, sobrenome, email), epis(nome)').eq('status', 'pendente').order('data_entrega', { ascending: false });
+            const pendentes = [];
+            if (sa) sa.forEach(s => pendentes.push({ id: `a-${s.id_entrega_aluno}`, nome: `${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim(), epi: s.epis?.nome, data: s.data_entrega, tipo: 'Aluno' }));
+            if (sf) sf.forEach(s => pendentes.push({ id: `f-${s.id_entrega_func}`, nome: `${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim(), epi: s.epis?.nome, data: s.data_entrega, tipo: 'Funcionário' }));
+            solicitacoesPendentes.value = pendentes.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
+            stats.value.solicitacoesPendentes = pendentes.length;
+
+            const { data: funcEmUso } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, status, funcionario(nome, sobrenome, email), epis(nome, codigo_patrimonio, tipo)').eq('status', 'aprovado').is('data_devolucao', null).order('data_entrega', { ascending: false });
             const hoje = new Date();
-            if (funcEntregas) {
-                stats.value.emprestimosAtivos = funcEntregas.filter(e => e.status === 'aprovado' && !e.data_devolucao).length;
-                funcEntregas.forEach(e => {
-                    recentes.push({ id: `f-${e.id_entrega_func}`, nome: `${e.funcionario?.nome || ''} ${e.funcionario?.sobrenome || ''}`.trim(), epi: e.epis?.nome, data: e.data_entrega, tipo: 'Funcionário', status: e.status });
-                    if (e.status === 'aprovado' && !e.data_devolucao) {
-                        const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
-                        devPendentes.push({ id: `f-${e.id_entrega_func}`, nome: `${e.funcionario?.nome || ''} ${e.funcionario?.sobrenome || ''}`.trim(), email: e.funcionario?.email || '—', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Funcionário', urgente: diasAtivo > 30 });
-                    }
-                });
-            }
-            if (alunoEntregas) {
-                alunoEntregas.forEach(e => {
-                    recentes.push({ id: `a-${e.id_entrega_aluno}`, nome: `${e.aluno?.nome || ''} ${e.aluno?.sobrenome || ''}`.trim(), epi: e.epis?.nome, data: e.data_entrega, tipo: 'Aluno', status: e.status });
-                });
-            }
-            entregasRecentes.value = recentes.sort((a, b) => (b.data || '').localeCompare(a.data || '')).slice(0, 8);
-            devolucoesPendentes.value = devPendentes.sort((a, b) => (b.urgente ? 1 : 0) - (a.urgente ? 1 : 0));
+            const emUso = [];
+            if (funcEmUso) funcEmUso.forEach(e => {
+                const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
+                emUso.push({ id: `f-${e.id_entrega_func}`, nome: `${e.funcionario?.nome || ''} ${e.funcionario?.sobrenome || ''}`.trim(), email: e.funcionario?.email || '—', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Funcionário', atrasado: diasAtivo > 30 });
+            });
+            episEmUso.value = emUso.sort((a, b) => (b.atrasado ? 1 : 0) - (a.atrasado ? 1 : 0));
+            stats.value.episEmUso = emUso.length;
         }
 
         async function carregarDadosDocente(userEm) {
             const { data: func } = await supabase.from('funcionario').select('idfuncionario').eq('email', userEm).single();
             if (!func) return;
-            const { data: minhas } = await supabase
-                .from('funcionario_has_epis')
-                .select('id_entrega_func, status, data_entrega, data_devolucao, epis(nome, codigo_patrimonio, tipo)')
-                .eq('funcionario_id', func.idfuncionario)
-                .order('data_entrega', { ascending: false });
+
+            const { data: minhas } = await supabase.from('funcionario_has_epis').select('id_entrega_func, status, data_entrega, data_devolucao, epis(nome, codigo_patrimonio, tipo)').eq('funcionario_id', func.idfuncionario).order('data_entrega', { ascending: false });
             if (minhas) {
                 stats.value.episComigo = minhas.filter(e => e.status === 'aprovado' && !e.data_devolucao).length;
-                stats.value.totalEntregas = minhas.filter(e => e.status === 'aprovado').length;
                 const hoje = new Date();
-                entregasRecentes.value = minhas.filter(e => e.status === 'aprovado').slice(0, 8).map(e => ({ id: e.id_entrega_func, nome: 'Você', epi: e.epis?.nome, data: e.data_entrega, tipo: 'Docente', status: e.status }));
-                devolucoesPendentes.value = minhas.filter(e => e.status === 'aprovado' && !e.data_devolucao).map(e => {
+                episEmUso.value = minhas.filter(e => e.status === 'aprovado' && !e.data_devolucao).map(e => {
                     const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
-                    return { id: e.id_entrega_func, nome: 'Você', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Docente', urgente: diasAtivo > 30 };
+                    return { id: e.id_entrega_func, nome: 'Você', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Docente', atrasado: diasAtivo > 30 };
                 });
+
+                const pendentesDoc = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, epis(nome)').eq('funcionario_id', func.idfuncionario).eq('status', 'pendente').order('data_entrega', { ascending: false });
+                solicitacoesPendentes.value = (pendentesDoc.data || []).map(e => ({ id: `f-${e.id_entrega_func}`, nome: 'Você', epi: e.epis?.nome, data: e.data_entrega, tipo: 'Docente' }));
             }
-            const { data: solPendentes } = await supabase.from('aluno_has_epis').select('id_entrega_aluno').eq('status', 'pendente');
-            if (solPendentes) stats.value.solicitacoesPendentes = solPendentes.length;
-            const { data: epis } = await supabase.from('epis').select('quantidade, disponivel, tipo');
+
+            const { data: solAlunos } = await supabase.from('aluno_has_epis').select('id_entrega_aluno').eq('status', 'pendente');
+            if (solAlunos) stats.value.solicitacoesPendentes = solAlunos.length;
+
+            const { data: epis } = await supabase.from('epis').select('quantidade, tipo');
             if (epis) {
                 const total = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
-                const disponiveis = epis.filter(e => e.disponivel && (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                const disponiveis = epis.filter(e => (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                stats.value.episDisponiveis = disponiveis;
                 stats.value.disponibilidadePct = total > 0 ? Math.round((disponiveis / total) * 100) : 0;
-                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5).length;
+                stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5 && (e.quantidade || 0) > 0).length;
                 const tiposMap = {};
                 epis.forEach(e => { const t = e.tipo || 'Sem tipo'; tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0); });
                 const maxVal = Math.max(...Object.values(tiposMap), 1);
@@ -740,7 +592,7 @@ export default {
         return {
             userName, firstName, userEmail, role, roleLabel,
             sidebarOpen, stats, today, exportando,
-            estoquePorTipo, entregasRecentes, devolucoesPendentes,
+            estoquePorTipo, solicitacoesPendentes, episEmUso,
             atividadeRecente, donutPct, donutMsg,
             formatDate, getBadge, formatStatus,
             exportarEpis, exportarSolicitacoes, exportarEpisPdf, exportarSolicitacoesPdf
@@ -1273,6 +1125,11 @@ export default {
 .badge-yellow {
     background: #fef3c7;
     color: #b45309;
+}
+
+.badge-blue {
+    background: #e8eeff;
+    color: #243c75;
 }
 
 .cards-mobile {

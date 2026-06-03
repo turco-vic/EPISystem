@@ -45,7 +45,7 @@ export default {
 <style>
 .toast-container {
   position: fixed;
-  bottom: 1.75rem;
+  top: calc(10vh + 0.75rem);
   right: 1.75rem;
   z-index: 9999;
   display: flex;

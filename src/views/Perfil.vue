@@ -16,7 +16,6 @@
                 <h2 class="profile-name">{{ fullName || 'Usuário' }}</h2>
                 <span class="role-tag" :class="roleClass">{{ roleLabel }}</span>
                 <p class="profile-email">{{ userEmail }}</p>
-
                 <div class="profile-stats">
                     <div class="stat-block">
                         <span class="stat-num">{{ episEntregues.length }}</span>
@@ -28,12 +27,10 @@
                         <span class="stat-lbl">Ativos</span>
                     </div>
                 </div>
-
                 <div class="profile-meta">
                     <i class="fa-solid fa-calendar"></i>
                     <span>Desde {{ createdAt }}</span>
                 </div>
-
                 <div class="profile-actions">
                     <button class="btn-edit" @click="abrirModalEditar">
                         <i class="fa-solid fa-pen"></i> Editar perfil
@@ -341,7 +338,7 @@ export default {
 .main {
     min-height: 100vh;
     background: linear-gradient(180deg, #f0f4ff 0%, #e8eeff 100%);
-    padding: 12vh 4rem 4rem 4rem;
+    padding: 2rem 4rem 4rem 4rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -359,22 +356,8 @@ export default {
     box-shadow: 0 8px 32px rgba(36, 60, 117, 0.08);
 }
 
-.script {
-    font-family: 'Pinyon Script', cursive;
-    color: #243c75;
-    font-size: 2rem;
-    margin: 0;
-    line-height: 1;
-}
-
-.page-title {
-    font-family: 'Archivo Black', sans-serif;
-    color: #243c75;
-    font-size: 3.5rem;
-    font-weight: 900;
-    margin: 0;
-    line-height: 1;
-}
+.script { font-family: 'Pinyon Script', cursive; color: #243c75; font-size: 2rem; margin: 0; line-height: 1; }
+.page-title { font-family: 'Archivo Black', sans-serif; color: #243c75; font-size: 3.5rem; font-weight: 900; margin: 0; line-height: 1; }
 
 .profile-grid {
     display: grid;
@@ -400,100 +383,44 @@ export default {
 .profile-card::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
+    top: -50%; right: -50%;
+    width: 200%; height: 200%;
     background: radial-gradient(circle, rgba(226, 249, 255, 0.08) 0%, transparent 40%);
     pointer-events: none;
 }
 
-.avatar-wrap {
-    position: relative;
-    margin-bottom: 0.5rem;
-}
+.avatar-wrap { position: relative; margin-bottom: 0.5rem; }
 
 .avatar {
-    width: 110px;
-    height: 110px;
+    width: 110px; height: 110px;
     border-radius: 50%;
     background: rgba(226, 249, 255, 0.15);
     border: 3px solid rgba(226, 249, 255, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 3.2rem;
 }
 
 .avatar-dot {
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    width: 22px;
-    height: 22px;
+    position: absolute; bottom: 6px; right: 6px;
+    width: 22px; height: 22px;
     border-radius: 50%;
     border: 3px solid #1a2d5a;
 }
 
-.dot-aluno {
-    background: #22c55e;
-}
+.dot-aluno { background: #22c55e; }
+.dot-docente { background: #f59e0b; }
+.dot-admin { background: #ef4444; }
 
-.dot-docente {
-    background: #f59e0b;
-}
+.profile-name { font-family: 'Archivo Black', sans-serif; font-size: 1.3rem; margin: 0; text-align: center; letter-spacing: 0.02em; }
+.profile-email { font-family: 'Red Hat Display', sans-serif; font-size: 0.82rem; color: rgba(226, 249, 255, 0.7); margin: 0; text-align: center; word-break: break-all; }
 
-.dot-admin {
-    background: #ef4444;
-}
-
-.profile-name {
-    font-family: 'Archivo Black', sans-serif;
-    font-size: 1.3rem;
-    margin: 0;
-    text-align: center;
-    letter-spacing: 0.02em;
-}
-
-.profile-email {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.82rem;
-    color: rgba(226, 249, 255, 0.7);
-    margin: 0;
-    text-align: center;
-    word-break: break-all;
-}
-
-.role-tag {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.35rem 1rem;
-    border-radius: 99px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
-
-.tag-aluno {
-    background: #22c55e;
-    color: #fff;
-}
-
-.tag-docente {
-    background: #f59e0b;
-    color: #fff;
-}
-
-.tag-admin {
-    background: #ef4444;
-    color: #fff;
-}
+.role-tag { font-family: 'Red Hat Display', sans-serif; font-size: 0.72rem; font-weight: 700; padding: 0.35rem 1rem; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.1em; }
+.tag-aluno { background: #22c55e; color: #fff; }
+.tag-docente { background: #f59e0b; color: #fff; }
+.tag-admin { background: #ef4444; color: #fff; }
 
 .profile-stats {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    display: flex; align-items: center; justify-content: center; gap: 1rem;
     width: 100%;
     background: rgba(226, 249, 255, 0.08);
     border: 1px solid rgba(226, 249, 255, 0.12);
@@ -502,421 +429,139 @@ export default {
     margin: 0.5rem 0;
 }
 
-.stat-block {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15rem;
-    flex: 1;
-}
+.stat-block { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; flex: 1; }
+.stat-num { font-family: 'Archivo Black', sans-serif; font-size: 1.6rem; color: #ebfbff; line-height: 1; }
+.stat-lbl { font-family: 'Red Hat Display', sans-serif; font-size: 0.7rem; color: rgba(226, 249, 255, 0.65); text-transform: uppercase; letter-spacing: 0.08em; }
+.stat-divider { width: 1px; height: 36px; background: rgba(226, 249, 255, 0.2); }
 
-.stat-num {
-    font-family: 'Archivo Black', sans-serif;
-    font-size: 1.6rem;
-    color: #ebfbff;
-    line-height: 1;
-}
+.profile-meta { font-family: 'Red Hat Display', sans-serif; font-size: 0.82rem; color: rgba(226, 249, 255, 0.6); display: flex; align-items: center; gap: 0.5rem; }
 
-.stat-lbl {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.7rem;
-    color: rgba(226, 249, 255, 0.65);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.stat-divider {
-    width: 1px;
-    height: 36px;
-    background: rgba(226, 249, 255, 0.2);
-}
-
-.profile-meta {
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.82rem;
-    color: rgba(226, 249, 255, 0.6);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.profile-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    width: 100%;
-    margin-top: 0.5rem;
-}
+.profile-actions { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; margin-top: 0.5rem; }
 
 .btn-edit {
-    width: 100%;
-    padding: 0.7rem;
+    width: 100%; padding: 0.7rem;
     background: rgba(226, 249, 255, 0.15);
     border: 1.5px solid rgba(226, 249, 255, 0.3);
-    color: #ebfbff;
-    border-radius: 10px;
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    color: #ebfbff; border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     transition: all 0.2s ease;
 }
-
-.btn-edit:hover {
-    background: rgba(226, 249, 255, 0.25);
-    border-color: rgba(226, 249, 255, 0.5);
-}
+.btn-edit:hover { background: rgba(226, 249, 255, 0.25); border-color: rgba(226, 249, 255, 0.5); }
 
 .btn-sair {
-    width: 100%;
-    padding: 0.7rem;
+    width: 100%; padding: 0.7rem;
     background: rgba(239, 68, 68, 0.15);
     border: 1.5px solid rgba(239, 68, 68, 0.4);
-    color: #fca5a5;
-    border-radius: 10px;
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.92rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    color: #fca5a5; border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     transition: all 0.2s ease;
 }
+.btn-sair:hover { background: rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.6); }
 
-.btn-sair:hover {
-    background: rgba(239, 68, 68, 0.3);
-    border-color: rgba(239, 68, 68, 0.6);
-}
+.right-col { display: flex; flex-direction: column; gap: 1.5rem; }
 
-.right-col {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.info-card,
-.epis-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 2rem 2.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.info-card, .epis-card {
+    background: #fff; border-radius: 20px; padding: 2rem 2.25rem;
+    display: flex; flex-direction: column; gap: 1.5rem;
     border: 1px solid #d0daf0;
     box-shadow: 0 8px 32px rgba(36, 60, 117, 0.08);
 }
 
 .card-title {
-    font-family: 'Archivo Black', sans-serif;
-    color: #243c75;
-    font-size: 1.05rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e8edf8;
+    font-family: 'Archivo Black', sans-serif; color: #243c75; font-size: 1.05rem; margin: 0;
+    display: flex; align-items: center; gap: 0.6rem;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding-bottom: 1rem; border-bottom: 2px solid #e8edf8;
 }
+.card-title i { color: #6b82b0; }
 
-.card-title i {
-    color: #6b82b0;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 3rem;
-}
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 3rem; }
 
 .info-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    padding: 0.9rem 0;
-    border-bottom: 1px solid #edf0f8;
+    display: flex; flex-direction: column; gap: 0.3rem;
+    padding: 0.9rem 0; border-bottom: 1px solid #edf0f8;
 }
 
-.info-label {
-    font-family: 'Anton', sans-serif;
-    color: #9aaac5;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-}
+.info-label { font-family: 'Anton', sans-serif; color: #9aaac5; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; }
+.info-value { font-family: 'Red Hat Display', sans-serif; color: #1a2b5e; font-size: 1rem; font-weight: 600; }
 
-.info-value {
-    font-family: 'Red Hat Display', sans-serif;
-    color: #1a2b5e;
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.epis-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
+.epis-list { display: flex; flex-direction: column; gap: 0.75rem; }
 
 .epi-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    display: flex; align-items: center; gap: 1rem;
     padding: 1rem 1.25rem;
-    background: #f8f9ff;
-    border: 1px solid #e8edf8;
-    border-radius: 12px;
+    background: #f8f9ff; border: 1px solid #e8edf8; border-radius: 12px;
     transition: all 0.2s ease;
 }
-
-.epi-row:hover {
-    background: #e8eeff;
-    border-color: #d0daf0;
-    transform: translateX(4px);
-}
+.epi-row:hover { background: #e8eeff; border-color: #d0daf0; transform: translateX(4px); }
 
 .epi-icon {
-    width: 2.75rem;
-    height: 2.75rem;
+    width: 2.75rem; height: 2.75rem;
     background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
-    color: #ebfbff;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 1.1rem;
+    color: #ebfbff; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 1.1rem;
 }
 
-.epi-info {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-.epi-nome {
-    font-family: 'Red Hat Display', sans-serif;
-    font-weight: 700;
-    color: #1a2b5e;
-    font-size: 0.98rem;
-}
-
-.epi-tipo {
-    font-family: 'Red Hat Display', sans-serif;
-    color: #6b82b0;
-    font-size: 0.82rem;
-}
+.epi-info { display: flex; flex-direction: column; flex: 1; }
+.epi-nome { font-family: 'Red Hat Display', sans-serif; font-weight: 700; color: #1a2b5e; font-size: 0.98rem; }
+.epi-tipo { font-family: 'Red Hat Display', sans-serif; color: #6b82b0; font-size: 0.82rem; }
 
 .epi-data {
-    font-family: 'Red Hat Display', sans-serif;
-    color: #243c75;
-    font-weight: 700;
-    font-size: 0.82rem;
-    background: #e8eeff;
-    padding: 0.35rem 0.8rem;
-    border-radius: 8px;
-    flex-shrink: 0;
+    font-family: 'Red Hat Display', sans-serif; color: #243c75; font-weight: 700; font-size: 0.82rem;
+    background: #e8eeff; padding: 0.35rem 0.8rem; border-radius: 8px; flex-shrink: 0;
 }
 
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 2.5rem 1rem;
-    color: #9aaac5;
-}
-
-.empty-state i {
-    font-size: 2.5rem;
-    opacity: 0.4;
-}
-
-.empty-state p {
-    font-family: 'Red Hat Display', sans-serif;
-    margin: 0;
-    font-size: 0.95rem;
-}
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 2.5rem 1rem; color: #9aaac5; }
+.empty-state i { font-size: 2.5rem; opacity: 0.4; }
+.empty-state p { font-family: 'Red Hat Display', sans-serif; margin: 0; font-size: 0.95rem; }
 
 .modal-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(10, 20, 50, 0.55);
     backdrop-filter: blur(4px);
     z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     padding: 1rem;
 }
 
 .modal {
-    background: #fff;
-    border-radius: 18px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 440px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    background: #fff; border-radius: 18px; padding: 2rem;
+    width: 100%; max-width: 440px;
+    display: flex; flex-direction: column; gap: 1.5rem;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
 }
 
-.modal-title {
-    font-family: 'Archivo Black', sans-serif;
-    color: #243c75;
-    font-size: 1.2rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+.modal-title { font-family: 'Archivo Black', sans-serif; color: #243c75; font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
+.modal-form { display: flex; flex-direction: column; gap: 1rem; }
+.field { display: flex; flex-direction: column; gap: 0.35rem; }
+.field label { font-family: 'Anton', sans-serif; color: #243c75; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.field input { padding: 0.65rem 0.85rem; font-size: 0.95rem; border: 1.5px solid #d0daf0; border-radius: 8px; height: 2.8rem; box-sizing: border-box; font-family: 'Red Hat Display', sans-serif; color: #1a2b5e; transition: border-color 0.2s ease; }
+.field input:focus { outline: none; border-color: #243c75; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
 
-.modal-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
+.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #243c75; color: #ebfbff; border: none; border-radius: 10px; padding: 0.7rem 1.3rem; font-family: 'Red Hat Display', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+.btn-primary:hover { background: #1a2d5a; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-}
+.btn-outline { background: transparent; border: 2px solid #243c75; color: #243c75; border-radius: 10px; padding: 0.6rem 1.2rem; font-family: 'Red Hat Display', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+.btn-outline:hover { background: #243c75; color: #ebfbff; }
 
-.field label {
-    font-family: 'Anton', sans-serif;
-    color: #243c75;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-}
-
-.field input {
-    padding: 0.65rem 0.85rem;
-    font-size: 0.95rem;
-    border: 1.5px solid #d0daf0;
-    border-radius: 8px;
-    height: 2.8rem;
-    box-sizing: border-box;
-    font-family: 'Red Hat Display', sans-serif;
-    color: #1a2b5e;
-    transition: border-color 0.2s ease;
-}
-
-.field input:focus {
-    outline: none;
-    border-color: #243c75;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-}
-
-.btn-primary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: #243c75;
-    color: #ebfbff;
-    border: none;
-    border-radius: 10px;
-    padding: 0.7rem 1.3rem;
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-    background: #1a2d5a;
-}
-
-.btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.btn-outline {
-    background: transparent;
-    border: 2px solid #243c75;
-    color: #243c75;
-    border-radius: 10px;
-    padding: 0.6rem 1.2rem;
-    font-family: 'Red Hat Display', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-outline:hover {
-    background: #243c75;
-    color: #ebfbff;
-}
-
-.error-msg {
-    font-family: 'Red Hat Display', sans-serif;
-    color: #b91c1c;
-    font-size: 0.9rem;
-    background: #fee2e2;
-    border: 1px solid #fecaca;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    margin: 0;
-}
-
-.success-msg {
-    font-family: 'Red Hat Display', sans-serif;
-    color: #15803d;
-    font-size: 0.9rem;
-    background: #dcfce7;
-    border: 1px solid #bbf7d0;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    margin: 0;
-}
+.error-msg { font-family: 'Red Hat Display', sans-serif; color: #b91c1c; font-size: 0.9rem; background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.6rem 1rem; margin: 0; }
+.success-msg { font-family: 'Red Hat Display', sans-serif; color: #15803d; font-size: 0.9rem; background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 1rem; margin: 0; }
 
 @media (max-width: 1024px) {
-    .profile-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .profile-card {
-        position: static;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
+    .profile-grid { grid-template-columns: 1fr; }
+    .info-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
-    .main {
-        padding: 10vh 1.25rem 3rem 1.25rem;
-    }
-
-    .page-title {
-        font-size: 2.5rem;
-    }
-
-    .info-card,
-    .epis-card {
-        padding: 1.5rem;
-    }
-
-    .epi-row {
-        flex-wrap: wrap;
-    }
+    .main { padding: 1.25rem 1.25rem 3rem 1.25rem; }
+    .page-title { font-size: 2.5rem; }
+    .info-card, .epis-card { padding: 1.25rem; }
+    .epi-row { flex-wrap: wrap; }
+    .epi-data { width: 100%; text-align: right; }
 }
 </style>
