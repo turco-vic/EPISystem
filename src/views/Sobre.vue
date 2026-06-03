@@ -82,7 +82,7 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: #ebfbff;
+    background: #fff;
 }
 
 .main {
@@ -132,7 +132,7 @@ export default {
 
 .highlighted {
     background: #243c75;
-    color: #ebfbff;
+    color: #fff;
     padding: 0 0.5rem;
 }
 
@@ -185,7 +185,7 @@ export default {
     flex-direction: column;
     gap: 0.25rem;
     background: #243c75;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .stat-num {
@@ -221,7 +221,7 @@ export default {
 
 .role:hover {
     background: #243c75;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .role i {

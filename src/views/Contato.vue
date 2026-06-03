@@ -141,7 +141,7 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: #ebfbff;
+    background: #fff;
 }
 
 .main {
@@ -190,7 +190,7 @@ export default {
 
 .highlighted {
     background: #243c75;
-    color: #ebfbff;
+    color: #fff;
     padding: 0 0.5rem;
 }
 
@@ -224,7 +224,7 @@ export default {
 
 a.channel:hover {
     background: #243c75;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .channel i {
@@ -274,7 +274,7 @@ a.channel:hover {
     font-family: "Red Hat Display", sans-serif;
     font-weight: 700;
     font-size: 0.85rem;
-    color: #ebfbff;
+    color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.1em;
 }
@@ -284,11 +284,11 @@ a.channel:hover {
 .field textarea {
     padding: 0.8rem 1rem;
     font-size: 1rem;
-    border: 2px solid #ebfbff;
+    border: 2px solid #fff;
     border-radius: 4px;
     font-family: "Red Hat Display", sans-serif;
     color: #243c75;
-    background: #ebfbff;
+    background: #fff;
     resize: vertical;
 }
 
@@ -302,8 +302,8 @@ a.channel:hover {
     font-family: "Red Hat Display", sans-serif;
     font-size: 0.95rem;
     color: #243c75;
-    background: #ebfbff;
-    border: 2px solid #ebfbff;
+    background: #fff;
+    border: 2px solid #fff;
     border-radius: 4px;
     padding: 0.6rem 1rem;
     margin: 0;
@@ -315,9 +315,9 @@ a.channel:hover {
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    background: #ebfbff;
+    background: #fff;
     color: #243c75;
-    border: 2px solid #ebfbff;
+    border: 2px solid #fff;
     border-radius: 4px;
     padding: 1rem 1.5rem;
     font-family: "Red Hat Display", sans-serif;
@@ -329,7 +329,7 @@ a.channel:hover {
 
 .btn:hover:not(:disabled) {
     background: transparent;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .btn:disabled {
@@ -351,7 +351,7 @@ a.channel:hover {
 
 .btn-outline:hover {
     background: #243c75;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .success {

@@ -220,7 +220,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: #ebfbff;
+    background-color: #fff;
     min-height: 100vh;
     padding-top: 10vh;
     box-sizing: border-box;
@@ -283,7 +283,7 @@ export default {
 
 .form-title {
     font-family: 'Anton', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 2rem;
     margin: 0;
 }
@@ -347,20 +347,20 @@ export default {
 
 .field label {
     font-family: 'Anton', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
 }
 
 .field input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #ebfbff;
+    border: 1px solid #fff;
     border-radius: 4px;
     height: 3rem;
     box-sizing: border-box;
     width: 100%;
     background-color: #243c75;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .field input::placeholder {
@@ -381,7 +381,7 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
 }
 
@@ -394,7 +394,7 @@ export default {
     padding: 0.75rem;
     font-size: 1.25rem;
     font-weight: bold;
-    background-color: #ebfbff;
+    background-color: #fff;
     color: #243c75;
     border: none;
     border-radius: 4px;
@@ -430,12 +430,12 @@ export default {
     align-items: center;
     justify-content: center;
     font-size: 1.75rem;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .pending-title {
     font-family: 'Archivo Black', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1.5rem;
     margin: 0;
 }
@@ -452,7 +452,7 @@ export default {
     display: inline-block;
     margin-top: 0.5rem;
     padding: 0.7rem 1.5rem;
-    background: #ebfbff;
+    background: #fff;
     color: #243c75;
     border-radius: 8px;
     font-family: 'Red Hat Display', sans-serif;
@@ -483,13 +483,13 @@ export default {
 
 .login-text {
     font-family: 'Red Hat Display', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
 }
 
 .login-link {
     font-family: 'Red Hat Display', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
     text-decoration: none;
 }

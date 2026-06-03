@@ -165,7 +165,7 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    color: #ebfbff;
+    color: #fff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
     font-size: 1.3rem;
@@ -174,7 +174,7 @@ export default {
 
 .highlighted {
     color: #243c75;
-    background-color: #ebfbff;
+    background-color: #fff;
 }
 
 .apresentation-page-topics {
@@ -183,12 +183,12 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #ebfbff;
+    border: 1px solid #fff;
     width: 100%;
     height: 8rem;
     padding: 1.5rem;
     background-color: #243c75;
-    color: #ebfbff;
+    color: #fff;
     font-family: "Red Hat Display", sans-serif;
     gap: 0.5rem;
 }
@@ -203,7 +203,7 @@ export default {
 .content {
     display: flex;
     flex-direction: column;
-    color: #ebfbff;
+    color: #fff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 100;
     gap: 1rem;
@@ -248,7 +248,7 @@ export default {
     align-items: center;
     width: 100%;
     min-height: 100vh;
-    background-color: #ebfbff;
+    background-color: #fff;
     padding: calc(10vh + 2rem) 2rem 4rem;
     gap: 2rem;
     box-sizing: border-box;
@@ -267,7 +267,7 @@ export default {
 }
 
 .title-highlighted {
-    color: #ebfbff;
+    color: #fff;
     background-color: #243c75;
     padding: 0.25rem 0.5rem;
 }
@@ -333,7 +333,7 @@ export default {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    color: #e2f9ff;
+    color: #fff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 900;
     font-size: 1.5rem;
@@ -346,11 +346,11 @@ export default {
     align-items: flex-start;
     justify-content: center;
     border-radius: 10px;
-    border: 1px solid #ebfbff;
+    border: 1px solid #fff;
     height: 8rem;
     padding: 1.5rem;
     background-color: #243c75;
-    color: #ebfbff;
+    color: #fff;
     font-family: "Red Hat Display", sans-serif;
     font-weight: 100;
     gap: 1rem;
@@ -362,7 +362,7 @@ export default {
 
 .content-highlighted {
     color: #243c75;
-    background-color: #ebfbff;
+    background-color: #fff;
     font-weight: bold;
 }
 
@@ -381,7 +381,7 @@ export default {
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: #ebfbff;
+    background-color: #fff;
     min-height: 100vh;
     padding: calc(10vh + 2rem) 2rem 4rem;
     gap: 2rem;

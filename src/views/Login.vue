@@ -129,7 +129,7 @@ export default {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    background-color: #ebfbff;
+    background-color: #fff;
     background-size: cover;
     background-position: center;
     min-height: 100vh;
@@ -194,7 +194,7 @@ export default {
 
 .login-title {
     font-family: 'Anton', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 2rem;
     margin: 0;
 }
@@ -243,7 +243,7 @@ export default {
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
 }
 
@@ -260,18 +260,18 @@ export default {
 
 .login-form label {
     font-family: 'Anton', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
 }
 
 .login-form input {
     padding: 0.5rem;
     font-size: 1rem;
-    border: 1px solid #ebfbff;
+    border: 1px solid #fff;
     border-radius: 4px;
     height: 3rem;
     background-color: #243c75;
-    color: #ebfbff;
+    color: #fff;
 }
 
 .login-form input::placeholder {
@@ -283,7 +283,7 @@ export default {
     padding: 0.75rem;
     font-size: 1.25rem;
     font-weight: bold;
-    background-color: #ebfbff;
+    background-color: #fff;
     color: #243c75;
     border: none;
     border-radius: 4px;
@@ -318,13 +318,13 @@ export default {
 
 .signup-text {
     font-family: 'Red Hat Display', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
 }
 
 .signup-link {
     font-family: 'Red Hat Display', sans-serif;
-    color: #ebfbff;
+    color: #fff;
     font-size: 1rem;
     text-decoration: none;
 }
