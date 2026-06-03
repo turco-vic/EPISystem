@@ -118,7 +118,7 @@ export default {
                     .eq('email', data.user.email)
                     .single();
 
-                if (func?.status === 'Inativo') {
+                if (!func || func?.status === 'Inativo') {
                     await supabase.auth.signOut();
                     loading.value = false;
                     errorMsg.value = 'Sua conta foi desativada. Entre em contato com a administração.';
