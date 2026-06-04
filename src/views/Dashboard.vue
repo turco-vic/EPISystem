@@ -498,12 +498,12 @@ export default {
 
         async function carregarDadosAdmin(userEm) {
             const { data: epis } = await supabase.from('epis').select('quantidade, tipo');
+            let totalEpis = 0;
             if (epis) {
-                const total = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
+                totalEpis = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
                 const disponiveis = epis.filter(e => (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
-                stats.value.totalEpis = total;
+                stats.value.totalEpis = totalEpis;
                 stats.value.episDisponiveis = disponiveis;
-                stats.value.disponibilidadePct = total > 0 ? Math.round((disponiveis / total) * 100) : 0;
                 stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5 && (e.quantidade || 0) > 0).length;
                 const tiposMap = {};
                 epis.forEach(e => { const t = e.tipo || 'Sem tipo'; tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0); });
@@ -528,6 +528,8 @@ export default {
             });
             episEmUso.value = emUso.sort((a, b) => (b.atrasado ? 1 : 0) - (a.atrasado ? 1 : 0));
             stats.value.episEmUso = emUso.length;
+            stats.value.disponibilidadePct = totalEpis > 0 ? Math.round(((totalEpis - emUso.length) / totalEpis) * 100) : 0;
+            stats.value.episDisponiveis = totalEpis - emUso.length;
         }
 
         async function carregarDadosDocente(userEm) {
