@@ -227,21 +227,23 @@ export default {
 
             if (role.value === 'aluno' && alunoData.value) {
                 await supabase.from('aluno')
-                    .update({ nome: formEditar.value.nome, sobrenome: formEditar.value.sobrenome, telefone: formEditar.value.telefone })
+                    .update({ nome: formEditar.value.nome, sobrenome: formEditar.value.sobrenome, telefone: formEditar.value.telefone || null })
                     .eq('idaluno', alunoData.value.idaluno);
+                alunoData.value = { ...alunoData.value, telefone: formEditar.value.telefone };
             }
 
-            if ((role.value === 'docente' || role.value === 'admin') && funcionarioData.value) {
-                await supabase.from('funcionario')
-                    .update({ nome: formEditar.value.nome, sobrenome: formEditar.value.sobrenome, telefone: formEditar.value.telefone })
-                    .eq('idfuncionario', funcionarioData.value.idfuncionario);
+            if (role.value === 'docente' || role.value === 'admin') {
+                if (funcionarioData.value) {
+                    await supabase.from('funcionario')
+                        .update({ nome: formEditar.value.nome, sobrenome: formEditar.value.sobrenome, telefone: formEditar.value.telefone || null })
+                        .eq('idfuncionario', funcionarioData.value.idfuncionario);
+                    funcionarioData.value = { ...funcionarioData.value, telefone: formEditar.value.telefone };
+                }
             }
 
             fullName.value = novoNomeCompleto;
             nome.value = formEditar.value.nome;
             sobrenome.value = formEditar.value.sobrenome;
-            if (alunoData.value) alunoData.value = { ...alunoData.value, telefone: formEditar.value.telefone };
-            if (funcionarioData.value) funcionarioData.value = { ...funcionarioData.value, telefone: formEditar.value.telefone };
 
             salvando.value = false;
             editarSucesso.value = true;
@@ -279,12 +281,14 @@ export default {
             if (role.value === 'aluno') {
                 const { data: aluno } = await supabase
                     .from('aluno')
-                    .select('cpf, telefone, data_nascimento, idaluno')
+                    .select('cpf, telefone, data_nascimento, idaluno, nome, sobrenome')
                     .eq('auth_id', user.id)
                     .single();
 
                 if (aluno) {
                     alunoData.value = aluno;
+                    nome.value = aluno.nome || nome.value;
+                    sobrenome.value = aluno.sobrenome || sobrenome.value;
                     const { data: entregas } = await supabase
                         .from('aluno_has_epis')
                         .select('data_entrega, epis(nome, tipo)')
@@ -302,12 +306,14 @@ export default {
             if (role.value === 'docente' || role.value === 'admin') {
                 const { data: func } = await supabase
                     .from('funcionario')
-                    .select('cpf, telefone, data_nascimento, funcao, status, idfuncionario')
+                    .select('cpf, telefone, data_nascimento, funcao, status, idfuncionario, nome, sobrenome')
                     .eq('email', user.email)
                     .single();
 
                 if (func) {
                     funcionarioData.value = func;
+                    nome.value = func.nome || nome.value;
+                    sobrenome.value = func.sobrenome || sobrenome.value;
                     const { data: entregas } = await supabase
                         .from('funcionario_has_epis')
                         .select('data_entrega, data_devolucao, epis(nome, tipo)')
@@ -356,8 +362,22 @@ export default {
     box-shadow: 0 8px 32px rgba(36, 60, 117, 0.08);
 }
 
-.script { font-family: 'Pinyon Script', cursive; color: #243c75; font-size: 2rem; margin: 0; line-height: 1; }
-.page-title { font-family: 'Archivo Black', sans-serif; color: #243c75; font-size: 3.5rem; font-weight: 900; margin: 0; line-height: 1; }
+.script {
+    font-family: 'Pinyon Script', cursive;
+    color: #243c75;
+    font-size: 2rem;
+    margin: 0;
+    line-height: 1;
+}
+
+.page-title {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1;
+}
 
 .profile-grid {
     display: grid;
@@ -383,44 +403,100 @@ export default {
 .profile-card::before {
     content: '';
     position: absolute;
-    top: -50%; right: -50%;
-    width: 200%; height: 200%;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
     background: radial-gradient(circle, rgba(226, 249, 255, 0.08) 0%, transparent 40%);
     pointer-events: none;
 }
 
-.avatar-wrap { position: relative; margin-bottom: 0.5rem; }
+.avatar-wrap {
+    position: relative;
+    margin-bottom: 0.5rem;
+}
 
 .avatar {
-    width: 110px; height: 110px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     background: rgba(226, 249, 255, 0.15);
     border: 3px solid rgba(226, 249, 255, 0.3);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 3.2rem;
 }
 
 .avatar-dot {
-    position: absolute; bottom: 6px; right: 6px;
-    width: 22px; height: 22px;
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     border: 3px solid #1a2d5a;
 }
 
-.dot-aluno { background: #22c55e; }
-.dot-docente { background: #f59e0b; }
-.dot-admin { background: #ef4444; }
+.dot-aluno {
+    background: #22c55e;
+}
 
-.profile-name { font-family: 'Archivo Black', sans-serif; font-size: 1.3rem; margin: 0; text-align: center; letter-spacing: 0.02em; }
-.profile-email { font-family: 'Red Hat Display', sans-serif; font-size: 0.82rem; color: rgba(226, 249, 255, 0.7); margin: 0; text-align: center; word-break: break-all; }
+.dot-docente {
+    background: #f59e0b;
+}
 
-.role-tag { font-family: 'Red Hat Display', sans-serif; font-size: 0.72rem; font-weight: 700; padding: 0.35rem 1rem; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.1em; }
-.tag-aluno { background: #22c55e; color: #fff; }
-.tag-docente { background: #f59e0b; color: #fff; }
-.tag-admin { background: #ef4444; color: #fff; }
+.dot-admin {
+    background: #ef4444;
+}
+
+.profile-name {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.3rem;
+    margin: 0;
+    text-align: center;
+    letter-spacing: 0.02em;
+}
+
+.profile-email {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.82rem;
+    color: rgba(226, 249, 255, 0.7);
+    margin: 0;
+    text-align: center;
+    word-break: break-all;
+}
+
+.role-tag {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 1rem;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.tag-aluno {
+    background: #22c55e;
+    color: #fff;
+}
+
+.tag-docente {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.tag-admin {
+    background: #ef4444;
+    color: #fff;
+}
 
 .profile-stats {
-    display: flex; align-items: center; justify-content: center; gap: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
     width: 100%;
     background: rgba(226, 249, 255, 0.08);
     border: 1px solid rgba(226, 249, 255, 0.12);
@@ -429,139 +505,422 @@ export default {
     margin: 0.5rem 0;
 }
 
-.stat-block { display: flex; flex-direction: column; align-items: center; gap: 0.15rem; flex: 1; }
-.stat-num { font-family: 'Archivo Black', sans-serif; font-size: 1.6rem; color: #ebfbff; line-height: 1; }
-.stat-lbl { font-family: 'Red Hat Display', sans-serif; font-size: 0.7rem; color: rgba(226, 249, 255, 0.65); text-transform: uppercase; letter-spacing: 0.08em; }
-.stat-divider { width: 1px; height: 36px; background: rgba(226, 249, 255, 0.2); }
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    flex: 1;
+}
 
-.profile-meta { font-family: 'Red Hat Display', sans-serif; font-size: 0.82rem; color: rgba(226, 249, 255, 0.6); display: flex; align-items: center; gap: 0.5rem; }
+.stat-num {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.6rem;
+    color: #ebfbff;
+    line-height: 1;
+}
 
-.profile-actions { display: flex; flex-direction: column; gap: 0.6rem; width: 100%; margin-top: 0.5rem; }
+.stat-lbl {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(226, 249, 255, 0.65);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(226, 249, 255, 0.2);
+}
+
+.profile-meta {
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.82rem;
+    color: rgba(226, 249, 255, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: 0.5rem;
+}
 
 .btn-edit {
-    width: 100%; padding: 0.7rem;
+    width: 100%;
+    padding: 0.7rem;
     background: rgba(226, 249, 255, 0.15);
     border: 1.5px solid rgba(226, 249, 255, 0.3);
-    color: #ebfbff; border-radius: 10px;
-    font-family: 'Red Hat Display', sans-serif; font-size: 0.92rem; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    color: #ebfbff;
+    border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     transition: all 0.2s ease;
 }
-.btn-edit:hover { background: rgba(226, 249, 255, 0.25); border-color: rgba(226, 249, 255, 0.5); }
+
+.btn-edit:hover {
+    background: rgba(226, 249, 255, 0.25);
+    border-color: rgba(226, 249, 255, 0.5);
+}
 
 .btn-sair {
-    width: 100%; padding: 0.7rem;
+    width: 100%;
+    padding: 0.7rem;
     background: rgba(239, 68, 68, 0.15);
     border: 1.5px solid rgba(239, 68, 68, 0.4);
-    color: #fca5a5; border-radius: 10px;
-    font-family: 'Red Hat Display', sans-serif; font-size: 0.92rem; font-weight: 700;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    color: #fca5a5;
+    border-radius: 10px;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     transition: all 0.2s ease;
 }
-.btn-sair:hover { background: rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.6); }
 
-.right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+.btn-sair:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: rgba(239, 68, 68, 0.6);
+}
 
-.info-card, .epis-card {
-    background: #fff; border-radius: 20px; padding: 2rem 2.25rem;
-    display: flex; flex-direction: column; gap: 1.5rem;
+.right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-card,
+.epis-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem 2.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     border: 1px solid #d0daf0;
     box-shadow: 0 8px 32px rgba(36, 60, 117, 0.08);
 }
 
 .card-title {
-    font-family: 'Archivo Black', sans-serif; color: #243c75; font-size: 1.05rem; margin: 0;
-    display: flex; align-items: center; gap: 0.6rem;
-    text-transform: uppercase; letter-spacing: 0.06em;
-    padding-bottom: 1rem; border-bottom: 2px solid #e8edf8;
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 1.05rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e8edf8;
 }
-.card-title i { color: #6b82b0; }
 
-.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 3rem; }
+.card-title i {
+    color: #6b82b0;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 3rem;
+}
 
 .info-row {
-    display: flex; flex-direction: column; gap: 0.3rem;
-    padding: 0.9rem 0; border-bottom: 1px solid #edf0f8;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.9rem 0;
+    border-bottom: 1px solid #edf0f8;
 }
 
-.info-label { font-family: 'Anton', sans-serif; color: #9aaac5; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; }
-.info-value { font-family: 'Red Hat Display', sans-serif; color: #1a2b5e; font-size: 1rem; font-weight: 600; }
+.info-label {
+    font-family: 'Anton', sans-serif;
+    color: #9aaac5;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
 
-.epis-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.info-value {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #1a2b5e;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.epis-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
 
 .epi-row {
-    display: flex; align-items: center; gap: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     padding: 1rem 1.25rem;
-    background: #f8f9ff; border: 1px solid #e8edf8; border-radius: 12px;
+    background: #f8f9ff;
+    border: 1px solid #e8edf8;
+    border-radius: 12px;
     transition: all 0.2s ease;
 }
-.epi-row:hover { background: #e8eeff; border-color: #d0daf0; transform: translateX(4px); }
+
+.epi-row:hover {
+    background: #e8eeff;
+    border-color: #d0daf0;
+    transform: translateX(4px);
+}
 
 .epi-icon {
-    width: 2.75rem; height: 2.75rem;
+    width: 2.75rem;
+    height: 2.75rem;
     background: linear-gradient(135deg, #243c75 0%, #3a5ba8 100%);
-    color: #ebfbff; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; font-size: 1.1rem;
+    color: #ebfbff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
 }
 
-.epi-info { display: flex; flex-direction: column; flex: 1; }
-.epi-nome { font-family: 'Red Hat Display', sans-serif; font-weight: 700; color: #1a2b5e; font-size: 0.98rem; }
-.epi-tipo { font-family: 'Red Hat Display', sans-serif; color: #6b82b0; font-size: 0.82rem; }
+.epi-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.epi-nome {
+    font-family: 'Red Hat Display', sans-serif;
+    font-weight: 700;
+    color: #1a2b5e;
+    font-size: 0.98rem;
+}
+
+.epi-tipo {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #6b82b0;
+    font-size: 0.82rem;
+}
 
 .epi-data {
-    font-family: 'Red Hat Display', sans-serif; color: #243c75; font-weight: 700; font-size: 0.82rem;
-    background: #e8eeff; padding: 0.35rem 0.8rem; border-radius: 8px; flex-shrink: 0;
+    font-family: 'Red Hat Display', sans-serif;
+    color: #243c75;
+    font-weight: 700;
+    font-size: 0.82rem;
+    background: #e8eeff;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    flex-shrink: 0;
 }
 
-.empty-state { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 2.5rem 1rem; color: #9aaac5; }
-.empty-state i { font-size: 2.5rem; opacity: 0.4; }
-.empty-state p { font-family: 'Red Hat Display', sans-serif; margin: 0; font-size: 0.95rem; }
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2.5rem 1rem;
+    color: #9aaac5;
+}
+
+.empty-state i {
+    font-size: 2.5rem;
+    opacity: 0.4;
+}
+
+.empty-state p {
+    font-family: 'Red Hat Display', sans-serif;
+    margin: 0;
+    font-size: 0.95rem;
+}
 
 .modal-overlay {
-    position: fixed; inset: 0;
+    position: fixed;
+    inset: 0;
     background: rgba(10, 20, 50, 0.55);
     backdrop-filter: blur(4px);
     z-index: 2000;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     padding: 1rem;
 }
 
 .modal {
-    background: #fff; border-radius: 18px; padding: 2rem;
-    width: 100%; max-width: 440px;
-    display: flex; flex-direction: column; gap: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
 }
 
-.modal-title { font-family: 'Archivo Black', sans-serif; color: #243c75; font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 0.5rem; }
-.modal-form { display: flex; flex-direction: column; gap: 1rem; }
-.field { display: flex; flex-direction: column; gap: 0.35rem; }
-.field label { font-family: 'Anton', sans-serif; color: #243c75; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
-.field input { padding: 0.65rem 0.85rem; font-size: 0.95rem; border: 1.5px solid #d0daf0; border-radius: 8px; height: 2.8rem; box-sizing: border-box; font-family: 'Red Hat Display', sans-serif; color: #1a2b5e; transition: border-color 0.2s ease; }
-.field input:focus { outline: none; border-color: #243c75; }
-.modal-actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
+.modal-title {
+    font-family: 'Archivo Black', sans-serif;
+    color: #243c75;
+    font-size: 1.2rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-.btn-primary { display: inline-flex; align-items: center; gap: 0.5rem; background: #243c75; color: #ebfbff; border: none; border-radius: 10px; padding: 0.7rem 1.3rem; font-family: 'Red Hat Display', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
-.btn-primary:hover { background: #1a2d5a; }
-.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 
-.btn-outline { background: transparent; border: 2px solid #243c75; color: #243c75; border-radius: 10px; padding: 0.6rem 1.2rem; font-family: 'Red Hat Display', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
-.btn-outline:hover { background: #243c75; color: #ebfbff; }
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
 
-.error-msg { font-family: 'Red Hat Display', sans-serif; color: #b91c1c; font-size: 0.9rem; background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.6rem 1rem; margin: 0; }
-.success-msg { font-family: 'Red Hat Display', sans-serif; color: #15803d; font-size: 0.9rem; background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 1rem; margin: 0; }
+.field label {
+    font-family: 'Anton', sans-serif;
+    color: #243c75;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.field input {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+    border: 1.5px solid #d0daf0;
+    border-radius: 8px;
+    height: 2.8rem;
+    box-sizing: border-box;
+    font-family: 'Red Hat Display', sans-serif;
+    color: #1a2b5e;
+    transition: border-color 0.2s ease;
+}
+
+.field input:focus {
+    outline: none;
+    border-color: #243c75;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #243c75;
+    color: #ebfbff;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.3rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #1a2d5a;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid #243c75;
+    color: #243c75;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Red Hat Display', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+    background: #243c75;
+    color: #ebfbff;
+}
+
+.error-msg {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #b91c1c;
+    font-size: 0.9rem;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0;
+}
+
+.success-msg {
+    font-family: 'Red Hat Display', sans-serif;
+    color: #15803d;
+    font-size: 0.9rem;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin: 0;
+}
 
 @media (max-width: 1024px) {
-    .profile-grid { grid-template-columns: 1fr; }
-    .info-grid { grid-template-columns: 1fr; }
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
-    .main { padding: 1.25rem 1.25rem 3rem 1.25rem; }
-    .page-title { font-size: 2.5rem; }
-    .info-card, .epis-card { padding: 1.25rem; }
-    .epi-row { flex-wrap: wrap; }
-    .epi-data { width: 100%; text-align: right; }
+    .main {
+        padding: 1.25rem 1.25rem 3rem 1.25rem;
+    }
+
+    .page-title {
+        font-size: 2.5rem;
+    }
+
+    .info-card,
+    .epis-card {
+        padding: 1.25rem;
+    }
+
+    .epi-row {
+        flex-wrap: wrap;
+    }
+
+    .epi-data {
+        width: 100%;
+        text-align: right;
+    }
 }
 </style>
