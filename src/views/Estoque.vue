@@ -98,7 +98,16 @@
                 </div>
 
                 <div v-if="tabAdmin === 'solicitacoes'">
-                    <h2 class="section-title">Todas as solicitações</h2>
+                    <div class="section-header">
+                        <h2 class="section-title">Todas as solicitações</h2>
+                        <select v-model="filtroStatusSolicitacoes" class="filtro-status-select"
+                            @change="paginaSolicitacoes = 1">
+                            <option value="">Todos</option>
+                            <option value="pendente">Pendente</option>
+                            <option value="aprovado">Aprovado</option>
+                            <option value="rejeitado">Rejeitado</option>
+                        </select>
+                    </div>
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
@@ -126,14 +135,15 @@
                                             @click="rejeitarSolicitacao(s)"><i class="fa-solid fa-xmark"></i></button>
                                     </td>
                                 </tr>
-                                <tr v-if="solicitacoes.length === 0">
+                                <tr v-if="solicitacoesFiltradas.length === 0">
                                     <td colspan="6" class="empty-row">Nenhuma solicitação encontrada.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="cards-mobile">
-                        <div v-if="solicitacoes.length === 0" class="card-empty">Nenhuma solicitação encontrada.</div>
+                        <div v-if="solicitacoesFiltradas.length === 0" class="card-empty">Nenhuma solicitação
+                            encontrada.</div>
                         <div v-for="s in solicitacoesPaginadas" :key="s.id" class="item-card">
                             <div class="item-card-header">
                                 <span class="item-card-nome">{{ s.solicitante }}</span>
@@ -583,11 +593,16 @@ export default {
         });
 
         const solicitacoes = ref([]);
+        const filtroStatusSolicitacoes = ref('pendente');
+        const solicitacoesFiltradas = computed(() => {
+            if (!filtroStatusSolicitacoes.value) return solicitacoes.value;
+            return solicitacoes.value.filter(s => s.status === filtroStatusSolicitacoes.value);
+        });
         const solicitacoesPaginadas = computed(() => {
             const inicio = (paginaSolicitacoes.value - 1) * ITENS_POR_PAGINA;
-            return solicitacoes.value.slice(inicio, inicio + ITENS_POR_PAGINA);
+            return solicitacoesFiltradas.value.slice(inicio, inicio + ITENS_POR_PAGINA);
         });
-        const totalPaginasSolicitacoes = computed(() => Math.ceil(solicitacoes.value.length / ITENS_POR_PAGINA));
+        const totalPaginasSolicitacoes = computed(() => Math.ceil(solicitacoesFiltradas.value.length / ITENS_POR_PAGINA));
 
         const solicitacoesAlunos = ref([]);
         const minhasEntregas = ref([]);
@@ -752,9 +767,11 @@ export default {
             const { error: erroStatus } = await supabase.from(tabela).update({ status: 'aprovado' }).eq(idCol, s.origem_id);
             if (erroStatus) { showToast('Erro ao aprovar solicitação.', 'error'); return; }
             const { error: erroEstoque } = await supabase.from('epis').update({ quantidade: epiAtual.quantidade - 1 }).eq('idepis', s.epi_id);
-            if (erroEstoque) { showToast('Solicitação aprovada, mas erro ao atualizar estoque. Verifique manualmente.', 'warning'); } else { showToast('Solicitação aprovada com sucesso.', 'success'); }
-            await carregarEpis();
-            if (role.value === 'admin') await carregarSolicitacoes();
+            if (erroEstoque) { showToast('Solicitação aprovada, mas erro ao atualizar estoque.', 'warning'); } else { showToast('Solicitação aprovada com sucesso.', 'success'); }
+            const idx = solicitacoes.value.findIndex(x => x.id === s.id);
+            if (idx !== -1) solicitacoes.value[idx] = { ...solicitacoes.value[idx], status: 'aprovado' };
+            const epiIdx = epis.value.findIndex(e => e.idepis === s.epi_id);
+            if (epiIdx !== -1) epis.value[epiIdx] = { ...epis.value[epiIdx], quantidade: epiAtual.quantidade - 1 };
             if (role.value === 'docente') await carregarSolicitacoesAlunos();
         }
 
@@ -764,7 +781,8 @@ export default {
             const { error } = await supabase.from(tabela).update({ status: 'rejeitado' }).eq(idCol, s.origem_id);
             if (error) { showToast('Erro ao rejeitar solicitação.', 'error'); return; }
             showToast('Solicitação rejeitada.', 'warning');
-            if (role.value === 'admin') await carregarSolicitacoes();
+            const idx = solicitacoes.value.findIndex(x => x.id === s.id);
+            if (idx !== -1) solicitacoes.value[idx] = { ...solicitacoes.value[idx], status: 'rejeitado' };
             if (role.value === 'docente') await carregarSolicitacoesAlunos();
         }
 
@@ -815,7 +833,7 @@ export default {
         return {
             sidebarOpen, loading, role, tabAdmin, tabDocente, tabAluno,
             epis, episDisponiveis, episFiltrados, episPaginados, totalPaginasEpis, paginaEpis,
-            solicitacoes, solicitacoesPaginadas, totalPaginasSolicitacoes, paginaSolicitacoes,
+            solicitacoes, solicitacoesPaginadas, solicitacoesFiltradas, totalPaginasSolicitacoes, paginaSolicitacoes, filtroStatusSolicitacoes,
             solicitacoesAlunos, minhasEntregas,
             filtroNome, filtroTipo, filtroDisponibilidade, tiposDisponiveis,
             modalEpi, editandoEpi, formEpi, modalError, salvando,
