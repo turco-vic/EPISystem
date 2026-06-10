@@ -677,12 +677,6 @@ export default {
             const qtd = parseInt(qtdSolicitacao.value) || 1;
             salvando.value = true;
             modalError.value = '';
-
-            const { data: epiAtual, error: erroConsulta } = await supabase.from('epis').select('quantidade').eq('idepis', epiSelecionado.value.idepis).single();
-            if (erroConsulta || !epiAtual) { modalError.value = 'Erro ao verificar estoque.'; salvando.value = false; return; }
-            if (epiAtual.quantidade <= 0) { modalError.value = 'Este EPI está sem estoque disponível.'; salvando.value = false; return; }
-            if (qtd > epiAtual.quantidade) { modalError.value = `Estoque insuficiente. Disponível: ${epiAtual.quantidade} unidade(s).`; salvando.value = false; return; }
-
             const hoje = new Date().toISOString().split('T')[0];
 
             if (tipoSolicitante.value === 'aluno') {
@@ -742,9 +736,8 @@ export default {
 
         async function carregarEntregasAluno() {
             if (!alunoId.value) return;
-            const { data, error } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, data_devolucao, status, epis_id').eq('aluno_id', alunoId.value).order('data_entrega', { ascending: false });
-            console.log('data:', data, 'error:', error);
-            if (data) minhasEntregas.value = data.map(e => ({ id: e.id_entrega_aluno, epi_nome: e.epis_id, epi_tipo: '', data_entrega: e.data_entrega, data_devolucao: e.data_devolucao, status: e.status || 'pendente' }));
+            const { data } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, data_devolucao, status, epis!aluno_has_epis_epis_id_fkey(nome, tipo)').eq('aluno_id', alunoId.value).order('data_entrega', { ascending: false });
+            if (data) minhasEntregas.value = data.map(e => ({ id: e.id_entrega_aluno, epi_nome: e.epis?.nome, epi_tipo: e.epis?.tipo, data_entrega: e.data_entrega, data_devolucao: e.data_devolucao, status: e.status || 'pendente' }));
         }
 
         async function carregarEntregasFuncionario() {
@@ -787,17 +780,11 @@ export default {
         async function aprovarSolicitacao(s) {
             const tabela = s.origem === 'aluno' ? 'aluno_has_epis' : 'funcionario_has_epis';
             const idCol = s.origem === 'aluno' ? 'id_entrega_aluno' : 'id_entrega_func';
-            const { data: epiAtual, error: erroConsulta } = await supabase.from('epis').select('quantidade').eq('idepis', s.epi_id).single();
-            if (erroConsulta || !epiAtual) { showToast('Erro ao verificar estoque.', 'error'); return; }
-            if (epiAtual.quantidade <= 0) { showToast('Não é possível aprovar: estoque zerado para este EPI.', 'error'); return; }
-            const { error: erroStatus } = await supabase.from(tabela).update({ status: 'aprovado' }).eq(idCol, s.origem_id);
-            if (erroStatus) { showToast('Erro ao aprovar solicitação.', 'error'); return; }
-            const { error: erroEstoque } = await supabase.from('epis').update({ quantidade: epiAtual.quantidade - 1 }).eq('idepis', s.epi_id);
-            if (erroEstoque) { showToast('Solicitação aprovada, mas erro ao atualizar estoque.', 'warning'); } else { showToast('Solicitação aprovada com sucesso.', 'success'); }
+            const { error } = await supabase.from(tabela).update({ status: 'aprovado' }).eq(idCol, s.origem_id);
+            if (error) { showToast('Erro ao aprovar solicitação.', 'error'); return; }
+            showToast('Solicitação aprovada com sucesso.', 'success');
             const idx = solicitacoes.value.findIndex(x => x.id === s.id);
             if (idx !== -1) solicitacoes.value[idx] = { ...solicitacoes.value[idx], status: 'aprovado' };
-            const epiIdx = epis.value.findIndex(e => e.idepis === s.epi_id);
-            if (epiIdx !== -1) epis.value[epiIdx] = { ...epis.value[epiIdx], quantidade: epiAtual.quantidade - 1 };
             if (role.value === 'docente') await carregarSolicitacoesAlunos();
         }
 
