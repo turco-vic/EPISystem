@@ -51,7 +51,7 @@
                                     <td>{{ epi.tipo }}</td>
                                     <td>{{ epi.quantidade }}</td>
                                     <td><span :class="['badge', epi.disponivel ? 'badge-green' : 'badge-red']">{{
-                                            epi.disponivel ? 'Sim' : 'Não' }}</span></td>
+                                        epi.disponivel ? 'Sim' : 'Não' }}</span></td>
                                     <td>{{ formatDate(epi.data_validade) }}</td>
                                     <td>{{ epi.codigo_patrimonio }}</td>
                                     <td class="actions-cell">
@@ -76,16 +76,16 @@
                                 </div>
                             </div>
                             <div class="item-card-row"><span class="item-card-label">Tipo</span><span>{{ epi.tipo
-                                    }}</span></div>
+                            }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Quantidade</span><span>{{
-                                    epi.quantidade }}</span></div>
+                                epi.quantidade }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Disponível</span><span
                                     :class="['badge', epi.disponivel ? 'badge-green' : 'badge-red']">{{ epi.disponivel ?
-                                    'Sim' : 'Não' }}</span></div>
+                                        'Sim' : 'Não' }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Validade</span><span>{{
-                                    formatDate(epi.data_validade) }}</span></div>
+                                formatDate(epi.data_validade) }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Patrimônio</span><span>{{
-                                    epi.codigo_patrimonio || '—' }}</span></div>
+                                epi.codigo_patrimonio || '—' }}</span></div>
                         </div>
                     </div>
                     <div class="paginacao" v-if="totalPaginasEpis > 1">
@@ -127,7 +127,7 @@
                                     <td>{{ s.epi_nome }}</td>
                                     <td>{{ formatDate(s.data) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status)
-                                            }}</span></td>
+                                    }}</span></td>
                                     <td class="actions-cell">
                                         <button v-if="s.status === 'pendente'" class="btn-icon btn-green"
                                             @click="aprovarSolicitacao(s)"><i class="fa-solid fa-check"></i></button>
@@ -155,11 +155,11 @@
                                 </div>
                             </div>
                             <div class="item-card-row"><span class="item-card-label">Tipo</span><span>{{
-                                    s.tipo_solicitante }}</span></div>
+                                s.tipo_solicitante }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">EPI</span><span>{{ s.epi_nome
-                                    }}</span></div>
+                            }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Data</span><span>{{
-                                    formatDate(s.data) }}</span></div>
+                                formatDate(s.data) }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Status</span><span
                                     :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status) }}</span>
                             </div>
@@ -248,7 +248,7 @@
                                     <td>{{ s.epi_nome }}</td>
                                     <td>{{ formatDate(s.data) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status)
-                                            }}</span></td>
+                                    }}</span></td>
                                     <td class="actions-cell">
                                         <button v-if="s.status === 'pendente'" class="btn-icon btn-green"
                                             @click="aprovarSolicitacao(s)"><i class="fa-solid fa-check"></i></button>
@@ -276,9 +276,9 @@
                                 </div>
                             </div>
                             <div class="item-card-row"><span class="item-card-label">EPI</span><span>{{ s.epi_nome
-                                    }}</span></div>
+                            }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Data</span><span>{{
-                                    formatDate(s.data) }}</span></div>
+                                formatDate(s.data) }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Status</span><span
                                     :class="['badge', getBadgeStatus(s.status)]">{{ formatStatus(s.status) }}</span>
                             </div>
@@ -313,7 +313,7 @@
                                     <td>{{ e.epi_nome }}</td>
                                     <td>{{ formatDate(e.data_entrega) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status)
-                                            }}</span></td>
+                                    }}</span></td>
                                     <td>{{ e.data_devolucao ? formatDate(e.data_devolucao) : '—' }}</td>
                                     <td><button v-if="!e.data_devolucao && e.status === 'aprovado'"
                                             class="btn-sm btn-outline" @click="devolverEpi(e)">Devolver</button></td>
@@ -333,7 +333,7 @@
                                 <span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status) }}</span>
                             </div>
                             <div class="item-card-row"><span class="item-card-label">Entrega</span><span>{{
-                                    formatDate(e.data_entrega) }}</span></div>
+                                formatDate(e.data_entrega) }}</span></div>
                             <div class="item-card-row"><span class="item-card-label">Devolução</span><span>{{
                                 e.data_devolucao ? formatDate(e.data_devolucao) : '—' }}</span></div>
                             <div class="item-card-row" v-if="!e.data_devolucao && e.status === 'aprovado'">
@@ -394,42 +394,67 @@
                 </div>
 
                 <div v-if="tabAluno === 'minhas'">
-                    <h2 class="section-title">Minhas solicitações</h2>
+                    <div class="section-header">
+                        <h2 class="section-title">Minhas solicitações</h2>
+                        <select v-model="filtroStatusMinhas" class="filtro-status-select">
+                            <option value="">Todos os status</option>
+                            <option value="pendente">Pendente</option>
+                            <option value="aprovado">Aprovado</option>
+                            <option value="devolvido">Devolvido</option>
+                            <option value="rejeitado">Rejeitado</option>
+                        </select>
+                    </div>
                     <div class="table-wrapper">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>EPI</th>
                                     <th>Tipo</th>
-                                    <th>Data</th>
+                                    <th>Data entrega</th>
                                     <th>Status</th>
+                                    <th>Devolução</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="e in minhasEntregas" :key="e.id">
+                                <tr v-for="e in minhasEntregasFiltradas" :key="e.id">
                                     <td>{{ e.epi_nome }}</td>
                                     <td>{{ e.epi_tipo }}</td>
                                     <td>{{ formatDate(e.data_entrega) }}</td>
                                     <td><span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status)
-                                            }}</span></td>
+                                    }}</span></td>
+                                    <td>{{ e.data_devolucao ? formatDate(e.data_devolucao) : '—' }}</td>
+                                    <td>
+                                        <button
+                                            v-if="!e.data_devolucao && (e.status === 'aprovado' || e.status === 'entregue')"
+                                            class="btn-sm btn-outline" @click="devolverEpiAluno(e)">Devolver</button>
+                                    </td>
                                 </tr>
-                                <tr v-if="minhasEntregas.length === 0">
-                                    <td colspan="4" class="empty-row">Nenhuma solicitação ainda.</td>
+                                <tr v-if="minhasEntregasFiltradas.length === 0">
+                                    <td colspan="6" class="empty-row">Nenhuma solicitação ainda.</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="cards-mobile">
-                        <div v-if="minhasEntregas.length === 0" class="card-empty">Nenhuma solicitação ainda.</div>
-                        <div v-for="e in minhasEntregas" :key="e.id" class="item-card">
+                        <div v-if="minhasEntregasFiltradas.length === 0" class="card-empty">Nenhuma solicitação ainda.
+                        </div>
+                        <div v-for="e in minhasEntregasFiltradas" :key="e.id" class="item-card">
                             <div class="item-card-header">
                                 <span class="item-card-nome">{{ e.epi_nome }}</span>
                                 <span :class="['badge', getBadgeStatus(e.status)]">{{ formatStatus(e.status) }}</span>
                             </div>
                             <div class="item-card-row"><span class="item-card-label">Tipo</span><span>{{ e.epi_tipo
-                                    }}</span></div>
-                            <div class="item-card-row"><span class="item-card-label">Data</span><span>{{
-                                    formatDate(e.data_entrega) }}</span></div>
+                            }}</span></div>
+                            <div class="item-card-row"><span class="item-card-label">Entrega</span><span>{{
+                                formatDate(e.data_entrega) }}</span></div>
+                            <div class="item-card-row"><span class="item-card-label">Devolução</span><span>{{
+                                e.data_devolucao ? formatDate(e.data_devolucao) : '—' }}</span></div>
+                            <div class="item-card-row"
+                                v-if="!e.data_devolucao && (e.status === 'aprovado' || e.status === 'entregue')">
+                                <span class="item-card-label"></span>
+                                <button class="btn-sm btn-outline" @click="devolverEpiAluno(e)">Devolver</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -460,7 +485,7 @@
                     <button class="btn-outline" @click="modalEpi = false">Cancelar</button>
                     <button class="btn-primary" @click="salvarEpi" :disabled="salvando">{{ salvando ? 'Salvando...' :
                         'Salvar'
-                        }}</button>
+                    }}</button>
                 </div>
             </div>
         </div>
@@ -717,8 +742,9 @@ export default {
 
         async function carregarEntregasAluno() {
             if (!alunoId.value) return;
-            const { data } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, status, epis(nome, tipo)').eq('aluno_id', alunoId.value).order('data_entrega', { ascending: false });
-            if (data) minhasEntregas.value = data.map(e => ({ id: e.id_entrega_aluno, epi_nome: e.epis?.nome, epi_tipo: e.epis?.tipo, data_entrega: e.data_entrega, status: e.status || 'pendente' }));
+            const { data, error } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, data_devolucao, status, epis_id').eq('aluno_id', alunoId.value).order('data_entrega', { ascending: false });
+            console.log('data:', data, 'error:', error);
+            if (data) minhasEntregas.value = data.map(e => ({ id: e.id_entrega_aluno, epi_nome: e.epis_id, epi_tipo: '', data_entrega: e.data_entrega, data_devolucao: e.data_devolucao, status: e.status || 'pendente' }));
         }
 
         async function carregarEntregasFuncionario() {
@@ -810,9 +836,16 @@ export default {
             const { error } = await supabase.from('funcionario_has_epis').update({ data_devolucao: new Date().toISOString().split('T')[0], status: 'devolvido' }).eq('id_entrega_func', entrega.id);
             if (error) { showToast('Erro ao devolver EPI.', 'error'); return; }
             const idx = minhasEntregas.value.findIndex(e => e.id === entrega.id);
-            if (idx !== -1) {
-                minhasEntregas.value[idx] = { ...minhasEntregas.value[idx], status: 'devolvido', data_devolucao: new Date().toISOString().split('T')[0] };
-            }
+            if (idx !== -1) minhasEntregas.value[idx] = { ...minhasEntregas.value[idx], status: 'devolvido', data_devolucao: new Date().toISOString().split('T')[0] };
+            showToast('EPI devolvido com sucesso.', 'success');
+        }
+
+        async function devolverEpiAluno(entrega) {
+            const hoje = new Date().toISOString().split('T')[0];
+            const { error } = await supabase.from('aluno_has_epis').update({ data_devolucao: hoje, status: 'devolvido' }).eq('id_entrega_aluno', entrega.id);
+            if (error) { showToast('Erro ao devolver EPI.', 'error'); return; }
+            const idx = minhasEntregas.value.findIndex(e => e.id === entrega.id);
+            if (idx !== -1) minhasEntregas.value[idx] = { ...minhasEntregas.value[idx], status: 'devolvido', data_devolucao: hoje };
             showToast('EPI devolvido com sucesso.', 'success');
         }
 
@@ -843,7 +876,7 @@ export default {
             aprovarSolicitacao, rejeitarSolicitacao,
             modalSolicitar, epiSelecionado, dataHoje, qtdSolicitacao,
             abrirModalSolicitar, confirmarSolicitacao, incQtd, decQtd,
-            abrirModalSolicitarLote, confirmarLote, devolverEpi,
+            abrirModalSolicitarLote, confirmarLote, devolverEpi, devolverEpiAluno,
             filtroStatusMinhas, minhasEntregasFiltradas
         };
     }

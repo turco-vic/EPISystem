@@ -253,9 +253,9 @@
                         <div class="info-card-row"><span class="info-card-label">EPI</span><span>{{ d.epi }}</span>
                         </div>
                         <div class="info-card-row"><span class="info-card-label">Patrimônio</span><span>{{ d.patrimonio
-                                || '—' }}</span></div>
+                            || '—' }}</span></div>
                         <div class="info-card-row"><span class="info-card-label">Entrega</span><span>{{
-                                formatDate(d.data) }}</span></div>
+                            formatDate(d.data) }}</span></div>
                         <div class="info-card-row"><span class="info-card-label">Tipo</span><span>{{ d.tipo }}</span>
                         </div>
                     </div>
@@ -383,6 +383,7 @@ export default {
             avisosValidade: 0
         });
 
+        const alunoId = ref(null);
         const estoquePorTipo = ref([]);
         const solicitacoesPendentes = ref([]);
         const episEmUso = ref([]);
@@ -501,9 +502,7 @@ export default {
             let totalEpis = 0;
             if (epis) {
                 totalEpis = epis.reduce((acc, e) => acc + (e.quantidade || 0), 0);
-                const disponiveis = epis.filter(e => (e.quantidade || 0) > 0).reduce((acc, e) => acc + (e.quantidade || 0), 0);
                 stats.value.totalEpis = totalEpis;
-                stats.value.episDisponiveis = disponiveis;
                 stats.value.estoqueCritico = epis.filter(e => (e.quantidade || 0) <= 5 && (e.quantidade || 0) > 0).length;
                 const tiposMap = {};
                 epis.forEach(e => { const t = e.tipo || 'Sem tipo'; tiposMap[t] = (tiposMap[t] || 0) + (e.quantidade || 0); });
@@ -511,25 +510,33 @@ export default {
                 estoquePorTipo.value = Object.entries(tiposMap).sort((a, b) => b[1] - a[1]).map(([tipo, total]) => ({ tipo, total, pct: Math.round((total / maxVal) * 100) }));
             }
 
-            const { data: sa } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome)').eq('status', 'pendente').order('data_entrega', { ascending: false });
-            const { data: sf } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, status, funcionario(nome, sobrenome, email), epis(nome)').eq('status', 'pendente').order('data_entrega', { ascending: false });
+            const { data: saPendentes } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome), epis(nome)').eq('status', 'pendente').order('data_entrega', { ascending: false });
+            const { data: sfPendentes } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, status, funcionario(nome, sobrenome, email), epis(nome)').eq('status', 'pendente').order('data_entrega', { ascending: false });
             const pendentes = [];
-            if (sa) sa.forEach(s => pendentes.push({ id: `a-${s.id_entrega_aluno}`, nome: `${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim(), epi: s.epis?.nome, data: s.data_entrega, tipo: 'Aluno' }));
-            if (sf) sf.forEach(s => pendentes.push({ id: `f-${s.id_entrega_func}`, nome: `${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim(), epi: s.epis?.nome, data: s.data_entrega, tipo: 'Funcionário' }));
+            if (saPendentes) saPendentes.forEach(s => pendentes.push({ id: `a-${s.id_entrega_aluno}`, nome: `${s.aluno?.nome || ''} ${s.aluno?.sobrenome || ''}`.trim(), epi: s.epis?.nome, data: s.data_entrega, tipo: 'Aluno' }));
+            if (sfPendentes) sfPendentes.forEach(s => pendentes.push({ id: `f-${s.id_entrega_func}`, nome: `${s.funcionario?.nome || ''} ${s.funcionario?.sobrenome || ''}`.trim(), epi: s.epis?.nome, data: s.data_entrega, tipo: 'Funcionário' }));
             solicitacoesPendentes.value = pendentes.sort((a, b) => (b.data || '').localeCompare(a.data || ''));
             stats.value.solicitacoesPendentes = pendentes.length;
 
-            const { data: funcEmUso } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, status, funcionario(nome, sobrenome, email), epis(nome, codigo_patrimonio, tipo)').eq('status', 'aprovado').is('data_devolucao', null).order('data_entrega', { ascending: false });
             const hoje = new Date();
             const emUso = [];
+
+            const { data: alunosEmUso } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, data_entrega, status, aluno(nome, sobrenome, email), epis(nome, codigo_patrimonio, tipo)').in('status', ['aprovado', 'entregue']).order('data_entrega', { ascending: false });
+            if (alunosEmUso) alunosEmUso.forEach(e => {
+                const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
+                emUso.push({ id: `a-${e.id_entrega_aluno}`, nome: `${e.aluno?.nome || ''} ${e.aluno?.sobrenome || ''}`.trim(), email: e.aluno?.email || '—', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Aluno', atrasado: diasAtivo > 30 });
+            });
+
+            const { data: funcEmUso } = await supabase.from('funcionario_has_epis').select('id_entrega_func, data_entrega, status, funcionario(nome, sobrenome, email), epis(nome, codigo_patrimonio, tipo)').in('status', ['aprovado', 'entregue']).is('data_devolucao', null).order('data_entrega', { ascending: false });
             if (funcEmUso) funcEmUso.forEach(e => {
                 const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
                 emUso.push({ id: `f-${e.id_entrega_func}`, nome: `${e.funcionario?.nome || ''} ${e.funcionario?.sobrenome || ''}`.trim(), email: e.funcionario?.email || '—', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Funcionário', atrasado: diasAtivo > 30 });
             });
+
             episEmUso.value = emUso.sort((a, b) => (b.atrasado ? 1 : 0) - (a.atrasado ? 1 : 0));
             stats.value.episEmUso = emUso.length;
-            stats.value.disponibilidadePct = totalEpis > 0 ? Math.round(((totalEpis - emUso.length) / totalEpis) * 100) : 0;
             stats.value.episDisponiveis = totalEpis - emUso.length;
+            stats.value.disponibilidadePct = totalEpis > 0 ? Math.round(((totalEpis - emUso.length) / totalEpis) * 100) : 0;
         }
 
         async function carregarDadosDocente(userEm) {
@@ -538,9 +545,9 @@ export default {
 
             const { data: minhas } = await supabase.from('funcionario_has_epis').select('id_entrega_func, status, data_entrega, data_devolucao, epis(nome, codigo_patrimonio, tipo)').eq('funcionario_id', func.idfuncionario).order('data_entrega', { ascending: false });
             if (minhas) {
-                stats.value.episComigo = minhas.filter(e => e.status === 'aprovado' && !e.data_devolucao).length;
+                stats.value.episComigo = minhas.filter(e => (e.status === 'aprovado' || e.status === 'entregue') && !e.data_devolucao).length;
                 const hoje = new Date();
-                episEmUso.value = minhas.filter(e => e.status === 'aprovado' && !e.data_devolucao).map(e => {
+                episEmUso.value = minhas.filter(e => (e.status === 'aprovado' || e.status === 'entregue') && !e.data_devolucao).map(e => {
                     const diasAtivo = e.data_entrega ? Math.floor((hoje - new Date(e.data_entrega)) / (1000 * 60 * 60 * 24)) : 0;
                     return { id: e.id_entrega_func, nome: 'Você', epi: e.epis?.nome, patrimonio: e.epis?.codigo_patrimonio, data: e.data_entrega, tipo: 'Docente', atrasado: diasAtivo > 30 };
                 });
@@ -579,10 +586,14 @@ export default {
             if (role.value === 'aluno') {
                 const { data: aluno } = await supabase.from('aluno').select('idaluno').eq('auth_id', user.id).single();
                 if (aluno) {
+                    alunoId.value = aluno.idaluno;
+                    const { data: todas } = await supabase.from('aluno_has_epis').select('status').eq('aluno_id', aluno.idaluno);
+                    if (todas) {
+                        stats.value.episComigo = todas.filter(e => e.status === 'aprovado' || e.status === 'entregue').length;
+                        stats.value.solicitacoesPendentes = todas.filter(e => e.status === 'pendente').length;
+                    }
                     const { data: minhas } = await supabase.from('aluno_has_epis').select('id_entrega_aluno, status, epis(nome, data_validade), data_entrega').eq('aluno_id', aluno.idaluno).order('data_entrega', { ascending: false }).limit(5);
                     if (minhas) {
-                        stats.value.episComigo = minhas.filter(e => e.status === 'aprovado').length;
-                        stats.value.solicitacoesPendentes = minhas.filter(e => e.status === 'pendente').length;
                         const hoje = new Date();
                         stats.value.avisosValidade = minhas.filter(e => { if (!e.epis?.data_validade) return false; const validade = new Date(e.epis.data_validade); const diff = (validade - hoje) / (1000 * 60 * 60 * 24); return diff >= 0 && diff <= 30; }).length;
                         atividadeRecente.value = minhas.map(e => ({ id: e.id_entrega_aluno, epi_nome: e.epis?.nome, data: e.data_entrega, status: e.status }));

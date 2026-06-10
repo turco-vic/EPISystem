@@ -110,7 +110,7 @@ export default {
                     return;
                 }
 
-                router.push('/estoque');
+                router.push('/dashboard');
             } else {
                 if (role === 'docente') {
                     const serviceKey = import.meta.env.VITE_SUPABASE_SERVICE_KEY;
